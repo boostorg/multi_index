@@ -1,6 +1,6 @@
-/* Boost.MultiIndex example of member functions used as key extractors.
+/* Boost.MultiIndex example of functions used as key extractors.
  *
- * Copyright 2003-2006 Joaquín M López Muñoz.
+ * Copyright 2003-2007 Joaquín M López Muñoz.
  * Distributed under the Boost Software License, Version 1.0.
  * (See accompanying file LICENSE_1_0.txt or copy at
  * http://www.boost.org/LICENSE_1_0.txt)
@@ -14,6 +14,7 @@
 #endif
 
 #include <boost/multi_index_container.hpp>
+#include <boost/multi_index/global_fun.hpp>
 #include <boost/multi_index/mem_fun.hpp>
 #include <boost/multi_index/ordered_index.hpp>
 #include <iostream>
@@ -46,7 +47,13 @@ private:
   std::string family_name;
 };
 
-/* multi_index_container with only one index based on name_record::name().
+std::string::size_type name_record_length(const name_record& r)
+{
+  return r.name().size();
+}
+
+/* multi_index_container with indices based on name_record::name()
+ * and name_record_length().
  * See Compiler specifics: Use of const_mem_fun_explicit and
  * mem_fun_explicit for info on BOOST_MULTI_INDEX_CONST_MEM_FUN.
  */
@@ -56,6 +63,9 @@ typedef multi_index_container<
   indexed_by<
     ordered_unique<
       BOOST_MULTI_INDEX_CONST_MEM_FUN(name_record,std::string,name)
+    >,
+    ordered_non_unique<
+      global_fun<const name_record&,std::string::size_type,name_record_length>
     >
   >
 > name_record_set;
@@ -71,8 +81,19 @@ int main()
 
   /* list the names in ns in phonebook order */
 
+  std::cout<<"Phonenook order\n"
+           <<"---------------"<<std::endl;
   for(name_record_set::iterator it=ns.begin();it!=ns.end();++it){
     std::cout<<it->name()<<std::endl;
+  }
+
+  /* list the names in ns according to their length*/
+
+  std::cout<<"\nLength order\n"
+           <<  "------------"<<std::endl;
+  for(nth_index_iterator<name_record_set,1>::type it1=get<1>(ns).begin();
+      it1!=get<1>(ns).end();++it1){
+    std::cout<<it1->name()<<std::endl;
   }
 
   return 0;
