@@ -1,4 +1,4 @@
-/* Copyright 2003-2007 Joaquín M López Muñoz.
+/* Copyright 2003-2008 Joaquin M Lopez Munoz.
  * Distributed under the Boost Software License, Version 1.0.
  * (See accompanying file LICENSE_1_0.txt or copy at
  * http://www.boost.org/LICENSE_1_0.txt)
@@ -16,6 +16,7 @@
 #include <boost/config.hpp> /* keep it first to prevent nasty warns in MSVC */
 #include <algorithm>
 #include <boost/detail/allocator_utilities.hpp>
+#include <boost/multi_index/detail/adl_swap.hpp>
 #include <boost/multi_index/detail/prevent_eti.hpp>
 #include <boost/noncopyable.hpp>
 #include <memory>
@@ -67,16 +68,7 @@ struct auto_space:private noncopyable
 
   void swap(auto_space& x)
   {
-    if(al_!=x.al_){
-
-#if defined(BOOST_FUNCTION_SCOPE_USING_DECLARATION_BREAKS_ADL)
-      std::swap(al_,x.al_);
-#else
-      using std::swap;
-      swap(al_,x.al_);
-#endif
-
-    }
+    if(al_!=x.al_)adl_swap(al_,x.al_);
     std::swap(n_,x.n_);
     std::swap(data_,x.data_);
   }

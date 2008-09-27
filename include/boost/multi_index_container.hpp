@@ -1,6 +1,6 @@
 /* Multiply indexed container.
  *
- * Copyright 2003-2007 Joaquín M López Muñoz.
+ * Copyright 2003-2008 Joaquin M Lopez Munoz.
  * Distributed under the Boost Software License, Version 1.0.
  * (See accompanying file LICENSE_1_0.txt or copy at
  * http://www.boost.org/LICENSE_1_0.txt)
@@ -29,6 +29,7 @@
 #include <boost/mpl/deref.hpp>
 #include <boost/multi_index_container_fwd.hpp>
 #include <boost/multi_index/detail/access_specifier.hpp>
+#include <boost/multi_index/detail/adl_swap.hpp>
 #include <boost/multi_index/detail/base_type.hpp>
 #include <boost/multi_index/detail/converter.hpp>
 #include <boost/multi_index/detail/header_holder.hpp>
@@ -96,8 +97,8 @@ class multi_index_container:
 private:
 #if !defined(BOOST_NO_MEMBER_TEMPLATE_FRIENDS)
   template <typename,typename,typename> friend class  detail::index_base;
-  template <typename,typename>          friend class  detail::header_holder;
-  template <typename,typename>          friend class  detail::converter;
+  template <typename,typename>          friend struct detail::header_holder;
+  template <typename,typename>          friend struct detail::converter;
 #endif
 
   typedef typename detail::multi_index_base_type<
@@ -192,6 +193,14 @@ public:
     BOOST_MULTI_INDEX_CHECK_INVARIANT;
   }    
 
+  explicit multi_index_container(const allocator_type& al):
+    bfm_allocator(al),
+    super(ctor_args_list(),bfm_allocator::member),
+    node_count(0)
+  {
+    BOOST_MULTI_INDEX_CHECK_INVARIANT;
+  }
+
   template<typename InputIterator>
   multi_index_container(
     InputIterator first,InputIterator last,
@@ -258,11 +267,10 @@ public:
   }
 
   multi_index_container<Value,IndexSpecifierList,Allocator>& operator=(
-    const multi_index_container<Value,IndexSpecifierList,Allocator>& x)
+    multi_index_container<Value,IndexSpecifierList,Allocator> x)
   {
     BOOST_MULTI_INDEX_CHECK_INVARIANT;
-    multi_index_container<Value,IndexSpecifierList,Allocator> tmp(x);
-    this->swap(tmp);
+    this->swap(x);
     return *this;
   }
 
@@ -351,8 +359,10 @@ public:
   {
     typedef typename nth_index<N>::type index;
 
+#if !defined(__SUNPRO_CC)||!(__SUNPRO_CC<0x580) /* fails in Sun C++ 5.7 */
     BOOST_STATIC_ASSERT(
       (mpl::contains<iterator_type_list,IteratorType>::value));
+#endif
 
     BOOST_MULTI_INDEX_CHECK_VALID_ITERATOR(it);
     BOOST_MULTI_INDEX_CHECK_IS_OWNER(
@@ -368,9 +378,11 @@ public:
   {
     typedef typename nth_index<N>::type index;
 
+#if !defined(__SUNPRO_CC)||!(__SUNPRO_CC<0x580) /* fails in Sun C++ 5.7 */
     BOOST_STATIC_ASSERT((
       mpl::contains<iterator_type_list,IteratorType>::value||
       mpl::contains<const_iterator_type_list,IteratorType>::value));
+#endif
 
     BOOST_MULTI_INDEX_CHECK_VALID_ITERATOR(it);
     BOOST_MULTI_INDEX_CHECK_IS_OWNER(
@@ -401,8 +413,10 @@ public:
   {
     typedef typename index<Tag>::type index;
 
+#if !defined(__SUNPRO_CC)||!(__SUNPRO_CC<0x580) /* fails in Sun C++ 5.7 */
     BOOST_STATIC_ASSERT(
       (mpl::contains<iterator_type_list,IteratorType>::value));
+#endif
 
     BOOST_MULTI_INDEX_CHECK_VALID_ITERATOR(it);
     BOOST_MULTI_INDEX_CHECK_IS_OWNER(
@@ -417,9 +431,11 @@ public:
   {
     typedef typename index<Tag>::type index;
 
+#if !defined(__SUNPRO_CC)||!(__SUNPRO_CC<0x580) /* fails in Sun C++ 5.7 */
     BOOST_STATIC_ASSERT((
       mpl::contains<iterator_type_list,IteratorType>::value||
       mpl::contains<const_iterator_type_list,IteratorType>::value));
+#endif
 
     BOOST_MULTI_INDEX_CHECK_VALID_ITERATOR(it);
     BOOST_MULTI_INDEX_CHECK_IS_OWNER(
@@ -532,14 +548,7 @@ BOOST_MULTI_INDEX_PROTECTED_IF_MEMBER_TEMPLATE_FRIENDS:
   void swap_(multi_index_container<Value,IndexSpecifierList,Allocator>& x)
   {
     if(bfm_allocator::member!=x.bfm_allocator::member){
-
-#if defined(BOOST_FUNCTION_SCOPE_USING_DECLARATION_BREAKS_ADL)
-      std::swap(bfm_allocator::member,x.bfm_allocator::member);
-#else
-      using std::swap;
-      swap(bfm_allocator::member,x.bfm_allocator::member);
-#endif
-
+      detail::adl_swap(bfm_allocator::member,x.bfm_allocator::member);
     }
     std::swap(bfm_header::member,x.bfm_header::member);
     super::swap_(x);
@@ -837,7 +846,8 @@ project(
     Value,IndexSpecifierList,Allocator>                multi_index_type;
   typedef typename nth_index<multi_index_type,N>::type index;
 
-#if !defined(BOOST_MSVC)||!(BOOST_MSVC<1310) /* ain't work in MSVC++ 6.0/7.0 */
+#if (!defined(BOOST_MSVC)||!(BOOST_MSVC<1310))&&  /* MSVC++ 6.0/7.0 fails */\
+    (!defined(__SUNPRO_CC)||!(__SUNPRO_CC<0x580)) /* as does Sun C++ 5.7  */
   BOOST_STATIC_ASSERT((
     mpl::contains<
       BOOST_DEDUCED_TYPENAME multi_index_type::iterator_type_list,
@@ -871,7 +881,8 @@ project(
     Value,IndexSpecifierList,Allocator>                multi_index_type;
   typedef typename nth_index<multi_index_type,N>::type index;
 
-#if !defined(BOOST_MSVC)||!(BOOST_MSVC<1310) /* ain't work in MSVC++ 6.0/7.0 */
+#if (!defined(BOOST_MSVC)||!(BOOST_MSVC<1310))&&  /* MSVC++ 6.0/7.0 fails */\
+    (!defined(__SUNPRO_CC)||!(__SUNPRO_CC<0x580)) /* as does Sun C++ 5.7  */
   BOOST_STATIC_ASSERT((
     mpl::contains<
       BOOST_DEDUCED_TYPENAME multi_index_type::iterator_type_list,
@@ -925,7 +936,8 @@ project(
   typedef typename ::boost::multi_index::index<
     multi_index_type,Tag>::type                 index;
 
-#if !defined(BOOST_MSVC)||!(BOOST_MSVC<1310) /* ain't work in MSVC++ 6.0/7.0 */
+#if (!defined(BOOST_MSVC)||!(BOOST_MSVC<1310))&&  /* MSVC++ 6.0/7.0 fails */\
+    (!defined(__SUNPRO_CC)||!(__SUNPRO_CC<0x580)) /* as does Sun C++ 5.7  */
   BOOST_STATIC_ASSERT((
     mpl::contains<
       BOOST_DEDUCED_TYPENAME multi_index_type::iterator_type_list,
@@ -960,7 +972,8 @@ project(
   typedef typename ::boost::multi_index::index<
     multi_index_type,Tag>::type                 index;
 
-#if !defined(BOOST_MSVC)||!(BOOST_MSVC<1310) /* ain't work in MSVC++ 6.0/7.0 */
+#if (!defined(BOOST_MSVC)||!(BOOST_MSVC<1310))&&  /* MSVC++ 6.0/7.0 fails */\
+    (!defined(__SUNPRO_CC)||!(__SUNPRO_CC<0x580)) /* as does Sun C++ 5.7  */
   BOOST_STATIC_ASSERT((
     mpl::contains<
       BOOST_DEDUCED_TYPENAME multi_index_type::iterator_type_list,

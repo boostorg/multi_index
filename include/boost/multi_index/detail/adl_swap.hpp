@@ -6,15 +6,15 @@
  * See http://www.boost.org/libs/multi_index for library home page.
  */
 
-#ifndef BOOST_MULTI_INDEX_DETAIL_HAS_TAG_HPP
-#define BOOST_MULTI_INDEX_DETAIL_HAS_TAG_HPP
+#ifndef BOOST_MULTI_INDEX_DETAIL_ADL_SWAP_HPP
+#define BOOST_MULTI_INDEX_DETAIL_ADL_SWAP_HPP
 
 #if defined(_MSC_VER)&&(_MSC_VER>=1200)
 #pragma once
 #endif
 
 #include <boost/config.hpp> /* keep it first to prevent nasty warns in MSVC */
-#include <boost/mpl/contains.hpp>
+#include <algorithm>
 
 namespace boost{
 
@@ -22,16 +22,18 @@ namespace multi_index{
 
 namespace detail{
 
-/* determines whether an index type has a given tag in its tag list */
-
-template<typename Tag>
-struct has_tag
+template<typename T>
+void adl_swap(T& x,T& y)
 {
-  template<typename Index>
-  struct apply:mpl::contains<BOOST_DEDUCED_TYPENAME Index::tag_list,Tag>
-  {
-  }; 
-};
+
+#if !defined(BOOST_FUNCTION_SCOPE_USING_DECLARATION_BREAKS_ADL)
+  using std::swap;
+  swap(x,y);
+#else
+  std::swap(x,y);
+#endif
+
+}
 
 } /* namespace multi_index::detail */
 
