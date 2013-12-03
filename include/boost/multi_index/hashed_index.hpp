@@ -41,6 +41,7 @@
 #include <cmath>
 #include <cstddef>
 #include <functional>
+#include <iterator>
 #include <utility>
 
 #if !defined(BOOST_NO_CXX11_HDR_INITIALIZER_LIST)
@@ -1047,6 +1048,60 @@ BOOST_MULTI_INDEX_PROTECTED_IF_MEMBER_TEMPLATE_FRIENDS:
     BOOST_CATCH_END
   }
 
+  /* comparison */
+
+#if !defined(BOOST_NO_MEMBER_TEMPLATE_FRIENDS)
+  /* defect macro refers to class, not function, templates, but anyway */
+
+  template<typename K,typename H,typename P,typename S,typename T,typename C>
+  friend bool operator==(
+    const hashed_index<K,H,P,S,T,C>&,const hashed_index<K,H,P,S,T,C>& y);
+#endif
+
+  bool equals(const hashed_index& x)const{return equals(x,Category());}
+
+  bool equals(const hashed_index& x,hashed_unique_tag)const
+  {
+    if(size()!=x.size())return false;
+    for(const_iterator it=begin(),it_end=end(),it2_end=x.end();
+        it!=it_end;++it){
+      const_iterator it2=x.find(key(*it));
+      if(it2==it2_end||!(*it==*it2))return false;
+    }
+    return true;
+  }
+
+  bool equals(const hashed_index& x,hashed_non_unique_tag)const
+  {
+    if(size()!=x.size())return false;
+    for(const_iterator it=begin(),it_end=end();it!=it_end;){
+      const_iterator it2,it2_last;
+      boost::tie(it2,it2_last)=x.equal_range(key(*it));
+      if(it2==it2_last)return false;
+
+      const_iterator it_last=make_iterator(
+        node_type::from_impl(end_of_range(it.get_node()->impl())));
+      if(std::distance(it,it_last)!=std::distance(it2,it2_last))return false;
+
+      /* From is_permutation code in
+       * http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2010/n3068.pdf
+       */
+
+      for(;it!=it_last;++it,++it2){
+        if(!(*it==*it2))break;
+      }
+      if(it!=it_last){
+        for(const_iterator scan=it;scan!=it_last;++scan){
+          if(std::find(it,scan,*scan)!=scan)continue;
+          std::ptrdiff_t matches=std::count(it2,it2_last,*scan);
+          if(matches==0||matches!=std::count(scan,it_last,*scan))return false;
+        }
+        it=it_last;
+      }
+    }
+    return true;
+  }
+
 #if !defined(BOOST_MULTI_INDEX_DISABLE_SERIALIZATION)
   /* serialization */
 
@@ -1450,6 +1505,30 @@ private:
 #pragma parse_mfunc_templ reset
 #endif
 };
+
+/* comparison */
+
+template<
+  typename KeyFromValue,typename Hash,typename Pred,
+  typename SuperMeta,typename TagList,typename Category
+>
+bool operator==(
+  const hashed_index<KeyFromValue,Hash,Pred,SuperMeta,TagList,Category>& x,
+  const hashed_index<KeyFromValue,Hash,Pred,SuperMeta,TagList,Category>& y)
+{
+  return x.equals(y);
+}
+
+template<
+  typename KeyFromValue,typename Hash,typename Pred,
+  typename SuperMeta,typename TagList,typename Category
+>
+bool operator!=(
+  const hashed_index<KeyFromValue,Hash,Pred,SuperMeta,TagList,Category>& x,
+  const hashed_index<KeyFromValue,Hash,Pred,SuperMeta,TagList,Category>& y)
+{
+  return !(x==y);
+}
 
 /*  specialized algorithms */
 

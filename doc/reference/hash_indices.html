@@ -50,6 +50,7 @@ Sequenced indices
           <li><a href="#lookup">Lookup</a></li>
           <li><a href="#bucket_interface">Bucket interface</a></li>
           <li><a href="#hash_policy">Hash policy</a></li>
+          <li><a href="#comparison">Comparison</a></li>
           <li><a href="#serialization">Serialization</a></li>
         </ul>
       </li>
@@ -117,6 +118,13 @@ their associated <a href="#hash_indices">hashed index</a> classes.
 <span class=keyword>namespace</span> <span class=identifier>detail</span><span class=special>{</span>
 
 <span class=keyword>template</span><span class=special>&lt;</span><b>implementation defined</b><span class=special>&gt;</span> <span class=keyword>class</span> <b>index class name implementation defined</b><span class=special>;</span>
+
+<span class=comment>// index comparison:</span>
+
+<span class=comment>// <b>OP</b> is any of ==,!=</span>
+
+<span class=keyword>template</span><span class=special>&lt;</span><b>implementation defined</b><span class=special>&gt;</span>
+<span class=keyword>bool</span> <span class=keyword>operator</span> <b><i>OP</i></b><span class=special>(</span><span class=keyword>const</span> <b>index class name</b><span class=special>&amp;</span> <span class=identifier>x</span><span class=special>,</span><span class=keyword>const</span> <b>index class name</b><span class=special>&amp;</span> <span class=identifier>y</span><span class=special>);</span>
 
 <span class=comment>// index specialized algorithms:</span>
 
@@ -349,6 +357,17 @@ requirements.
   <span class=keyword>void</span>  <span class=identifier>rehash</span><span class=special>(</span><span class=identifier>size_type</span> <span class=identifier>n</span><span class=special>);</span>
   <span class=keyword>void</span>  <span class=identifier>reserve</span><span class=special>(</span><span class=identifier>size_type</span> <span class=identifier>n</span><span class=special>);</span>
 <span class=special>};</span>
+
+<span class=comment>// index comparison:</span>
+
+<span class=keyword>template</span><span class=special>&lt;</span><b>implementation defined</b><span class=special>&gt;</span>
+<span class=keyword>bool</span> <span class=keyword>operator</span><span class=special>==(</span><span class=keyword>const</span> <b>index class name</b><span class=special>&amp;</span> <span class=identifier>x</span><span class=special>,</span><span class=keyword>const</span> <b>index class name</b><span class=special>&amp;</span> <span class=identifier>y</span><span class=special>)</span><span class=special>;</span>
+
+<span class=keyword>template</span><span class=special>&lt;</span><b>implementation defined</b><span class=special>&gt;</span>
+<span class=keyword>bool</span> <span class=keyword>operator</span><span class=special>!=(</span><span class=keyword>const</span> <b>index class name</b><span class=special>&amp;</span> <span class=identifier>x</span><span class=special>,</span><span class=keyword>const</span> <b>index class name</b><span class=special>&amp;</span> <span class=identifier>y</span><span class=special>)</span>
+<span class=special>{</span>
+  <span class=keyword>return</span> <span class=special>!(</span><span class=identifier>x</span><span class=special>==</span><span class=identifier>y</span><span class=special>);</span>
+<span class=special>}</span>
 
 <span class=comment>// index specialized algorithms:</span>
 
@@ -992,6 +1011,36 @@ non-equivalent elements in the index.<br>
 </pre></blockquote>
 </blockquote>
 
+<h4><a name="comparison">Comparison</a></h4>
+
+<code>template&lt;<i>implementation defined</i>&gt;<br>
+bool operator==(const <i>index class name</i>&amp; x,const <i>index class name</i>&amp; y);</code>
+
+<blockquote>
+<b>Requires:</b> <code>x.key_extractor()</code>, <code>x.hash_function()</code> and
+<code>x.key_eq()</code> have the same behavior as the corresponding objects in <code>y</code>.
+For any two elements <code>e1</code>, <code>e2</code> in <code>x</code> or <code>y</code>,
+if <code>e1==e2</code> then their keys are equivalent.<br>
+<b>Returns:</b> <code>true</code> iff <code>x</code> and <code>y</code> have the same size
+and for each key <code>k</code> present in <code>x</code> the range
+<code>x.equal_range(k)</code> is equal (considering the <code>==</code> operator of <code>value_type</code>)
+to <code>y.equal_range(k)</code> under permutations of the elements.<br>
+<b>Complexity:</b> Let <code>k<sub>1</sub></code>,...,<code>k<sub>m</sub></code> be the different
+keys present in <code>x</code>:<br>
+<ul>
+  <li>If, for each <code>k<sub>i</sub></code>, <code>x.equal_range(k<sub>i</sub>)</code> is arranged
+    in the same order as <code>y.equal_range(k<sub>i</sub>)</code>, average case is
+    <code>O(x.size())</code>, worst case <code>O(x.size()<sup>2</sup>)</code>.
+  </li>
+  <li>Otherwise, average case is
+    <code>O(<font style="font-size:1.5em">&Sigma;</font>(x.count(k<sub>i</sub>)<sup>2</sup>))</code>,
+    worst case <code>O(x.size()<sup>2</sup>)</code>.
+  </li>
+</ul>
+(For unique indices, the formulas above reduce to average case 
+<code>O(x.size())</code>, worst case <code>O(x.size()<sup>2</sup>)</code>.)
+</blockquote>
+
 <h4><a name="serialization">Serialization</a></h4>
 
 <p>
@@ -1080,7 +1129,7 @@ Sequenced indices
 
 <br>
 
-<p>Revised October 20th 2013</p>
+<p>Revised November 30th 2013</p>
 
 <p>&copy; Copyright 2003-2013 Joaqu&iacute;n M L&oacute;pez Mu&ntilde;oz.
 Distributed under the Boost Software 

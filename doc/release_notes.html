@@ -75,6 +75,8 @@ Acknowledgements
     by Boost 1.56 version of Boost.MultiIndex, but not the other way around.
   </li>
   <li>Hashed indices now provide <code>reserve</code>.</li>
+  <li>Hashed indices can now be checked for equality and inequality following the
+    (suitably adapted) C++ standard specification in <b>[unord.req]</b>.</li>
   <li>The public interface of Boost.MultiIndex provide <code>noexcept</code> specifications
     where appropriate (for compliant compilers).
   </li>
@@ -82,6 +84,7 @@ Acknowledgements
   <li>Much internal code aimed at supporting MSVC++ 7.0 and prior has been removed.
     Compilation times without this legacy code might be slightly faster.
   </li>
+  <li>Maintenance fixes.</li>
 </ul>
 </p>
 
@@ -442,7 +445,7 @@ Acknowledgements
 
 <br>
 
-<p>Revised October 12th 2013</p>
+<p>Revised November 30th 2013</p>
 
 <p>&copy; Copyright 2003-2013 Joaqu&iacute;n M L&oacute;pez Mu&ntilde;oz.
 Distributed under the Boost Software 
