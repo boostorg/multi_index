@@ -1340,7 +1340,7 @@ private:
           std::size_t prev_buc=buckets.position(hashes.data()[i-1]);
           if(!within_bucket)prev_buc=~prev_buc;
 
-          for(int j=i;j--;){
+          for(std::size_t j=i;j--;){
             std::size_t       buc=buckets.position(hashes.data()[j]);
             node_impl_pointer x=node_ptrs.data()[j];
             if(buc==prev_buc)node_alg::append(x,end_);
@@ -1396,7 +1396,7 @@ private:
           std::size_t prev_buc=buckets.position(hashes.data()[i-1]);
           if(!within_bucket)prev_buc=~prev_buc;
 
-          for(int j=i;j--;){
+          for(std::size_t j=i;j--;){
             std::size_t       buc=buckets.position(hashes.data()[j]);
             node_impl_pointer x=node_ptrs.data()[j],
                               y=
