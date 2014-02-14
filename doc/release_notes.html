@@ -84,6 +84,9 @@ Acknowledgements
   <li>Much internal code aimed at supporting MSVC++ 7.0 and prior has been removed.
     Compilation times without this legacy code might be slightly faster.
   </li>
+  <li>Fixed a bug with insertion via iterators dereferencing to rvalues
+    (ticket <a href="https://svn.boost.org/trac/boost/ticket/9665">#9665</a>).
+  </li>
   <li>Maintenance fixes.</li>
 </ul>
 </p>
@@ -445,9 +448,9 @@ Acknowledgements
 
 <br>
 
-<p>Revised November 30th 2013</p>
+<p>Revised February 13th 2014</p>
 
-<p>&copy; Copyright 2003-2013 Joaqu&iacute;n M L&oacute;pez Mu&ntilde;oz.
+<p>&copy; Copyright 2003-2014 Joaqu&iacute;n M L&oacute;pez Mu&ntilde;oz.
 Distributed under the Boost Software 
 License, Version 1.0. (See accompanying file <a href="../../../LICENSE_1_0.txt">
 LICENSE_1_0.txt</a> or copy at <a href="http://www.boost.org/LICENSE_1_0.txt">
