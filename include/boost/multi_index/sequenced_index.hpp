@@ -1,4 +1,4 @@
-/* Copyright 2003-2013 Joaquin M Lopez Munoz.
+/* Copyright 2003-2014 Joaquin M Lopez Munoz.
  * Distributed under the Boost Software License, Version 1.0.
  * (See accompanying file LICENSE_1_0.txt or copy at
  * http://www.boost.org/LICENSE_1_0.txt)
@@ -221,13 +221,13 @@ public:
   const_iterator
     end()const BOOST_NOEXCEPT{return make_iterator(header());}
   reverse_iterator
-    rbegin()BOOST_NOEXCEPT{return make_reverse_iterator(end());}
+    rbegin()BOOST_NOEXCEPT{return boost::make_reverse_iterator(end());}
   const_reverse_iterator
-    rbegin()const BOOST_NOEXCEPT{return make_reverse_iterator(end());}
+    rbegin()const BOOST_NOEXCEPT{return boost::make_reverse_iterator(end());}
   reverse_iterator
-    rend()BOOST_NOEXCEPT{return make_reverse_iterator(begin());}
+    rend()BOOST_NOEXCEPT{return boost::make_reverse_iterator(begin());}
   const_reverse_iterator
-    rend()const BOOST_NOEXCEPT{return make_reverse_iterator(begin());}
+    rend()const BOOST_NOEXCEPT{return boost::make_reverse_iterator(begin());}
   const_iterator
     cbegin()const BOOST_NOEXCEPT{return begin();}
   const_iterator
