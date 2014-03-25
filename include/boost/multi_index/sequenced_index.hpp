@@ -785,7 +785,8 @@ BOOST_MULTI_INDEX_PROTECTED_IF_MEMBER_TEMPLATE_FRIENDS:
     Archive& ar,const unsigned int version,const index_loader_type& lm)
   {
     lm.load(
-      ::boost::bind(&sequenced_index::rearranger,this,_1,_2),
+      ::boost::bind(
+        &sequenced_index::rearranger,this,::boost::arg<1>(),::boost::arg<2>()),
       ar,version);
     super::load_(ar,version,lm);
   }

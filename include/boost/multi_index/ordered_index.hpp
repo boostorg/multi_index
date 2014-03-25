@@ -1318,7 +1318,8 @@ private:
     ordered_non_unique_tag)
   {
     lm.load(
-      ::boost::bind(&ordered_index::rearranger,this,_1,_2),
+      ::boost::bind(
+        &ordered_index::rearranger,this,::boost::arg<1>(),::boost::arg<2>()),
       ar,version);
     super::load_(ar,version,lm);
   }

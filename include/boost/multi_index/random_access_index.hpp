@@ -895,7 +895,10 @@ BOOST_MULTI_INDEX_PROTECTED_IF_MEMBER_TEMPLATE_FRIENDS:
       typedef random_access_index_loader<node_type,allocator_type> loader;
 
       loader ld(get_allocator(),ptrs);
-      lm.load(::boost::bind(&loader::rearrange,&ld,_1,_2),ar,version);
+      lm.load(
+        ::boost::bind(
+          &loader::rearrange,&ld,::boost::arg<1>(),::boost::arg<2>()),
+        ar,version);
     } /* exit scope so that ld frees its resources */
     super::load_(ar,version,lm);
   }
