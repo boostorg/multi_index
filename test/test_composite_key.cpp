@@ -336,7 +336,7 @@ struct xystr
 #define TUPLE_MAKER_CREATE(z,n,tuple)                   \
 template<BOOST_PP_ENUM_PARAMS(n,typename T)>            \
 static tuple<BOOST_PP_ENUM_PARAMS(n,T)>                 \
-create(BOOST_PP_ENUM_BINARY_PARAMS(n,T,t)){             \
+create(BOOST_PP_ENUM_BINARY_PARAMS(n,const T,& t)){     \
   return tuple<BOOST_PP_ENUM_PARAMS(n,T)>(              \
    BOOST_PP_ENUM_PARAMS(n,t));                          \
 }
