@@ -72,7 +72,7 @@ inline Node* ordered_index_find(
     top,y,key,x,comp,
     mpl::and_<
       promotes_1st_arg<CompatibleCompare,CompatibleKey,key_type>,
-      promotes_2nd_arg<CompatibleCompare,key_type,CompatibleKey>>());
+      promotes_2nd_arg<CompatibleCompare,key_type,CompatibleKey> >());
 }
 
 template<
@@ -214,7 +214,7 @@ inline std::pair<Node*,Node*> ordered_index_equal_range(
     top,y,key,x,comp,
     mpl::and_<
       promotes_1st_arg<CompatibleCompare,CompatibleKey,key_type>,
-      promotes_2nd_arg<CompatibleCompare,key_type,CompatibleKey>>());
+      promotes_2nd_arg<CompatibleCompare,key_type,CompatibleKey> >());
 }
 
 template<
