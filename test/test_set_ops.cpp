@@ -27,12 +27,19 @@ private:
   operator type1()const{return type1();}
 };
 
+struct type3
+{
+  operator type1()const{return type1();}
+};
+
 struct less_type12
 {
   bool operator()(type1,type1)const{return false;}
   bool operator()(type1,type2)const{return false;}
   bool operator()(type2,type1)const{return false;}
 };
+
+bool less_type1_f(type1,type1){return false;}
 
 struct hash_type12
 {
@@ -105,4 +112,16 @@ void test_set_ops()
   BOOST_TEST(c.get<1>().count(type2())==1);
   BOOST_TEST(c.get<1>().equal_range(type2())==
              std::make_pair(c.get<1>().begin(),c.get<1>().end()));
+
+  /* check promotion detection does not break with functions */
+
+  multi_index_container<
+    type1,
+    indexed_by<
+      ordered_unique<identity<type1>,bool(*)(type1,type1)>
+    >
+  > c2(boost::make_tuple(boost::make_tuple(identity<type1>(),&less_type1_f)));
+  c2.insert(type1());
+
+  BOOST_TEST(c2.find(type3())==c2.begin());
 }
