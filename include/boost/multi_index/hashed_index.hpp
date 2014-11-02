@@ -1514,7 +1514,7 @@ private:
     const key_type& k,
     const CompatibleHash& hash,const CompatiblePred& eq,mpl::true_)const
   {
-    return find(k,hash,eq,mpl::false());
+    return find(k,hash,eq,mpl::false_());
   }
 
   template<
@@ -1541,7 +1541,7 @@ private:
     const key_type& k,
     const CompatibleHash& hash,const CompatiblePred& eq,mpl::true_)const
   {
-    return count(k,hash,eq,mpl::false());
+    return count(k,hash,eq,mpl::false_());
   }
 
   template<
