@@ -66,7 +66,7 @@ struct is_transparent_class_helper:F
 {
   using F::operator();
   template<typename T,typename Q>
-  not_is_transparent_result_type operator()(T,Q)const;
+  not_is_transparent_result_type operator()(const T&,const Q&)const;
 };
 
 template<typename F,typename Arg1,typename Arg2,typename=void>
