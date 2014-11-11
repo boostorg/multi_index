@@ -1073,7 +1073,8 @@ is thus designed upon that of <code>std::list</code>; nearly every operation
 provided in the standard container is replicated here, occasionally with changes
 in the syntax and/or semantics to cope with the constraints imposed by
 Boost.MultiIndex. An important difference, commented <a href="#iterator_access">above</a>,
-is the fact that sequenced index iterators are <i>constant</i>:
+is the fact that the values pointed to by sequenced index iterators are treated
+as <i>constant</i>:
 </p>
 
 <blockquote><pre>
