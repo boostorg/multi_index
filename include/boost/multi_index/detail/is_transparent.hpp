@@ -37,7 +37,7 @@ struct is_transparent:mpl::true_{};
 
 } /* namespace boost */
 
-#if !defined(BOOST_NO_SFINAE)&& \
+#if !defined(BOOST_NO_SFINAE)&&!defined(BOOST_NO_SFINAE_EXPR)&& \
     !defined(BOOST_NO_CXX11_DECLTYPE)&& \
     (defined(BOOST_NO_CXX11_FINAL)||defined(BOOST_IS_FINAL))
 
