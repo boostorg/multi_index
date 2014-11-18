@@ -39,7 +39,7 @@ struct is_transparent:mpl::true_{};
 
 #if !defined(BOOST_NO_SFINAE)&& \
     !defined(BOOST_NO_CXX11_DECLTYPE)&& \
-    defined(BOOST_IS_FINAL)
+    (defined(BOOST_NO_CXX11_FINAL)||defined(BOOST_IS_FINAL))
 
 #include <boost/mpl/and.hpp>
 #include <boost/mpl/not.hpp>
@@ -92,7 +92,7 @@ struct is_transparent<
   typename enable_if<
     mpl::and_<
       is_class<F>,
-      mpl::not_<is_final<F> >
+      mpl::not_<is_final<F> > /* is_transparent_class_helper derives from F */
     >
   >::type
 >:is_transparent_class<F,Arg1,Arg2>{};
