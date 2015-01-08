@@ -172,7 +172,6 @@ void random_access_index_sort(
 
   if(ptrs.size()<=1)return;
 
-  typedef typename Node::value_type         value_type;
   typedef typename Node::impl_pointer       impl_pointer;
   typedef typename Node::impl_ptr_pointer   impl_ptr_pointer;
   typedef random_access_index_sort_compare<
