@@ -1271,7 +1271,7 @@ private:
 
   void calculate_max_load()
   {
-    float fml=static_cast<float>(mlf*bucket_count());
+    float fml=mlf*static_cast<float>(bucket_count());
     max_load=(std::numeric_limits<size_type>::max)();
     if(max_load>fml)max_load=static_cast<size_type>(fml);
   }
