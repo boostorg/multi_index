@@ -1,4 +1,4 @@
-/* Copyright 2003-2014 Joaquin M Lopez Munoz.
+/* Copyright 2003-2015 Joaquin M Lopez Munoz.
  * Distributed under the Boost Software License, Version 1.0.
  * (See accompanying file LICENSE_1_0.txt or copy at
  * http://www.boost.org/LICENSE_1_0.txt)
@@ -1271,7 +1271,7 @@ private:
 
   void calculate_max_load()
   {
-    float fml=static_cast<float>(mlf*bucket_count());
+    float fml=static_cast<float>(mlf*static_cast<float>(bucket_count()));
     max_load=(std::numeric_limits<size_type>::max)();
     if(max_load>fml)max_load=static_cast<size_type>(fml);
   }
