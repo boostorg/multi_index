@@ -527,15 +527,16 @@ indices), but induces important limitations in non key-based indices:
   <span class=special>&gt;</span>
 <span class=special>&gt;</span> <span class=identifier>container</span><span class=special>;</span>	
 
-<span class=identifier>container</span> <span class=identifier>c</span><span class=special>;</span>
+<span class=identifier>container</span>    <span class=identifier>c</span><span class=special>;</span>
+<span class=identifier>std</span><span class=special>::</span><span class=identifier>mt19937</span> <span class=identifier>rng</span><span class=special>;</span>
 <span class=special>...</span>
 <span class=comment>// compiler error: assignment to read-only objects</span>
-<span class=identifier>std</span><span class=special>::</span><span class=identifier>random_shuffle</span><span class=special>(</span><span class=identifier>c</span><span class=special>.</span><span class=identifier>begin</span><span class=special>(),</span><span class=identifier>c</span><span class=special>.</span><span class=identifier>end</span><span class=special>());</span>
+<span class=identifier>std</span><span class=special>::</span><span class=identifier>shuffle</span><span class=special>(</span><span class=identifier>c</span><span class=special>.</span><span class=identifier>begin</span><span class=special>(),</span><span class=identifier>c</span><span class=special>.</span><span class=identifier>end</span><span class=special>(),</span><span class=identifier>rng</span><span class=special>);</span>
 </pre></blockquote>
 
 <p>
 What is unfortunate about the previous example is that the operation
-performed by <code>std::random_shuffle</code> is potentially compatible
+performed by <code>std::shuffle</code> is potentially compatible
 with <code>multi_index_container</code> invariants, as its result can be
 described by a permutation of the elements in the random access index
 with no actual modifications to the elements themselves. There are many
@@ -561,7 +562,7 @@ container:
 <span class=identifier>BOOST_FOREACH</span><span class=special>(</span><span class=keyword>const</span> <span class=keyword>int</span><span class=special>&amp;</span> <span class=identifier>i</span><span class=special>,</span><span class=identifier>c</span><span class=special>)</span><span class=identifier>v</span><span class=special>.</span><span class=identifier>push_back</span><span class=special>(</span><span class=identifier>boost</span><span class=special>::</span><span class=identifier>cref</span><span class=special>(</span><span class=identifier>i</span><span class=special>));</span>
 
 <span class=comment>// this compiles OK, as reference_wrappers are swappable</span>
-<span class=identifier>std</span><span class=special>::</span><span class=identifier>random_shuffle</span><span class=special>(</span><span class=identifier>v</span><span class=special>.</span><span class=identifier>begin</span><span class=special>(),</span><span class=identifier>v</span><span class=special>.</span><span class=identifier>end</span><span class=special>());</span>
+<span class=identifier>std</span><span class=special>::</span><span class=identifier>shuffle</span><span class=special>(</span><span class=identifier>v</span><span class=special>.</span><span class=identifier>begin</span><span class=special>(),</span><span class=identifier>v</span><span class=special>.</span><span class=identifier>end</span><span class=special>(),</span><span class=identifier>rng</span><span class=special>);</span>
 </pre></blockquote>
 
 <p>
@@ -569,7 +570,7 @@ Elements of <code>v</code> are <code>reference_wrapper</code>s (from
 <a href="../../../../doc/html/ref.html">Boost.Ref</a>) to the actual elements
 in the multi-index container. These objects still do not allow modification
 of the referenced entities, but they are swappable,
-which is the only requirement <code>std::random_shuffle</code> imposes. Once
+which is the only requirement <code>std::shuffle</code> imposes. Once
 we have our desired rearrange stored in the view, we can transfer it to
 the container with
 </p>
@@ -716,9 +717,9 @@ Key extraction
 
 <br>
 
-<p>Revised July 7th 2013</p>
+<p>Revised March 25th 2015</p>
 
-<p>&copy; Copyright 2003-2013 Joaqu&iacute;n M L&oacute;pez Mu&ntilde;oz.
+<p>&copy; Copyright 2003-2015 Joaqu&iacute;n M L&oacute;pez Mu&ntilde;oz.
 Distributed under the Boost Software 
 License, Version 1.0. (See accompanying file <a href="../../../../LICENSE_1_0.txt">
 LICENSE_1_0.txt</a> or copy at <a href="http://www.boost.org/LICENSE_1_0.txt">
