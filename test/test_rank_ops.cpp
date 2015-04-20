@@ -77,7 +77,7 @@ static void local_test_rank_ops()
 
   for(int i=0;i<12;++i){
     std::size_t pos=s.find_rank(i);
-    BOOST_TEST(pos==s.size()&&ss.find(i)==ss.end() || *s.nth(pos)==i);
+    BOOST_TEST((pos==s.size()&&ss.find(i)==ss.end())||(*s.nth(pos)==i));
     BOOST_TEST(same_position(s.lower_bound_rank(i),s,ss.lower_bound(i),ss));
     BOOST_TEST(same_position(s.upper_bound_rank(i),s,ss.upper_bound(i),ss));
     std::pair<std::size_t,std::size_t> posp=s.equal_range_rank(i);

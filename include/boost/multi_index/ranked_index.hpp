@@ -160,18 +160,18 @@ private:
   std::pair<std::size_t,std::size_t>
   range_rank(LowerBounder lower,UpperBounder upper,none_unbounded_tag)const
   {
-    node_type* y=header();
-    node_type* z=root();
+    node_type* y=this->header();
+    node_type* z=this->root();
 
     if(!z)return std::pair<std::size_t,std::size_t>(0,0);
 
     std::size_t s=z->size;
 
     do{
-      if(!lower(key(z->value()))){
+      if(!lower(this->key(z->value()))){
         z=node_type::from_impl(z->right());
       }
-      else if(!upper(key(z->value()))){
+      else if(!upper(this->key(z->value()))){
         y=z;
         s-=ranked_node_size(y->right())+1;
         z=node_type::from_impl(z->left());
@@ -194,7 +194,7 @@ private:
   {
     return std::pair<std::size_t,std::size_t>(
       0,
-      upper_range_rank(root(),header(),upper));
+      upper_range_rank(this->root(),this->header(),upper));
   }
 
   template<typename LowerBounder,typename UpperBounder>
@@ -202,7 +202,7 @@ private:
   range_rank(LowerBounder lower,UpperBounder,upper_unbounded_tag)const
   {
     return std::pair<std::size_t,std::size_t>(
-      lower_range_rank(root(),header(),lower),
+      lower_range_rank(this->root(),this->header(),lower),
       this->size());
   }
 
@@ -222,7 +222,7 @@ private:
     std::size_t s=top->size;
 
     do{
-      if(lower(key(top->value()))){
+      if(lower(this->key(top->value()))){
         y=top;
         s-=ranked_node_size(y->right())+1;
         top=node_type::from_impl(top->left());
@@ -242,7 +242,7 @@ private:
     std::size_t s=top->size;
 
     do{
-      if(!upper(key(top->value()))){
+      if(!upper(this->key(top->value()))){
         y=top;
         s-=ranked_node_size(y->right())+1;
         top=node_type::from_impl(top->left());
