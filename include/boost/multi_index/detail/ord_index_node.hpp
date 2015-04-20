@@ -207,10 +207,10 @@ private:
 
 template<typename AugmentPolicy,typename Allocator>
 struct ordered_index_node_impl_base:
-  AugmentPolicy::template augmented_node<
 
 #if !defined(BOOST_MULTI_INDEX_DISABLE_COMPRESSED_ORDERED_INDEX_NODES)
-    mpl::if_c<
+  AugmentPolicy::template augmented_node<
+    typename mpl::if_c<
       !(has_uintptr_type::value)||
       (alignment_of<
         ordered_index_node_compressed_base<AugmentPolicy,Allocator>
@@ -224,11 +224,13 @@ struct ordered_index_node_impl_base:
       ordered_index_node_std_base<AugmentPolicy,Allocator>,
       ordered_index_node_compressed_base<AugmentPolicy,Allocator>
     >::type
+  >::type
 #else
+  AugmentPolicy::template augmented_node<
     ordered_index_node_std_base<Allocator>
+  >::type
 #endif
 
-  >::type
 {};
 
 template<typename AugmentPolicy,typename Allocator>

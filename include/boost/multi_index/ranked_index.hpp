@@ -35,7 +35,7 @@ struct ranked_node:OrderedIndexNodeImpl
 template<typename OrderedIndexImpl>
 class ranked_index:public OrderedIndexImpl
 {
-  typedef typename OrderedIndexImpl         super;
+  typedef          OrderedIndexImpl         super;
 
 protected:
   typedef typename super::node_type         node_type;

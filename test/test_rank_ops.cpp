@@ -28,11 +28,13 @@ template<
 bool same_position(
   std::size_t n1,const Sequence1& s1,Iterator2 it2,const Sequence2& s2)
 {
-  typedef typename Sequence1::const_iterator const_iterator;
+  typedef typename Sequence1::const_iterator const_iterator1;
+  typedef typename Sequence2::const_iterator const_iterator2;
 
-  const_iterator it1=s1.begin();
-  std::advance(it1,n1);
-  return std::distance(s1.begin(),it1)==std::distance(s2.begin(),it2);
+  const_iterator1 cit1=s1.begin();
+  std::advance(cit1,n1);
+  const_iterator2 cit2=it2;
+  return std::distance(s1.begin(),cit1)==std::distance(s2.begin(),cit2);
 }
 
 struct less_equal_than
