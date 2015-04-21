@@ -36,8 +36,9 @@ inline std::size_t ranked_node_size(Pointer x)
 }
 
 template<typename Pointer>
-inline Pointer ranked_index_nth(std::size_t n,Pointer top,Pointer end_)
+inline Pointer ranked_index_nth(std::size_t n,Pointer end_)
 {
+  Pointer top=end_->parent();
   if(top==Pointer(0)||n>=top->size)return end_;
 
   for(;;){
@@ -52,10 +53,11 @@ inline Pointer ranked_index_nth(std::size_t n,Pointer top,Pointer end_)
 }
 
 template<typename Pointer>
-inline std::size_t ranked_index_rank(Pointer x,Pointer top)
+inline std::size_t ranked_index_rank(Pointer x,Pointer end_)
 {
+  Pointer top=end_->parent();
   if(top==Pointer(0))return 0;
-  if(x==top->parent())return top->size; /* end */
+  if(x==end_)return top->size;
 
   std::size_t s=ranked_node_size(x->left());
   while(x!=top){

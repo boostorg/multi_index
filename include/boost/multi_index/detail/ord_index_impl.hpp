@@ -230,19 +230,8 @@ public:
   /* construct/copy/destroy
    * Default and copy ctors are in the protected section as indices are
    * not supposed to be created on their own. No range ctor either.
-   * Assignment operator defined at ordered_index rather than here.
+   * Assignment operators defined at ordered_index rather than here.
    */
-
-#if !defined(BOOST_NO_CXX11_HDR_INITIALIZER_LIST)
-  ordered_index<KeyFromValue,Compare,SuperMeta,TagList,Category,AugmentPolicy>&
-    operator=(std::initializer_list<value_type> list)
-  {
-    this->final()=list;
-    return *static_cast<
-      ordered_index<
-        KeyFromValue,Compare,SuperMeta,TagList,Category,AugmentPolicy>*>(this);
-  }
-#endif
 
   allocator_type get_allocator()const BOOST_NOEXCEPT
   {
@@ -1402,11 +1391,24 @@ public:
   typedef typename super::allocator_type          allocator_type;
   typedef typename super::iterator                iterator;
 
+  /* construct/copy/destroy
+   * Default and copy ctors are in the protected section as indices are
+   * not supposed to be created on their own. No range ctor either.
+   */
+
   ordered_index& operator=(const ordered_index& x)
   {
     this->final()=x.final();
     return *this;
   }
+
+#if !defined(BOOST_NO_CXX11_HDR_INITIALIZER_LIST)
+  ordered_index& operator=(std::initializer_list<value_type> list)
+  {
+    this->final()=list;
+    return *this;
+  }
+#endif
 
 protected:
   ordered_index(

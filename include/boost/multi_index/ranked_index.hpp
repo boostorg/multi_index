@@ -51,7 +51,7 @@ public:
   iterator nth(std::size_t n)const
   {
     return this->make_iterator(node_type::from_impl(
-      ranked_index_nth(n,this->root()->impl(),this->header()->impl())));
+      ranked_index_nth(n,this->header()->impl())));
   }
 
   std::size_t rank(iterator position)const
@@ -60,7 +60,7 @@ public:
     BOOST_MULTI_INDEX_CHECK_IS_OWNER(position,*this);
 
     return ranked_index_rank(
-      position.get_node()->impl(),this->root()->impl());
+      position.get_node()->impl(),this->header()->impl());
   }
 
   template<typename CompatibleKey>
