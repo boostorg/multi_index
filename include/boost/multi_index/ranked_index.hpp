@@ -50,7 +50,7 @@ public:
 
   iterator nth(std::size_t n)const
   {
-    return make_iterator(node_type::from_impl(
+    return this->make_iterator(node_type::from_impl(
       ranked_index_nth(n,this->root()->impl(),this->header()->impl())));
   }
 
