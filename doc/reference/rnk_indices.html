@@ -172,18 +172,19 @@ explanations on their acceptable type values.
 <p>
 Ranked indices are a variation of <a href="ord_indices.html">ordered indices</a>
 providing additional capabilities for calculation of and access by rank; the <i>rank</i> of an element is the
-distance to it from the beginning of the index. Other than this, ranked indices present
-the same public interface and complexity guarantees than ordered indices, although
-execution times and memory consumption are expected to be poorer due to the internal
-bookkeeping needed to maintain rank-related information.
+distance to it from the beginning of the index. Besides this extension, ranked indices replicate the
+public interface of ordered indices with the difference, complexity-wise, that <a href="#complexity_signature">deletion</a>
+is done in logarithmic rather than constant time. Also, execution times and memory consumption are
+expected to be poorer due to the internal bookkeeping needed to maintain rank-related information.
 As with ordered indices, ranked indices can be unique (no duplicate elements are allowed)
 or non-unique: either version is associated to a different index specifier, but
-the interface of both is the same.
+the interface of both index types is the same.
 </p>
 
 <p>
-Being then these a pure extension of ordered indices, we only provide descriptions for
-the extra operations they provide.
+In what follows, we only describe the extra operations provided by ranked indices: for the
+rest refer to the <a href="ord_indices.html#ord_indices">documentation</a> for ordered
+indices, bearing in mind the occasional differences in complexity.
 </p>
 
 <blockquote><pre>
@@ -428,7 +429,25 @@ the extra operations they provide.
 <h4><a name="complexity_signature">Complexity signature</a></h4>
 
 <p>
-The same as <a href="ord_indices.html#complexity_signature">ordered indices</a>.
+We follow the terminology described in the 
+<a href="indices.html#complexity_signature">complexity signature
+section</a>. The complexity signature of ranked indices is:
+<ul>
+  <li>copying: <code>c(n)=n*log(n)</code>,</li>
+  <li>insertion: <code>i(n)=log(n)</code>,</li>
+  <li>hinted insertion: <code>h(n)=1</code> (constant) if the hint element
+    is immediately after the point of insertion, <code>h(n)=log(n)</code> otherwise,</li>
+  <li>deletion: <b><code>d(n)=log(n)</code></b> ,</li>
+  <li>replacement: <code>r(n)=1</code> (constant) if the element position does not
+    change, <code>r(n)=log(n)</code> otherwise,</li>
+  <li>modifying: <code>m(n)=1</code> (constant) if the element position does not
+    change, <code>m(n)=log(n)</code> otherwise.</li>
+</ul>
+</p>
+<p>
+These complexity guarantees are the same as those of
+<a href="ord_indices.html#complexity_signature">ordered indices</a>
+except for deletion, which is <code>log(n)</code> here and amortized constant there.
 </p>
 
 <h4><a name="instantiation_types">Instantiation types</a></h4>
@@ -613,7 +632,7 @@ Hashed indices
 
 <br>
 
-<p>Revised April 19th 2015</p>
+<p>Revised April 21st 2015</p>
 
 <p>&copy; Copyright 2003-2015 Joaqu&iacute;n M L&oacute;pez Mu&ntilde;oz.
 Distributed under the Boost Software 
