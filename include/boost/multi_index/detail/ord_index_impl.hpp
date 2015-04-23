@@ -336,8 +336,7 @@ public:
   }
 
 #if !defined(BOOST_NO_CXX11_HDR_INITIALIZER_LIST)
-  void insert(
-    std::initializer_list<BOOST_DEDUCED_TYPENAME super::value_type> list)
+  void insert(std::initializer_list<value_type> list)
   {
     insert(list.begin(),list.end());
   }
@@ -1404,7 +1403,8 @@ public:
   }
 
 #if !defined(BOOST_NO_CXX11_HDR_INITIALIZER_LIST)
-  ordered_index& operator=(std::initializer_list<value_type> list)
+  ordered_index& operator=(
+    std::initializer_list<BOOST_DEDUCED_TYPENAME super::value_type> list)
   {
     this->final()=list;
     return *this;
