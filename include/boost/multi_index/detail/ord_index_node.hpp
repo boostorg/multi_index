@@ -43,6 +43,7 @@
 #include <boost/config.hpp> /* keep it first to prevent nasty warns in MSVC */
 #include <cstddef>
 #include <boost/detail/allocator_utilities.hpp>
+#include <boost/multi_index/detail/raw_ptr.hpp>
 
 #if !defined(BOOST_MULTI_INDEX_DISABLE_COMPRESSED_ORDERED_INDEX_NODES)
 #include <boost/mpl/and.hpp>
@@ -617,14 +618,18 @@ public:
 
   static ordered_index_node* from_impl(impl_pointer x)
   {
-    return static_cast<ordered_index_node*>(
-      static_cast<trampoline*>(&*x));
+    return
+      static_cast<ordered_index_node*>(
+        static_cast<trampoline*>(
+          raw_ptr<impl_type*>(x)));
   }
 
   static const ordered_index_node* from_impl(const_impl_pointer x)
   {
-    return static_cast<const ordered_index_node*>(
-      static_cast<const trampoline*>(&*x));
+    return
+      static_cast<const ordered_index_node*>(
+        static_cast<const trampoline*>(
+          raw_ptr<const impl_type*>(x)));
   }
 
   /* interoperability with bidir_node_iterator */
