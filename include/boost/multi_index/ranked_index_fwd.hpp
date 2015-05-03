@@ -6,8 +6,8 @@
  * See http://www.boost.org/libs/multi_index for library home page.
  */
 
-#ifndef BOOST_MULTI_INDEX_ORDERED_INDEX_FWD_HPP
-#define BOOST_MULTI_INDEX_ORDERED_INDEX_FWD_HPP
+#ifndef BOOST_MULTI_INDEX_RANKED_INDEX_FWD_HPP
+#define BOOST_MULTI_INDEX_RANKED_INDEX_FWD_HPP
 
 #if defined(_MSC_VER)
 #pragma once
@@ -20,13 +20,13 @@ namespace boost{
 
 namespace multi_index{
 
-/* ordered_index specifiers */
+/* ranked_index specifiers */
 
 template<typename Arg1,typename Arg2=mpl::na,typename Arg3=mpl::na>
-struct ordered_unique;
+struct ranked_unique;
 
 template<typename Arg1,typename Arg2=mpl::na,typename Arg3=mpl::na>
-struct ordered_non_unique;
+struct ranked_non_unique;
 
 } /* namespace multi_index */
 
