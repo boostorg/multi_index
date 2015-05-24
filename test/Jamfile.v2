@@ -10,6 +10,8 @@
 import os ;
 import type ;
 
+project : requirements <toolset>msvc:<define>_SCL_SECURE_NO_WARNINGS ;
+
 # Windows Vista UAC has an heuristic by which executable files whose name
 # contains any of the words "install", "setup", "update", etc. are assumed
 # to be installation packages needing administrative rights, which causes
