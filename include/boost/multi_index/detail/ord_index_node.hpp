@@ -228,7 +228,7 @@ struct ordered_index_node_impl_base:
   >::type
 #else
   AugmentPolicy::template augmented_node<
-    ordered_index_node_std_base<Allocator>
+    ordered_index_node_std_base<AugmentPolicy,Allocator>
   >::type
 #endif
 
