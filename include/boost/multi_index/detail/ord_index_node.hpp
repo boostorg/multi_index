@@ -182,7 +182,7 @@ struct ordered_index_node_compressed_base
   color_ref           color(){return color_ref(&parentcolor_);}
   ordered_index_color color()const
   {
-    return ordered_index_color(parentcolor_&std::size_t(1ul));
+    return ordered_index_color(parentcolor_&uintptr_type(1));
   }
 
   parent_ref parent(){return parent_ref(&parentcolor_);}
