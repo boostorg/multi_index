@@ -14,6 +14,7 @@
 #endif
 
 #include <boost/config.hpp> /* keep it first to prevent nasty warns in MSVC */
+#include <boost/multi_index/detail/may_alias.hpp>
 #include <boost/type_traits/aligned_storage.hpp>
 #include <boost/type_traits/alignment_of.hpp> 
 
@@ -39,7 +40,7 @@ struct pod_value_holder
   typename aligned_storage<
     sizeof(Value),
     alignment_of<Value>::value
-  >::type                      space;
+  >::type BOOST_MULTI_INDEX_ATTRIBUTE_MAY_ALIAS space;
 };
 
 template<typename Value,typename Allocator>

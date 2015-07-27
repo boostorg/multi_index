@@ -15,6 +15,7 @@
 
 #include <boost/config.hpp> /* keep it first to prevent nasty warns in MSVC */
 #include <boost/detail/no_exceptions_support.hpp>
+#include <boost/multi_index/detail/may_alias.hpp>
 #include <boost/noncopyable.hpp>
 #include <boost/serialization/serialization.hpp>
 #include <boost/type_traits/aligned_storage.hpp>
@@ -67,7 +68,8 @@ struct archive_constructed:private noncopyable
   T& get(){return *reinterpret_cast<T*>(&space);}
 
 private:
-  typename aligned_storage<sizeof(T),alignment_of<T>::value>::type space;
+  typename aligned_storage<sizeof(T),alignment_of<T>::value>::type
+  BOOST_MULTI_INDEX_ATTRIBUTE_MAY_ALIAS                            space;
 };
 
 } /* namespace multi_index::detail */
