@@ -15,7 +15,6 @@
 
 #include <boost/config.hpp> /* keep it first to prevent nasty warns in MSVC */
 #include <boost/detail/no_exceptions_support.hpp>
-#include <boost/multi_index/detail/may_alias.hpp>
 #include <boost/multi_index/detail/seq_index_node.hpp>
 #include <boost/limits.hpp>
 #include <boost/type_traits/aligned_storage.hpp>
@@ -127,15 +126,15 @@ void sequenced_index_sort(Node* header,Compare comp)
   if(header->next()==header->impl()||
      header->next()->next()==header->impl())return;
 
-  typedef typename Node::impl_type              impl_type;
-  typedef typename Node::impl_pointer           impl_pointer;
+  typedef typename Node::impl_type      impl_type;
+  typedef typename Node::impl_pointer   impl_pointer;
 
   typedef typename aligned_storage<
     sizeof(impl_type),
     alignment_of<impl_type>::value
-  >::type BOOST_MULTI_INDEX_ATTRIBUTE_MAY_ALIAS carry_spc_type;
-  carry_spc_type                                carry_spc;
-  impl_type&                                    carry=
+  >::type                               carry_spc_type;
+  carry_spc_type                        carry_spc;
+  impl_type&                            carry=
     *reinterpret_cast<impl_type*>(&carry_spc);
   typedef typename aligned_storage<
     sizeof(
@@ -145,11 +144,11 @@ void sequenced_index_sort(Node* header,Compare comp)
       impl_type
         [sequenced_index_sort_max_fill]
     >::value
-  >::type BOOST_MULTI_INDEX_ATTRIBUTE_MAY_ALIAS counter_spc_type;
-  counter_spc_type                              counter_spc;
-  impl_type*                                    counter=
+  >::type                               counter_spc_type;
+  counter_spc_type                      counter_spc;
+  impl_type*                            counter=
     reinterpret_cast<impl_type*>(&counter_spc);
-  std::size_t                                   fill=0;
+  std::size_t                           fill=0;
 
   carry.prior()=carry.next()=static_cast<impl_pointer>(&carry);
   counter[0].prior()=counter[0].next()=static_cast<impl_pointer>(&counter[0]);
