@@ -302,13 +302,13 @@ struct rank_policy
   {
     y->size=x->size;
     x->size=ranked_node_size(x->left())+ranked_node_size(x->right())+1;
-  };
+  }
 
   template<typename Pointer>
   static void rotate_right(Pointer x,Pointer y) /* in: x==y->right() */
   {
     rotate_left(x,y);
-  };
+  }
 
 #if defined(BOOST_MULTI_INDEX_ENABLE_INVARIANT_CHECKING)
   /* invariant stuff */
