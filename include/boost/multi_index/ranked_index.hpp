@@ -270,7 +270,7 @@ struct rank_policy
     typedef ranked_index<OrderedIndexImpl> type;
   };
 
-  /* algorihmic stuff */
+  /* algorithmic stuff */
 
   template<typename Pointer>
   static void add(Pointer x,Pointer root)
