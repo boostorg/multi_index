@@ -536,7 +536,7 @@ the index belongs if
     <code>multi_index_container</code>.</li>
 </ul>
 <code>position</code> is used as a hint to improve the efficiency of the
-operation. If succesful, insertion happens as close as possible to the
+operation. If successful, insertion happens as close as possible to the
 location just prior to <code>position</code>.<br>
 <b>Returns:</b> On successful insertion, an iterator to the newly inserted
 element. Otherwise, an iterator to an element that caused the insertion to be
@@ -590,7 +590,7 @@ the index belongs if
     <code>multi_index_container</code>.</li>
 </ul>
 <code>position</code> is used as a hint to improve the efficiency of the
-operation. If succesful, insertion happens as close as possible to the
+operation. If successful, insertion happens as close as possible to the
 location just prior to <code>position</code>.<br>
 <b>Returns:</b> On successful insertion, an iterator to the newly inserted
 element. Otherwise, an iterator to an element that caused the insertion to be
@@ -1065,7 +1065,7 @@ input archive (XML archive) <code>ar</code>.
 <b>Requires:</b> Additionally to the general requirements, <code>value_comp()</code>
 must be serialization-compatible with <code>m.get&lt;i&gt;().value_comp()</code>,
 where <code>i</code> is the position of the ordered index in the container.<br>
-<b>Postconditions:</b> On succesful loading, each of the elements of
+<b>Postconditions:</b> On successful loading, each of the elements of
 [<code>begin()</code>, <code>end()</code>) is a restored copy of the corresponding
 element in [<code>m.get&lt;i&gt;().begin()</code>, <code>m.get&lt;i&gt;().end()</code>).
 </blockquote>
@@ -1082,7 +1082,7 @@ Operation: loading of an <code>iterator</code> or <code>const_iterator</code>
 <code>it'</code> from an input archive (XML archive) <code>ar</code>.
 
 <blockquote>
-<b>Postconditions:</b> On succesful loading, if <code>it</code> was dereferenceable
+<b>Postconditions:</b> On successful loading, if <code>it</code> was dereferenceable
 then <code>*it'</code> is the restored copy of <code>*it</code>, otherwise
 <code>it'==end()</code>.<br>
 <b>Note:</b> It is allowed that <code>it</code> be a <code>const_iterator</code>
@@ -1103,7 +1103,7 @@ Ranked indices
 
 <br>
 
-<p>Revised April 19th 2015</p>
+<p>Revised November 24th 2015</p>
 
 <p>&copy; Copyright 2003-2015 Joaqu&iacute;n M L&oacute;pez Mu&ntilde;oz.
 Distributed under the Boost Software 
