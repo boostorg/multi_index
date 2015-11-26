@@ -714,7 +714,11 @@ belongs remains in its original state.
 <b>Requires:</b> <code>mod</code> is a unary function object
 accepting arguments of type
 <code>value_type&amp;</code>. <code>position</code> is a valid dereferenceable
-iterator of the index.<br>
+iterator of the index.
+The execution of <code>mod(e)</code>, where <code>e</code> is the element
+pointed to by <code>position</code>, does not invoke any operation of the
+<code>multi_index_container</code> after <code>e</code> is directly modified
+or, before modification, if the operation would invalidate <code>position</code>.<br>
 <b>Effects:</b> Calls <code>mod(e)</code> where <code>e</code> is the element
 pointed to by <code>position</code> and rearranges <code>*position</code> into
 all the indices of the <code>multi_index_container</code>. Rearrangement is successful if
@@ -743,9 +747,15 @@ bool modify(iterator position,Modifier mod,Rollback back);</code>
 <b>Requires:</b> <code>mod</code> and <code>back</code> are unary function
 objects accepting arguments of type
 <code>value_type&amp;</code>. <code>position</code> is a valid dereferenceable
-iterator of the index. The sequence of operations <code>mod(e)</code>,
-<code>back(e)</code>, where <code>e</code> is the element
-pointed to by <code>position</code>, restores all keys of the element
+iterator of the index. 
+The execution of <code>mod(e)</code>, where <code>e</code> is the element
+pointed to by <code>position</code>, does not invoke any operation of the
+<code>multi_index_container</code> after <code>e</code> is directly modified
+or, before modification, if the operation would invalidate <code>position</code>.
+<code>back(e)</code> does not invoke any operation of the
+<code>multi_index_container</code>.
+The sequence of operations <code>mod(e)</code>,
+<code>back(e)</code> restores all keys of the element
 to their original state.<br>
 <b>Effects:</b> Calls <code>mod(e)</code> where <code>e</code> is the element
 pointed to by <code>position</code> and tries to rearrange <code>*position</code> into
@@ -781,7 +791,11 @@ is rethrown.
 from <code>value_type</code>. <code>mod</code> is a
 unary function object accepting arguments of type
 <code>key_type&amp;</code>. <code>position</code> is a valid dereferenceable
-iterator of the index.<br>
+iterator of the index.
+The execution of <code>mod(k)</code>, where <code>k</code> is the key of the element
+pointed to by <code>position</code>, does not invoke any operation of the
+<code>multi_index_container</code> after <code>k</code> is directly modified
+or, before modification, if the operation would invalidate <code>position</code>.<br>
 <b>Effects:</b> Equivalent to <code>modify(position,mod')</code>,
 with <code>mod'</code> defined in such a way that
 <code>mod'(x)</code> is the same as <code>mod(key(x))</code>, where
@@ -798,9 +812,14 @@ from <code>value_type</code>. <code>mod</code> and <code>back</code>
 are unary function objects accepting arguments of type
 <code>key_type&amp;</code>. <code>position</code> is a valid dereferenceable
 iterator of the index.
+The execution of <code>mod(k)</code>, where <code>k</code> is the key of the element
+pointed to by <code>position</code>, does not invoke any operation of the
+<code>multi_index_container</code> after <code>k</code> is directly modified
+or, before modification, if the operation would invalidate <code>position</code>.
+<code>back(k)</code> does not invoke any operation of the
+<code>multi_index_container</code>.
 The sequence of operations <code>mod(k)</code>,
-<code>back(k)</code>, where <code>k</code> is the key of the element
-pointed to by <code>position</code>, restores <code>k</code> to its original state.<br>
+<code>back(k)</code> restores <code>k</code> to its original state.<br>
 <b>Effects:</b> Equivalent to <code>modify(position,mod',back')</code>,
 with <code>mod'</code> and <code>back</code> defined in such a way that
 <code>mod'(x)</code> is the same as <code>mod(key(x))</code> and
@@ -1129,7 +1148,7 @@ Sequenced indices
 
 <br>
 
-<p>Revised November 24th 2015</p>
+<p>Revised November 26th 2015</p>
 
 <p>&copy; Copyright 2003-2015 Joaqu&iacute;n M L&oacute;pez Mu&ntilde;oz.
 Distributed under the Boost Software 
