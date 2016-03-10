@@ -6,18 +6,13 @@
  * See http://www.boost.org/libs/multi_index for library home page.
  */
 
-#ifndef BOOST_MULTI_INDEX_DETAIL_IGNORE_WSTRICT_ALIASING_HPP
-#define BOOST_MULTI_INDEX_DETAIL_IGNORE_WSTRICT_ALIASING_HPP
-
-#if defined(_MSC_VER)
-#pragma once
-#endif
-
 #include <boost/config.hpp>
 
 #if defined(BOOST_GCC)&&(BOOST_GCC>=3*10000+3*100)
+#if !defined(BOOST_MULTI_INDEX_DETAIL_RESTORE_WSTRICT_ALIASING)
 #pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wstrict-aliasing" 
+#pragma GCC diagnostic ignored "-Wstrict-aliasing"
+#else
+#pragma GCC diagnostic pop
 #endif
-
 #endif
