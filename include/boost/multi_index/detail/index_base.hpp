@@ -83,10 +83,8 @@ protected:
     final_allocator_type>                     index_loader_type;
 #endif
 
-private:
   typedef Value                               value_type;
 
-protected:
   explicit index_base(const ctor_args_list&,const Allocator&){}
 
   index_base(
