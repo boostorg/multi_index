@@ -409,7 +409,7 @@ key are accomplished by passing tuples with the values searched:
 </p>
 
 <blockquote><pre>
-<span class=identifier>phonebook</span> <span class=identifier>pb</span><span class=special>;</span>
+<span class=identifier>phonebook</span> <span class=identifier>pb()</span><span class=special>;</span>
 <span class=special>...</span>
 <span class=comment>// search for Dorothea White's number</span>
 <span class=identifier>phonebook</span><span class=special>::</span><span class=identifier>iterator</span> <span class=identifier>it</span><span class=special>=</span><span class=identifier>pb</span><span class=special>.</span><span class=identifier>find</span><span class=special>(</span><span class=identifier>std</span><span class=special>::</span><span class=identifier>make_tuple</span><span class=special>(</span><span class=string>&quot;White&quot;</span><span class=special>,</span><span class=string>&quot;Dorothea&quot;</span><span class=special>));</span>
