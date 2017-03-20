@@ -90,7 +90,7 @@ class hashed_index:
     hashed_index<KeyFromValue,Hash,Pred,SuperMeta,TagList,Category> >
 #endif
 
-{ 
+{
 #if defined(BOOST_MULTI_INDEX_ENABLE_INVARIANT_CHECKING)&&\
     BOOST_WORKAROUND(__MWERKS__,<=0x3003)
 /* The "ISO C++ Template Parser" option in CW8.3 has a problem with the
@@ -130,7 +130,7 @@ public:
   typedef typename allocator_type::const_pointer     const_pointer;
   typedef typename allocator_type::reference         reference;
   typedef typename allocator_type::const_reference   const_reference;
-  typedef std::size_t                                size_type;      
+  typedef std::size_t                                size_type;
   typedef std::ptrdiff_t                             difference_type;
 
 #if defined(BOOST_MULTI_INDEX_ENABLE_SAFE_MODE)
@@ -157,7 +157,7 @@ public:
 protected:
   typedef typename super::final_node_type     final_node_type;
   typedef tuples::cons<
-    ctor_args, 
+    ctor_args,
     typename super::ctor_args_list>           ctor_args_list;
   typedef typename mpl::push_front<
     typename super::index_type_list,
@@ -277,7 +277,7 @@ public:
       x,static_cast<final_node_type*>(position.get_node()));
     return make_iterator(p.first);
   }
-    
+
   iterator insert(iterator position,BOOST_RV_REF(value_type) x)
   {
     BOOST_MULTI_INDEX_CHECK_VALID_ITERATOR(position);
@@ -453,7 +453,7 @@ public:
   key_from_value key_extractor()const{return key;}
   hasher         hash_function()const{return hash_;}
   key_equal      key_eq()const{return eq_;}
-  
+
   /* lookup */
 
   /* Internally, these ops rely on const_iterator being the same
@@ -722,7 +722,7 @@ BOOST_MULTI_INDEX_PROTECTED_IF_MEMBER_TEMPLATE_FRIENDS:
 
     super::copy_(x,map);
   }
-  
+
   void copy_(
     const hashed_index<KeyFromValue,Hash,Pred,SuperMeta,TagList,Category>& x,
     const copy_map_type& map,hashed_non_unique_tag)
@@ -900,7 +900,7 @@ BOOST_MULTI_INDEX_PROTECTED_IF_MEMBER_TEMPLATE_FRIENDS:
     if(eq_(key(v),key(x->value()))){
       return super::replace_(v,x,variant);
     }
-      
+
     unlink_undo undo;
     unlink(x,undo);
 
@@ -924,7 +924,7 @@ BOOST_MULTI_INDEX_PROTECTED_IF_MEMBER_TEMPLATE_FRIENDS:
   bool modify_(node_type* x)
   {
     std::size_t buc;
-    bool        b; 
+    bool        b;
     BOOST_TRY{
       buc=find_bucket(x->value());
       b=in_place(x->impl(),key(x->value()),buc);
@@ -1198,7 +1198,7 @@ private:
     }
     else if(z->prior()==x)               /* last of bucket */
       return x;
-    else                                /* group of size>2 */        
+    else                                /* group of size>2 */
       return z;
   }
 
@@ -1228,7 +1228,7 @@ private:
     }
     else if(z->prior()==x)               /* last of bucket */
       return z;
-    else                                /* group of size>2 */        
+    else                                /* group of size>2 */
       return z->next()->prior()==z?
                node_impl_type::pointer_from(z->next()):
                z->next()->prior();
@@ -1352,10 +1352,10 @@ private:
         std::size_t,allocator_type>       hashes(get_allocator(),size());
       auto_space<
         node_impl_pointer,allocator_type> node_ptrs(get_allocator(),size());
-      std::size_t                         i=0;
+      std::size_t                         i=0, size_=size();
       bool                                within_bucket=false;
       BOOST_TRY{
-        for(;;++i){
+        for(;i!=size_;++i){
           node_impl_pointer x=end_->prior();
           if(x==end_)break;
 
@@ -1602,7 +1602,7 @@ private:
   bucket_array_type            buckets;
   float                        mlf;
   size_type                    max_load;
-      
+
 #if defined(BOOST_MULTI_INDEX_ENABLE_INVARIANT_CHECKING)&&\
     BOOST_WORKAROUND(__MWERKS__,<=0x3003)
 #pragma parse_mfunc_templ reset
