@@ -30,6 +30,7 @@ Acknowledgements
 <h2>Contents</h2>
 
 <ul>
+  <li><a href="#boost_1_66">Boost 1.66 release</a></li>
   <li><a href="#boost_1_64">Boost 1.64 release</a></li>
   <li><a href="#boost_1_62">Boost 1.62 release</a></li>
   <li><a href="#boost_1_60">Boost 1.60 release</a></li>
@@ -54,6 +55,24 @@ Acknowledgements
   <li><a href="#boost_1_33_1">Boost 1.33.1 release</a></li>
   <li><a href="#boost_1_33">Boost 1.33 release</a></li>
 </ul>
+
+<h2><a name="boost_1_66">Boost 1.66 release</a></h2>
+
+<p>
+<ul>
+  <li>Made <code>modify</code> and <code>modify_key</code> more robust so that
+    the modified element is erased if the modifier throws or the rollback
+    functor does not properly restore the element (full discussion at
+    ticket <a href="https://svn.boost.org/trac/boost/ticket/12542">#12542</a>).
+    This is technically backwards incompatible; for instance, the following code:
+<blockquote><pre>
+<span class=identifier>c</span><span class=special>.</span><span class=identifier>modify</span><span class=special>(</span><span class=identifier>c</span><span class=special>.</span><span class=identifier>begin</span><span class=special>(),[](</span><span class=keyword>auto</span><span class=special>&amp;){</span><span class=keyword>throw</span> <span class=number>0</span><span class=special>;});</span>  
+</pre></blockquote>
+    keeps the container <code>c</code> untouched in former versions of Boost whereas
+    now <code>c.begin()</code> is erased. Thanks to Jon Kalb for raising the issue.
+  </li>
+</ul>
+</p>
 
 <h2><a name="boost_1_64">Boost 1.64 release</a></h2>
 
@@ -534,7 +553,7 @@ Acknowledgements
 
 <br>
 
-<p>Revised April 10th 2017</p>
+<p>Revised August 24th 2017</p>
 
 <p>&copy; Copyright 2003-2017 Joaqu&iacute;n M L&oacute;pez Mu&ntilde;oz.
 Distributed under the Boost Software 
