@@ -594,7 +594,7 @@ public:
 
   void reserve(size_type n)
   {
-    rehash(static_cast<size_type>(std::ceil(static_cast<double>(n)/mlf)));
+    rehash(static_cast<size_type>(std::ceil(static_cast<float>(n)/mlf)));
   }
 
 BOOST_MULTI_INDEX_PROTECTED_IF_MEMBER_TEMPLATE_FRIENDS:
