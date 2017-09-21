@@ -584,7 +584,7 @@ public:
     if(size()<=max_load&&n<=bucket_count())return;
 
     size_type bc =(std::numeric_limits<size_type>::max)();
-    float     fbc=static_cast<float>(1+size()/mlf);
+    float     fbc=1.0f+static_cast<float>(size())/mlf;
     if(bc>fbc){
       bc=static_cast<size_type>(fbc);
       if(bc<n)bc=n;
@@ -594,7 +594,7 @@ public:
 
   void reserve(size_type n)
   {
-    rehash(static_cast<size_type>(std::ceil(static_cast<double>(n)/mlf)));
+    rehash(static_cast<size_type>(std::ceil(static_cast<float>(n)/mlf)));
   }
 
 BOOST_MULTI_INDEX_PROTECTED_IF_MEMBER_TEMPLATE_FRIENDS:
@@ -1277,7 +1277,7 @@ private:
 
   void calculate_max_load()
   {
-    float fml=static_cast<float>(mlf*static_cast<float>(bucket_count()));
+    float fml=mlf*static_cast<float>(bucket_count());
     max_load=(std::numeric_limits<size_type>::max)();
     if(max_load>fml)max_load=static_cast<size_type>(fml);
   }
@@ -1286,7 +1286,7 @@ private:
   {
     if(n>max_load){
       size_type bc =(std::numeric_limits<size_type>::max)();
-      float     fbc=static_cast<float>(1+static_cast<double>(n)/mlf);
+      float     fbc=1.0f+static_cast<float>(n)/mlf;
       if(bc>fbc)bc =static_cast<size_type>(fbc);
       unchecked_rehash(bc);
     }
