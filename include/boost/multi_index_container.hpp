@@ -17,6 +17,7 @@
 
 #include <boost/config.hpp> /* keep it first to prevent nasty warns in MSVC */
 #include <algorithm>
+#include <boost/core/addressof.hpp>
 #include <boost/detail/allocator_utilities.hpp>
 #include <boost/detail/no_exceptions_support.hpp>
 #include <boost/detail/workaround.hpp>
@@ -580,7 +581,7 @@ BOOST_MULTI_INDEX_PROTECTED_IF_MEMBER_TEMPLATE_FRIENDS:
   {
     node_type* x=allocate_node();
     BOOST_TRY{
-      new(&x->value()) value_type(t);
+      new(boost::addressof(x->value())) value_type(t);
       BOOST_TRY{
         node_type* res=super::insert_(x->value(),x,detail::emplaced_tag());
         if(res==x){
@@ -588,13 +589,13 @@ BOOST_MULTI_INDEX_PROTECTED_IF_MEMBER_TEMPLATE_FRIENDS:
           return std::pair<node_type*,bool>(res,true);
         }
         else{
-          boost::detail::allocator::destroy(&x->value());
+          boost::detail::allocator::destroy(boost::addressof(x->value()));
           deallocate_node(x);
           return std::pair<node_type*,bool>(res,false);
         }
       }
       BOOST_CATCH(...){
-        boost::detail::allocator::destroy(&x->value());
+        boost::detail::allocator::destroy(boost::addressof(x->value()));
         BOOST_RETHROW;
       }
       BOOST_CATCH_END
@@ -623,7 +624,7 @@ BOOST_MULTI_INDEX_PROTECTED_IF_MEMBER_TEMPLATE_FRIENDS:
     node_type* x=allocate_node();
     BOOST_TRY{
       detail::vartempl_placement_new(
-        &x->value(),BOOST_MULTI_INDEX_FORWARD_PARAM_PACK);
+        boost::addressof(x->value()),BOOST_MULTI_INDEX_FORWARD_PARAM_PACK);
       BOOST_TRY{
         node_type* res=super::insert_(x->value(),x,detail::emplaced_tag());
         if(res==x){
@@ -631,13 +632,13 @@ BOOST_MULTI_INDEX_PROTECTED_IF_MEMBER_TEMPLATE_FRIENDS:
           return std::pair<node_type*,bool>(res,true);
         }
         else{
-          boost::detail::allocator::destroy(&x->value());
+          boost::detail::allocator::destroy(boost::addressof(x->value()));
           deallocate_node(x);
           return std::pair<node_type*,bool>(res,false);
         }
       }
       BOOST_CATCH(...){
-        boost::detail::allocator::destroy(&x->value());
+        boost::detail::allocator::destroy(boost::addressof(x->value()));
         BOOST_RETHROW;
       }
       BOOST_CATCH_END
@@ -680,7 +681,7 @@ BOOST_MULTI_INDEX_PROTECTED_IF_MEMBER_TEMPLATE_FRIENDS:
   {
     node_type* x=allocate_node();
     BOOST_TRY{
-      new(&x->value()) value_type(t);
+      new(boost::addressof(x->value())) value_type(t);
       BOOST_TRY{
         node_type* res=super::insert_(
           x->value(),position,x,detail::emplaced_tag());
@@ -689,13 +690,13 @@ BOOST_MULTI_INDEX_PROTECTED_IF_MEMBER_TEMPLATE_FRIENDS:
           return std::pair<node_type*,bool>(res,true);
         }
         else{
-          boost::detail::allocator::destroy(&x->value());
+          boost::detail::allocator::destroy(boost::addressof(x->value()));
           deallocate_node(x);
           return std::pair<node_type*,bool>(res,false);
         }
       }
       BOOST_CATCH(...){
-        boost::detail::allocator::destroy(&x->value());
+        boost::detail::allocator::destroy(boost::addressof(x->value()));
         BOOST_RETHROW;
       }
       BOOST_CATCH_END
@@ -727,7 +728,7 @@ BOOST_MULTI_INDEX_PROTECTED_IF_MEMBER_TEMPLATE_FRIENDS:
     node_type* x=allocate_node();
     BOOST_TRY{
       detail::vartempl_placement_new(
-        &x->value(),BOOST_MULTI_INDEX_FORWARD_PARAM_PACK);
+        boost::addressof(x->value()),BOOST_MULTI_INDEX_FORWARD_PARAM_PACK);
       BOOST_TRY{
         node_type* res=super::insert_(
           x->value(),position,x,detail::emplaced_tag());
@@ -736,13 +737,13 @@ BOOST_MULTI_INDEX_PROTECTED_IF_MEMBER_TEMPLATE_FRIENDS:
           return std::pair<node_type*,bool>(res,true);
         }
         else{
-          boost::detail::allocator::destroy(&x->value());
+          boost::detail::allocator::destroy(boost::addressof(x->value()));
           deallocate_node(x);
           return std::pair<node_type*,bool>(res,false);
         }
       }
       BOOST_CATCH(...){
-        boost::detail::allocator::destroy(&x->value());
+        boost::detail::allocator::destroy(boost::addressof(x->value()));
         BOOST_RETHROW;
       }
       BOOST_CATCH_END
@@ -901,7 +902,8 @@ BOOST_MULTI_INDEX_PROTECTED_IF_MEMBER_TEMPLATE_FRIENDS:
     index_saver_type sm(bfm_allocator::member,s);
 
     for(iterator it=super::begin(),it_end=super::end();it!=it_end;++it){
-      serialization::save_construct_data_adl(ar,&*it,value_version);
+      serialization::save_construct_data_adl(
+        ar,boost::addressof(*it),value_version);
       ar<<serialization::make_nvp("item",*it);
       sm.add(it.get_node(),ar,version);
     }
@@ -942,7 +944,8 @@ BOOST_MULTI_INDEX_PROTECTED_IF_MEMBER_TEMPLATE_FRIENDS:
       if(!p.second)throw_exception(
         archive::archive_exception(
           archive::archive_exception::other_exception));
-      ar.reset_object_address(&p.first->value(),&value.get());
+      ar.reset_object_address(
+        boost::addressof(p.first->value()),boost::addressof(value.get()));
       lm.add(p.first,ar,version);
     }
     lm.add_track(header(),ar,version);
