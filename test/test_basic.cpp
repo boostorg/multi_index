@@ -126,7 +126,7 @@ void test_basic()
 
     multi_index_t        c;
     const multi_index_t& cc=c;
-    no_addressof_type x(0);
+    no_addressof_type    x(0);
     int                  a[]={1,2};
     int                  b[]={6,7};
     c.push_back(x);
@@ -150,7 +150,7 @@ void test_basic()
     (void)cc.get<3>().iterator_to(c.front());
     (void)c.get<3>().local_iterator_to(c.front());
     (void)cc.get<3>().local_iterator_to(c.front());
-    auto c2=c;
+    auto c2=c;(void)c2;
     c.erase(c.begin());
     c.erase(c.begin(),c.end());
   }
