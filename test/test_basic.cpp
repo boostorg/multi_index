@@ -118,9 +118,9 @@ void test_basic()
       no_addressof_type,
       indexed_by<
         random_access<>,
-        ordered_non_unique<identity<no_addressof_type>>,
+        ordered_non_unique<identity<no_addressof_type> >,
         sequenced<>,
-        hashed_non_unique<identity<no_addressof_type>>
+        hashed_non_unique<identity<no_addressof_type> >
       >
     > multi_index_t;
 
