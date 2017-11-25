@@ -150,7 +150,7 @@ void test_basic()
     (void)cc.get<3>().iterator_to(c.front());
     (void)c.get<3>().local_iterator_to(c.front());
     (void)cc.get<3>().local_iterator_to(c.front());
-    auto c2=c;(void)c2;
+    multi_index_t c2=c;(void)c2;
     c.erase(c.begin());
     c.erase(c.begin(),c.end());
   }
