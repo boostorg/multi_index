@@ -1,4 +1,4 @@
-/* Copyright 2003-2015 Joaquin M Lopez Munoz.
+/* Copyright 2003-2017 Joaquin M Lopez Munoz.
  * Distributed under the Boost Software License, Version 1.0.
  * (See accompanying file LICENSE_1_0.txt or copy at
  * http://www.boost.org/LICENSE_1_0.txt)
@@ -15,6 +15,7 @@
 
 #include <boost/config.hpp> /* keep it first to prevent nasty warns in MSVC */
 #include <algorithm>
+#include <boost/core/addressof.hpp>
 #include <boost/detail/no_exceptions_support.hpp>
 #include <boost/multi_index/detail/auto_space.hpp>
 #include <boost/multi_index/detail/raw_ptr.hpp>
@@ -70,7 +71,8 @@ public:
   {
     if(!released){
       for(std::size_t i=0;i<n;++i){
-        boost::detail::allocator::destroy(&(spc.data()+i)->second->value());
+        boost::detail::allocator::destroy(
+          boost::addressof((spc.data()+i)->second->value()));
         deallocate((spc.data()+i)->second);
       }
     }
@@ -85,7 +87,7 @@ public:
     (spc.data()+n)->second=raw_ptr<Node*>(al_.allocate(1));
     BOOST_TRY{
       boost::detail::allocator::construct(
-        &(spc.data()+n)->second->value(),node->value());
+        boost::addressof((spc.data()+n)->second->value()),node->value());
     }
     BOOST_CATCH(...){
       deallocate((spc.data()+n)->second);

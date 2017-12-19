@@ -43,6 +43,7 @@
 #include <boost/config.hpp> /* keep it first to prevent nasty warns in MSVC */
 #include <algorithm>
 #include <boost/call_traits.hpp>
+#include <boost/core/addressof.hpp>
 #include <boost/detail/no_exceptions_support.hpp>
 #include <boost/detail/workaround.hpp>
 #include <boost/foreach_fwd.hpp>
@@ -267,12 +268,12 @@ public:
  
   iterator iterator_to(const value_type& x)
   {
-    return make_iterator(node_from_value<node_type>(&x));
+    return make_iterator(node_from_value<node_type>(boost::addressof(x)));
   }
 
   const_iterator iterator_to(const value_type& x)const
   {
-    return make_iterator(node_from_value<node_type>(&x));
+    return make_iterator(node_from_value<node_type>(boost::addressof(x)));
   }
 
   /* capacity */
