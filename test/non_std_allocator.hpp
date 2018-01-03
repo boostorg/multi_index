@@ -1,6 +1,6 @@
 /* Used in Boost.MultiIndex tests.
  *
- * Copyright 2003-2015 Joaquin M Lopez Munoz.
+ * Copyright 2003-2018 Joaquin M Lopez Munoz.
  * Distributed under the Boost Software License, Version 1.0.
  * (See accompanying file LICENSE_1_0.txt or copy at
  * http://www.boost.org/LICENSE_1_0.txt)
@@ -122,6 +122,30 @@ public:
   }
 
   size_type max_size() const{return (size_type )(-1);}
+
+  friend bool operator==(const non_std_allocator&,const non_std_allocator&)
+  {
+    return true;
+  }
+
+  friend bool operator!=(const non_std_allocator&,const non_std_allocator&)
+  {
+    return false;
+  }
+};
+
+template<>
+class non_std_allocator<void>
+{
+public:
+  typedef void*       pointer;
+  typedef const void* const_pointer;
+  typedef void        value_type;
+  template<class U>struct rebind{typedef non_std_allocator<U> other;};
+
+  non_std_allocator(){}
+  non_std_allocator(const non_std_allocator<void>&){}
+  template<class U>non_std_allocator(const non_std_allocator<U>&,int=0){}
 
   friend bool operator==(const non_std_allocator&,const non_std_allocator&)
   {
