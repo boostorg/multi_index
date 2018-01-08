@@ -103,6 +103,8 @@ public:
   typedef std::ptrdiff_t           difference_type;
   typedef non_raw_pointer<T>       pointer;
   typedef non_raw_pointer<const T> const_pointer;
+  typedef void*                    void_pointer;
+  typedef const void*              const_void_pointer;
   typedef T&                       reference;
   typedef const T&                 const_reference;
   typedef T                        value_type;
@@ -123,30 +125,6 @@ public:
   }
 
   size_type max_size() const{return (size_type )(-1);}
-
-  friend bool operator==(const non_std_allocator&,const non_std_allocator&)
-  {
-    return true;
-  }
-
-  friend bool operator!=(const non_std_allocator&,const non_std_allocator&)
-  {
-    return false;
-  }
-};
-
-template<>
-class non_std_allocator<void>
-{
-public:
-  typedef void*       pointer;
-  typedef const void* const_pointer;
-  typedef void        value_type;
-  template<class U>struct rebind{typedef non_std_allocator<U> other;};
-
-  non_std_allocator(){}
-  non_std_allocator(const non_std_allocator<void>&){}
-  template<class U>non_std_allocator(const non_std_allocator<U>&,int=0){}
 
   friend bool operator==(const non_std_allocator&,const non_std_allocator&)
   {
