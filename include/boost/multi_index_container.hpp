@@ -1,6 +1,6 @@
 /* Multiply indexed container.
  *
- * Copyright 2003-2017 Joaquin M Lopez Munoz.
+ * Copyright 2003-2018 Joaquin M Lopez Munoz.
  * Distributed under the Boost Software License, Version 1.0.
  * (See accompanying file LICENSE_1_0.txt or copy at
  * http://www.boost.org/LICENSE_1_0.txt)
@@ -17,6 +17,7 @@
 
 #include <boost/config.hpp> /* keep it first to prevent nasty warns in MSVC */
 #include <algorithm>
+#include <memory>
 #include <boost/core/addressof.hpp>
 #include <boost/detail/allocator_utilities.hpp>
 #include <boost/detail/no_exceptions_support.hpp>
@@ -90,11 +91,19 @@ class multi_index_container:
         Value,IndexSpecifierList,Allocator>::type
     >::type>,
   BOOST_MULTI_INDEX_PRIVATE_IF_MEMBER_TEMPLATE_FRIENDS detail::header_holder<
-    typename boost::detail::allocator::rebind_to<
-      Allocator,
-      typename detail::multi_index_node_type<
-        Value,IndexSpecifierList,Allocator>::type
-    >::type::pointer,
+#ifndef BOOST_NO_CXX11_ALLOCATOR
+    typename std::allocator_traits<
+#endif
+      typename boost::detail::allocator::rebind_to<
+        Allocator,
+        typename detail::multi_index_node_type<
+          Value,IndexSpecifierList,Allocator>::type
+      >::type
+#ifdef BOOST_NO_CXX11_ALLOCATOR
+    ::pointer,
+#else
+    >::pointer,
+#endif
     multi_index_container<Value,IndexSpecifierList,Allocator> >,
   public detail::multi_index_base_type<
     Value,IndexSpecifierList,Allocator>::type
@@ -125,12 +134,17 @@ private:
     Allocator,
     typename super::node_type
   >::type                                         node_allocator;
+#ifdef BOOST_NO_CXX11_ALLOCATOR
+  typedef typename node_allocator::pointer        node_pointer;
+#else
+  typedef std::allocator_traits<node_allocator>   node_allocator_traits;
+  typedef typename node_allocator_traits::pointer node_pointer;
+#endif
   typedef ::boost::base_from_member<
     node_allocator>                               bfm_allocator;
   typedef detail::header_holder<
-    typename node_allocator::pointer,
+    node_pointer,
     multi_index_container>                        bfm_header;
-
 
 public:
   /* All types are inherited from super, a few are explicitly
@@ -528,13 +542,20 @@ BOOST_MULTI_INDEX_PROTECTED_IF_MEMBER_TEMPLATE_FRIENDS:
 
   node_type* allocate_node()
   {
+#ifdef BOOST_NO_CXX11_ALLOCATOR
     return &*bfm_allocator::member.allocate(1);
+#else
+    return &*node_allocator_traits::allocate(bfm_allocator::member,1);
+#endif
   }
 
   void deallocate_node(node_type* x)
   {
-    typedef typename node_allocator::pointer node_pointer;
+#ifdef BOOST_NO_CXX11_ALLOCATOR
     bfm_allocator::member.deallocate(static_cast<node_pointer>(x),1);
+#else
+    node_allocator_traits::deallocate(bfm_allocator::member,static_cast<node_pointer>(x),1);
+#endif
   }
 
   bool empty_()const
