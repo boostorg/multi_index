@@ -960,7 +960,7 @@ BOOST_MULTI_INDEX_PROTECTED_IF_MEMBER_TEMPLATE_FRIENDS:
 
     for(std::size_t n=0;n<s;++n){
       detail::archive_constructed<Value> value("item",ar,value_version);
-      std::pair<node_type*,bool> p=insert_(
+      std::pair<node_type*,bool> p=insert_rv_(
         value.get(),super::end().get_node());
       if(!p.second)throw_exception(
         archive::archive_exception(
