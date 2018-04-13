@@ -172,21 +172,26 @@ public:
 
   /* construct/copy/destroy */
 
+  multi_index_container():
+    bfm_allocator(allocator_type()),
+    super(ctor_args_list(),bfm_allocator::member),
+    node_count(0)
+  {
+    BOOST_MULTI_INDEX_CHECK_INVARIANT;
+  }
+
   explicit multi_index_container(
+    const ctor_args_list& args_list,
 
 #if BOOST_WORKAROUND(__IBMCPP__,<=600)
-    /* VisualAge seems to have an ETI issue with the default values
-     * for arguments args_list and al.
+    /* VisualAge seems to have an ETI issue with the default value for
+     * argument al.
      */
 
-    const ctor_args_list& args_list=
-      typename mpl::identity<multi_index_container>::type::
-        ctor_args_list(),
     const allocator_type& al=
       typename mpl::identity<multi_index_container>::type::
         allocator_type()):
 #else
-    const ctor_args_list& args_list=ctor_args_list(),
     const allocator_type& al=allocator_type()):
 #endif
 
