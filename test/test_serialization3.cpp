@@ -210,7 +210,7 @@ void test_serialization3()
     > multi_index_t;
 
     multi_index_t m;
-    for(int i=0;i<100;++i)m.insert(non_copyable(i));
+    for(int i=0;i<100;++i)m.emplace(i);
     test_serialization(m);
   }
 }
