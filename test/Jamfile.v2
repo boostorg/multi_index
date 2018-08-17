@@ -39,8 +39,8 @@ test-suite "multi_index" :
     [ run test_iterators.cpp        test_iterators_main.cpp        ]
     [ run test_key.cpp              test_key_main.cpp              
         : : : 
-        [ requires cxx17_std_apply ] # used as a proxy for C++17 support	
-	                                                               ]
+        [ requires cxx17_std_apply ] # used as a proxy for C++17 support
+                                                                   ]
     [ run test_key_extractors.cpp   test_key_extractors_main.cpp   ]
     [ run test_list_ops.cpp         test_list_ops_main.cpp         ]
     [ run test_modifiers.cpp        test_modifiers_main.cpp        ]
