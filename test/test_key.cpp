@@ -10,11 +10,13 @@
 
 #include "test_key.hpp"
 
-#if __cplusplus<201703L
+#if !defined(BOOST_MULTI_INDEX_KEY_SUPPORTED)
+
+#include <boost/detail/lightweight_test.hpp>
 
 void test_key()
 {
-  /* trivially passes as key is not available for pre-C++17 compilers */
+  BOOST_TEST(false); /* boost::multi_index::key not supported */
 }
 
 #else
