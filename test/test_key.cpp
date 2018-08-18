@@ -10,9 +10,12 @@
 
 #include "test_key.hpp"
 
-#if !defined(BOOST_MULTI_INDEX_KEY_SUPPORTED)
-
+#include <boost/config.hpp> /* keep it first to prevent nasty warns in MSVC */
 #include <boost/detail/lightweight_test.hpp>
+#include "pre_multi_index.hpp"
+#include <boost/multi_index/key.hpp>
+
+#if !defined(BOOST_MULTI_INDEX_KEY_SUPPORTED)
 
 void test_key()
 {
@@ -21,10 +24,6 @@ void test_key()
 
 #else
 
-#include <boost/config.hpp> /* keep it first to prevent nasty warns in MSVC */
-#include <boost/detail/lightweight_test.hpp>
-#include "pre_multi_index.hpp"
-#include <boost/multi_index/key.hpp>
 #include <functional>
 #include <type_traits>
 
