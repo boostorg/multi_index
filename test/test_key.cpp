@@ -53,22 +53,22 @@ int grh(std::reference_wrapper<derived>& d){return d.get().y;}
 
 void test_key()
 {
-  BOOST_TEST((std::is_same_v<
+  BOOST_TEST((std::is_same<
     key<&base::x>,member<base,int,&base::x> 
-  >));
-  BOOST_TEST((std::is_same_v<
+  >::value));
+  BOOST_TEST((std::is_same<
     key<&base::cx>,member<base,const int,&base::cx> 
-  >));
-  BOOST_TEST((std::is_same_v<
+  >::value));
+  BOOST_TEST((std::is_same<
     key<&base::f>,mem_fun<base,int,&base::f> 
-  >));
-  BOOST_TEST((std::is_same_v<
+  >::value));
+  BOOST_TEST((std::is_same<
     key<&base::cf>,const_mem_fun<base,int,&base::cf>
-  >));
-  BOOST_TEST((std::is_same_v<
+  >::value));
+  BOOST_TEST((std::is_same<
     key<gf>,global_fun<const base&,int,gf> 
-  >));
-  BOOST_TEST((std::is_same_v<
+  >::value));
+  BOOST_TEST((std::is_same<
     key<&base::x,&base::cx,&base::f,&base::cf,gf>,
     composite_key<
       base,
@@ -78,24 +78,24 @@ void test_key()
       const_mem_fun<base,int,&base::cf>,
       global_fun<const base&,int,gf>
     >
-  >));
-  BOOST_TEST((std::is_same_v<
+  >::value));
+  BOOST_TEST((std::is_same<
     key<&base::x,&derived::y>,
     composite_key<
       derived,
       member<base,int,&base::x>,
       member<derived,int,&derived::y>
     >
-  >));
-  BOOST_TEST((std::is_same_v<
+  >::value));
+  BOOST_TEST((std::is_same<
     key<gf,gh>,
     composite_key<
       derived,
       global_fun<const base&,int,gf>,
       global_fun<derived&,int,gh>
     >
-  >));
-  BOOST_TEST((std::is_same_v<
+  >::value));
+  BOOST_TEST((std::is_same<
     key<gf,gh,grh>,
     composite_key<
       std::reference_wrapper<derived>,
@@ -103,6 +103,6 @@ void test_key()
       global_fun<derived&,int,gh>,
       global_fun<std::reference_wrapper<derived>&,int,grh>
     >
-  >));
+  >::value));
 }
 #endif
