@@ -2074,7 +2074,9 @@ subsets of those associated to <code>!(x&lt;y)&amp;&amp;!(y&lt;x)</code>.
 <span class=preprocessor>#include</span> <span class=special>&lt;</span><span class=identifier>boost</span><span class=special>/</span><span class=identifier>multi_index</span><span class=special>/</span><span class=identifier>global_fun</span><span class=special>.</span><span class=identifier>hpp</span><span class=special>&gt;</span>
 <span class=preprocessor>#include</span> <span class=special>&lt;</span><span class=identifier>boost</span><span class=special>/</span><span class=identifier>multi_index</span><span class=special>/</span><span class=identifier>composite_key</span><span class=special>.</span><span class=identifier>hpp</span><span class=special>&gt;</span>
 
-<span class=preprocessor>#if</span> <span class=identifier>__cplusplus</span><span class=special>&gt;=</span><span class=number>201703L</span>
+<span class=preprocessor>#if</span> <b>implementation defined</b> <span class=comment>/* auto non-type template parameters supported */</span>
+
+<span class=preprocessor>#define</span> <span class=identifier>BOOST_MULTI_INDEX_KEY_SUPPORTED</span>
 
 <span class=keyword>namespace</span> <span class=identifier>boost</span><span class=special>{</span>
 
@@ -2148,7 +2150,7 @@ Compiler specifics
 
 <br>
 
-<p>Revised August 18th 2018</p>
+<p>Revised August 22nd 2018</p>
 
 <p>&copy; Copyright 2003-2018 Joaqu&iacute;n M L&oacute;pez Mu&ntilde;oz.
 Distributed under the Boost Software 
