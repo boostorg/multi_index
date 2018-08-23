@@ -37,7 +37,8 @@ namespace detail{
 template<auto... Keys>
 struct key_impl
 {
-  static_assert(sizeof...(Keys),"at least one key must be provided");
+  static_assert(sizeof...(Keys)!=0,"at least one key must be provided");
+  static_assert(sizeof...(Keys)!=1,"provided key type not supported");
 };
 
 template<typename Class,typename Type,Type Class::*PtrToMember>
@@ -95,16 +96,18 @@ struct least_generic<T0,T1,Ts...>
   >::type;
 };
 
-template<auto Key0,auto... Keys>
-struct key_impl<Key0,Keys...>
+template<auto Key0,auto Key1,auto... Keys>
+struct key_impl<Key0,Key1,Keys...>
 {
   using value_type=typename least_generic<
     typename std::decay<typename key_impl<Key0>::value_type>::type,
+    typename std::decay<typename key_impl<Key1>::value_type>::type,
     typename std::decay<typename key_impl<Keys>::value_type>::type...
   >::type;
   using type=composite_key<
     value_type,
     typename key_impl<Key0>::type,
+    typename key_impl<Key1>::type,
     typename key_impl<Keys>::type...
   >;
 };
