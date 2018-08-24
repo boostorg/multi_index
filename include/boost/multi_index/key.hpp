@@ -35,11 +35,7 @@ namespace multi_index{
 namespace detail{
 
 template<auto... Keys>
-struct key_impl
-{
-  static_assert(sizeof...(Keys)!=0,"at least one key must be provided");
-  static_assert(sizeof...(Keys)!=1,"provided key type not supported");
-};
+struct key_impl;
 
 template<typename Class,typename Type,Type Class::*PtrToMember>
 struct key_impl<PtrToMember>
