@@ -34,11 +34,11 @@ namespace multi_index{
 
 namespace detail{
 
-template<auto... Keys>
-struct key_impl;
+template<typename T,T>
+struct typed_key_impl;
 
 template<typename Class,typename Type,Type Class::*PtrToMember>
-struct key_impl<PtrToMember>
+struct typed_key_impl<Type Class::*,PtrToMember>
 {
   using value_type=Class;
   using type=member<Class,Type,PtrToMember>;
@@ -47,25 +47,31 @@ struct key_impl<PtrToMember>
 template<
   typename Class,typename Type,Type (Class::*PtrToMemberFunction)()const
 >
-struct key_impl<PtrToMemberFunction>
+struct typed_key_impl<Type (Class::*)()const,PtrToMemberFunction>
 {
   using value_type=Class;
   using type=const_mem_fun<Class,Type,PtrToMemberFunction>;
 };
 
 template<typename Class,typename Type,Type (Class::*PtrToMemberFunction)()>
-struct key_impl<PtrToMemberFunction>
+struct typed_key_impl<Type (Class::*)(),PtrToMemberFunction>
 {
   using value_type=Class;
   using type=mem_fun<Class,Type,PtrToMemberFunction>;
 };
 
 template<class Value,typename Type,Type (*PtrToFunction)(Value)>
-struct key_impl<PtrToFunction>
+struct typed_key_impl<Type (*)(Value),PtrToFunction>
 {
   using value_type=Value;
   using type=global_fun<Value,Type,PtrToFunction>;
 };
+
+template<auto... Keys>
+struct key_impl;
+
+template<auto Key>
+struct key_impl<Key>:typed_key_impl<decltype(Key),Key>{};
 
 template<typename... Ts>
 struct least_generic;
@@ -92,18 +98,16 @@ struct least_generic<T0,T1,Ts...>
   >::type;
 };
 
-template<auto Key0,auto Key1,auto... Keys>
-struct key_impl<Key0,Key1,Keys...>
+template<auto Key0,auto... Keys>
+struct key_impl<Key0,Keys...>
 {
   using value_type=typename least_generic<
     typename std::decay<typename key_impl<Key0>::value_type>::type,
-    typename std::decay<typename key_impl<Key1>::value_type>::type,
     typename std::decay<typename key_impl<Keys>::value_type>::type...
   >::type;
   using type=composite_key<
     value_type,
     typename key_impl<Key0>::type,
-    typename key_impl<Key1>::type,
     typename key_impl<Keys>::type...
   >;
 };
