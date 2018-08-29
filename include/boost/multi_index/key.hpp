@@ -34,11 +34,14 @@ namespace multi_index{
 
 namespace detail{
 
-template<typename T,T>
+template<typename T,T,typename=void>
 struct typed_key_impl;
 
 template<typename Class,typename Type,Type Class::*PtrToMember>
-struct typed_key_impl<Type Class::*,PtrToMember>
+struct typed_key_impl<
+  Type Class::*,PtrToMember,
+  typename std::enable_if<!std::is_function<Type>::value>::type
+>
 {
   using value_type=Class;
   using type=member<Class,Type,PtrToMember>;
