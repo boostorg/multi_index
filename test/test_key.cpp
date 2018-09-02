@@ -16,20 +16,8 @@
 #include <boost/multi_index/key.hpp>
 
 #if !defined(BOOST_MULTI_INDEX_KEY_SUPPORTED)
-
-#if defined(__GNUC__)
-#warning boost::multi_index::key not supported, skipping test
-#else
-#include <boost/config/pragma_message.hpp>
-
-BOOST_PRAGMA_MESSAGE("boost::multi_index::key not supported, skipping test")
+#error boost::multi_index::key not supported
 #endif
-
-void test_key()
-{
-}
-
-#else
 
 #include <functional>
 #include <type_traits>
@@ -112,4 +100,3 @@ void test_key()
     >
   >::value));
 }
-#endif
