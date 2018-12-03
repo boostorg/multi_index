@@ -47,10 +47,11 @@ public:
   >::type                                               value_allocator;
 #ifdef BOOST_NO_CXX11_ALLOCATOR
   typedef typename value_allocator::pointer             pointer;
+  typedef typename value_allocator::size_type           value_allocator_size_type;
 #else
-  typedef typename std::allocator_traits<
-    value_allocator
-  >::pointer                                            pointer;
+  typedef std::allocator_traits<value_allocator>        value_allocator_traits;
+  typedef typename value_allocator_traits::pointer      pointer;
+  typedef typename value_allocator_traits::size_type    value_allocator_size_type;
 #endif
 
   random_access_index_ptr_array(
@@ -117,8 +118,8 @@ public:
   }
 
 private:
-  std::size_t                      size_;
-  std::size_t                      capacity_;
+  value_allocator_size_type        size_;
+  value_allocator_size_type        capacity_;
   auto_space<value_type,Allocator> spc;
 
   pointer ptrs()const

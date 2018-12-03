@@ -131,12 +131,16 @@ public:
 #ifdef BOOST_NO_CXX11_ALLOCATOR
   typedef typename allocator_type::pointer           pointer;
   typedef typename allocator_type::const_pointer     const_pointer;
+  typedef typename allocator_type::size_type         allocator_size_type;
+  typedef typename allocator_type::difference_type   allocator_diff_type;
   typedef typename allocator_type::reference         reference;
   typedef typename allocator_type::const_reference   const_reference;
 #else
   typedef std::allocator_traits<allocator_type>      allocator_traits;
   typedef typename allocator_traits::pointer         pointer;
   typedef typename allocator_traits::const_pointer   const_pointer;
+  typedef typename allocator_traits::size_type       allocator_size_type;
+  typedef typename allocator_traits::difference_type allocator_diff_type;
   typedef value_type&                                reference;
   typedef const value_type&                          const_reference;
 #endif
@@ -1619,7 +1623,7 @@ private:
   key_equal                    eq_;
   bucket_array_type            buckets;
   float                        mlf;
-  size_type                    max_load;
+  allocator_size_type          max_load;
       
 #if defined(BOOST_MULTI_INDEX_ENABLE_INVARIANT_CHECKING)&&\
     BOOST_WORKAROUND(__MWERKS__,<=0x3003)

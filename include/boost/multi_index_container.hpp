@@ -136,9 +136,11 @@ private:
   >::type                                         node_allocator;
 #ifdef BOOST_NO_CXX11_ALLOCATOR
   typedef typename node_allocator::pointer        node_pointer;
+  typedef typename node_allocator::size_type      node_allocator_size_type;
 #else
   typedef std::allocator_traits<node_allocator>   node_allocator_traits;
   typedef typename node_allocator_traits::pointer node_pointer;
+  typedef typename node_allocator_traits::size_type node_allocator_size_type;
 #endif
   typedef ::boost::base_from_member<
     node_allocator>                               bfm_allocator;
@@ -575,7 +577,7 @@ BOOST_MULTI_INDEX_PROTECTED_IF_MEMBER_TEMPLATE_FRIENDS:
 
   std::size_t max_size_()const
   {
-    return static_cast<std::size_t >(-1);
+    return static_cast<node_allocator_size_type>(-1);
   }
 
   template<typename Variant>
@@ -995,7 +997,7 @@ BOOST_MULTI_INDEX_PROTECTED_IF_MEMBER_TEMPLATE_FRIENDS:
 #endif
 
 private:
-  std::size_t node_count;
+  node_allocator_size_type node_count;
 
 #if defined(BOOST_MULTI_INDEX_ENABLE_INVARIANT_CHECKING)&&\
     BOOST_WORKAROUND(__MWERKS__,<=0x3003)
