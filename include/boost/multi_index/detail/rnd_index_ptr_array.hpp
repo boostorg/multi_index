@@ -49,7 +49,7 @@ public:
   typedef typename value_allocator::pointer             pointer;
   typedef typename value_allocator::size_type           size_type;
 #else
-  typedef std::allocator_traits<allocator>              allocator_traits;
+  typedef std::allocator_traits<value_allocator>        allocator_traits;
   typedef typename allocator_traits::pointer            pointer;
   typedef typename allocator_traits::size_type          size_type;
 #endif

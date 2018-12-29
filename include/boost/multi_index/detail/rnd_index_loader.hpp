@@ -98,7 +98,7 @@ private:
 #ifdef BOOST_NO_CXX11_ALLOCATOR
   typedef typename Allocator::size_type         size_type;
 #else
-  typedef std::allocator_traits<allocator>      allocator_traits;
+  typedef std::allocator_traits<Allocator>      allocator_traits;
   typedef typename allocator_traits::size_type  size_type;
 #endif
 
