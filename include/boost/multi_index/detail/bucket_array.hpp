@@ -174,7 +174,7 @@ public:
 
 private:
   typedef auto_space<base_node_impl_type,Allocator> auto_space_type;
-  typedef typename auto_space::size_type            auto_space_size_type;
+  typedef typename auto_space_type::size_type       auto_space_size_type;
 
   std::size_t      size_index_;
   auto_space_type  spc;
