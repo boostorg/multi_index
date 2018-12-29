@@ -79,10 +79,14 @@ struct ordered_index_node_traits
 #ifdef BOOST_NO_CXX11_ALLOCATOR
   typedef typename allocator::pointer                pointer;
   typedef typename allocator::const_pointer          const_pointer;
+  typedef typename allocator::difference_type        difference_type;
+  typedef typename allocator::size_type              size_type;
 #else
   typedef std::allocator_traits<allocator>           allocator_traits;
   typedef typename allocator_traits::pointer         pointer;
   typedef typename allocator_traits::const_pointer   const_pointer;
+  typedef typename allocator_traits::difference_type difference_type;
+  typedef typename allocator_traits::size_type       size_type;
 #endif
 };
 
@@ -90,12 +94,14 @@ template<typename AugmentPolicy,typename Allocator>
 struct ordered_index_node_std_base
 {
   typedef ordered_index_node_traits<
-    AugmentPolicy,Allocator>                  node_traits;
-  typedef typename node_traits::allocator     node_allocator;
-  typedef typename node_traits::pointer       pointer;
-  typedef typename node_traits::const_pointer const_pointer;
-  typedef ordered_index_color&                color_ref;
-  typedef pointer&                            parent_ref;
+    AugmentPolicy,Allocator>                    node_traits;
+  typedef typename node_traits::allocator       node_allocator;
+  typedef typename node_traits::pointer         pointer;
+  typedef typename node_traits::const_pointer   const_pointer;
+  typedef typename node_traits::difference_type difference_type;
+  typedef typename node_traits::size_type       size_type;
+  typedef ordered_index_color&                  color_ref;
+  typedef pointer&                              parent_ref;
 
   ordered_index_color& color(){return color_;}
   ordered_index_color  color()const{return color_;}
@@ -134,10 +140,14 @@ private:
 template<typename AugmentPolicy,typename Allocator>
 struct ordered_index_node_compressed_base
 {
+  typedef ordered_index_node_traits<
+    AugmentPolicy,Allocator>                    node_traits;
   typedef ordered_index_node_impl<
-    AugmentPolicy,Allocator>*            pointer;
+    AugmentPolicy,Allocator>*                   pointer;
   typedef const ordered_index_node_impl<
-    AugmentPolicy,Allocator>*            const_pointer;
+    AugmentPolicy,Allocator>*                   const_pointer;
+  typedef typename node_traits::difference_type difference_type;
+  typedef typename node_traits::size_type       size_type;
 
   struct color_ref
   {
@@ -600,11 +610,13 @@ private:
   typedef ordered_index_node_trampoline<AugmentPolicy,Super> trampoline;
 
 public:
-  typedef typename trampoline::impl_type     impl_type;
-  typedef typename trampoline::color_ref     impl_color_ref;
-  typedef typename trampoline::parent_ref    impl_parent_ref;
-  typedef typename trampoline::pointer       impl_pointer;
-  typedef typename trampoline::const_pointer const_impl_pointer;
+  typedef typename trampoline::impl_type       impl_type;
+  typedef typename trampoline::color_ref       impl_color_ref;
+  typedef typename trampoline::parent_ref      impl_parent_ref;
+  typedef typename trampoline::pointer         impl_pointer;
+  typedef typename trampoline::const_pointer   const_impl_pointer;
+  typedef typename trampoline::difference_type difference_type;
+  typedef typename trampoline::size_type       size_type;
 
   impl_color_ref      color(){return trampoline::color();}
   ordered_index_color color()const{return trampoline::color();}

@@ -39,7 +39,6 @@
 #include <boost/multi_index/sequenced_index_fwd.hpp>
 #include <boost/tuple/tuple.hpp>
 #include <boost/type_traits/is_integral.hpp>
-#include <cstddef>
 #include <functional>
 #include <utility>
 #include <memory>
@@ -125,15 +124,17 @@ public:
 
   typedef iterator                                    const_iterator;
 
-  typedef std::size_t                                 size_type;      
-  typedef std::ptrdiff_t                              difference_type;
 #ifdef BOOST_NO_CXX11_ALLOCATOR
   typedef typename allocator_type::pointer            pointer;
   typedef typename allocator_type::const_pointer      const_pointer;
+  typedef typename allocator_type::size_type          size_type;
+  typedef typename allocator_type::difference_type    difference_type;
 #else
   typedef std::allocator_traits<allocator_type>       allocator_traits;
   typedef typename allocator_traits::pointer          pointer;
   typedef typename allocator_traits::const_pointer    const_pointer;
+  typedef typename allocator_traits::size_type        size_type;
+  typedef typename allocator_traits::difference_type  difference_type;
 #endif
   typedef typename
     boost::reverse_iterator<iterator>                 reverse_iterator;
@@ -280,7 +281,7 @@ public:
   void resize(size_type n,value_param_type x)
   {
     BOOST_MULTI_INDEX_SEQ_INDEX_CHECK_INVARIANT;
-    if(n>size())insert(end(),n-size(),x);
+    if(n>size())insert(end(),static_cast<size_type>(n-size()),x);
     else if(n<size())for(size_type m=size()-n;m--;)pop_back();
   }
 

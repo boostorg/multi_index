@@ -33,14 +33,16 @@ struct sequenced_index_node_impl
   typedef typename
   boost::detail::allocator::rebind_to<
     Allocator,sequenced_index_node_impl
-  >::type                                          node_allocator;
+  >::type                                            node_allocator;
 #ifdef BOOST_NO_CXX11_ALLOCATOR
-  typedef typename node_allocator::pointer         pointer;
-  typedef typename node_allocator::const_pointer   const_pointer;
+  typedef typename node_allocator::pointer           pointer;
+  typedef typename node_allocator::const_pointer     const_pointer;
+  typedef typename node_allocator::difference_type   difference_type;
 #else
-  typedef std::allocator_traits<node_allocator>    allocator_traits;
-  typedef typename allocator_traits::pointer       pointer;
-  typedef typename allocator_traits::const_pointer const_pointer;
+  typedef std::allocator_traits<node_allocator>      allocator_traits;
+  typedef typename allocator_traits::pointer         pointer;
+  typedef typename allocator_traits::const_pointer   const_pointer;
+  typedef typename allocator_traits::difference_type difference_type;
 #endif
   pointer& prior(){return prior_;}
   pointer  prior()const{return prior_;}
@@ -158,9 +160,10 @@ private:
   typedef sequenced_index_node_trampoline<Super> trampoline;
 
 public:
-  typedef typename trampoline::impl_type         impl_type;
-  typedef typename trampoline::pointer           impl_pointer;
-  typedef typename trampoline::const_pointer     const_impl_pointer;
+  typedef typename trampoline::impl_type       impl_type;
+  typedef typename trampoline::pointer         impl_pointer;
+  typedef typename trampoline::const_pointer   const_impl_pointer;
+  typedef typename trampoline::difference_type difference_type;
 
   impl_pointer& prior(){return trampoline::prior();}
   impl_pointer  prior()const{return trampoline::prior();}

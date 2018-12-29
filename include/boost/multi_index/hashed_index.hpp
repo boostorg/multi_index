@@ -125,23 +125,25 @@ public:
   typedef KeyFromValue                               key_from_value;
   typedef Hash                                       hasher;
   typedef Pred                                       key_equal;
-  typedef tuple<std::size_t,
-    key_from_value,hasher,key_equal>                 ctor_args;
   typedef typename super::final_allocator_type       allocator_type;
 #ifdef BOOST_NO_CXX11_ALLOCATOR
   typedef typename allocator_type::pointer           pointer;
   typedef typename allocator_type::const_pointer     const_pointer;
   typedef typename allocator_type::reference         reference;
   typedef typename allocator_type::const_reference   const_reference;
+  typedef typename allocator_type::size_type         size_type;
+  typedef typename allocator_type::difference_type   difference_type;
 #else
   typedef std::allocator_traits<allocator_type>      allocator_traits;
   typedef typename allocator_traits::pointer         pointer;
   typedef typename allocator_traits::const_pointer   const_pointer;
   typedef value_type&                                reference;
   typedef const value_type&                          const_reference;
+  typedef typename allocator_traits::size_type       size_type;
+  typedef typename allocator_traits::difference_type difference_type;
 #endif
-  typedef std::size_t                                size_type;      
-  typedef std::ptrdiff_t                             difference_type;
+  typedef tuple<size_type,
+    key_from_value,hasher,key_equal>                 ctor_args;
 
 #if defined(BOOST_MULTI_INDEX_ENABLE_SAFE_MODE)
   typedef safe_mode::safe_iterator<
@@ -528,7 +530,11 @@ public:
 
   /* bucket interface */
 
-  size_type bucket_count()const BOOST_NOEXCEPT{return buckets.size();}
+  size_type bucket_count()const BOOST_NOEXCEPT
+  {
+    return static_cast<size_type>(buckets.size());
+  }
+
   size_type max_bucket_count()const BOOST_NOEXCEPT{return static_cast<size_type>(-1);}
 
   size_type bucket_size(size_type n)const
@@ -543,7 +549,7 @@ public:
 
   size_type bucket(key_param_type k)const
   {
-    return buckets.position(hash_(k));
+    return static_cast<size_type>(buckets.position(hash_(k)));
   }
 
   local_iterator begin(size_type n)
@@ -1072,7 +1078,7 @@ BOOST_MULTI_INDEX_PROTECTED_IF_MEMBER_TEMPLATE_FRIENDS:
       if(it!=it_last){
         for(const_iterator scan=it;scan!=it_last;++scan){
           if(std::find(it,scan,*scan)!=scan)continue;
-          std::ptrdiff_t matches=std::count(it2,it2_last,*scan);
+          difference_type matches=std::count(it2,it2_last,*scan);
           if(matches==0||matches!=std::count(scan,it_last,*scan))return false;
         }
         it=it_last;

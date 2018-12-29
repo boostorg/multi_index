@@ -160,6 +160,7 @@ public:
   typedef typename super::const_iterator_type_list const_iterator_type_list;
   typedef typename super::value_type               value_type;
   typedef typename super::final_allocator_type     allocator_type;
+  typedef typename super::size_type                size_type;
   typedef typename super::iterator                 iterator;
   typedef typename super::const_iterator           const_iterator;
 
@@ -568,14 +569,14 @@ BOOST_MULTI_INDEX_PROTECTED_IF_MEMBER_TEMPLATE_FRIENDS:
     return node_count==0;
   }
 
-  std::size_t size_()const
+  size_type size_()const
   {
     return node_count;
   }
 
-  std::size_t max_size_()const
+  size_type max_size_()const
   {
-    return static_cast<std::size_t >(-1);
+    return static_cast<size_type>(-1);
   }
 
   template<typename Variant>
@@ -995,7 +996,7 @@ BOOST_MULTI_INDEX_PROTECTED_IF_MEMBER_TEMPLATE_FRIENDS:
 #endif
 
 private:
-  std::size_t node_count;
+  size_type node_count;
 
 #if defined(BOOST_MULTI_INDEX_ENABLE_INVARIANT_CHECKING)&&\
     BOOST_WORKAROUND(__MWERKS__,<=0x3003)

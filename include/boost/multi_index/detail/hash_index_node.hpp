@@ -103,30 +103,30 @@ struct hashed_index_base_node_impl
   typedef typename
   boost::detail::allocator::rebind_to<
     Allocator,hashed_index_base_node_impl
-  >::type                                        base_allocator;
+  >::type                                          base_allocator;
   typedef typename
   boost::detail::allocator::rebind_to<
     Allocator,
     hashed_index_node_impl<Allocator>
-  >::type                                        node_allocator;
+  >::type                                          node_allocator;
 #ifdef BOOST_NO_CXX11_ALLOCATOR
-  typedef typename base_allocator::pointer       base_pointer;
-  typedef typename base_allocator::const_pointer const_base_pointer;
-  typedef typename node_allocator::pointer       pointer;
-  typedef typename node_allocator::const_pointer const_pointer;
+  typedef typename base_allocator::pointer         base_pointer;
+  typedef typename base_allocator::const_pointer   const_base_pointer;
+  typedef typename node_allocator::pointer         pointer;
+  typedef typename node_allocator::const_pointer   const_pointer;
+  typedef typename node_allocator::difference_type difference_type;
 #else
-  typedef typename std::allocator_traits<
-    base_allocator
-  >::pointer                                     base_pointer;
-  typedef typename std::allocator_traits<
-    base_allocator
-  >::const_pointer                               const_base_pointer;
-  typedef typename std::allocator_traits<
-    node_allocator
-  >::pointer                                     pointer;
-  typedef typename std::allocator_traits<
-    node_allocator
-  >::const_pointer                               const_pointer;
+  typedef std::allocator_traits<base_allocator>    base_allocator_traits;
+  typedef std::allocator_traits<node_allocator>    node_allocator_traits;
+
+  typedef typename base_allocator_traits::pointer  base_pointer;
+  typedef typename base_allocator_traits::
+    const_pointer                                  const_base_pointer;
+  typedef typename node_allocator_traits::pointer  pointer;
+  typedef typename node_allocator_traits::
+    const_pointer                                  const_pointer;
+  typedef typename node_allocator_traits::
+    difference_type                                difference_type;
 #endif
 
   pointer& prior(){return prior_;}
@@ -733,6 +733,7 @@ public:
   typedef typename trampoline::const_base_pointer const_impl_base_pointer;
   typedef typename trampoline::pointer            impl_pointer;
   typedef typename trampoline::const_pointer      const_impl_pointer;
+  typedef typename trampoline::difference_type    difference_type;
 
   impl_pointer&      prior(){return trampoline::prior();}
   impl_pointer       prior()const{return trampoline::prior();}

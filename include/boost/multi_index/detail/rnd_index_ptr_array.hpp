@@ -47,14 +47,15 @@ public:
   >::type                                               value_allocator;
 #ifdef BOOST_NO_CXX11_ALLOCATOR
   typedef typename value_allocator::pointer             pointer;
+  typedef typename value_allocator::size_type           size_type;
 #else
-  typedef typename std::allocator_traits<
-    value_allocator
-  >::pointer                                            pointer;
+  typedef std::allocator_traits<allocator>              allocator_traits;
+  typedef typename allocator_traits::pointer            pointer;
+  typedef typename allocator_traits::size_type          size_type;
 #endif
 
   random_access_index_ptr_array(
-    const Allocator& al,value_type end_,std::size_t sz):
+    const Allocator& al,value_type end_,size_type sz):
     size_(sz),
     capacity_(sz),
     spc(al,capacity_+1)
@@ -63,8 +64,8 @@ public:
     end_->up()=end();
   }
 
-  std::size_t size()const{return size_;}
-  std::size_t capacity()const{return capacity_;}
+  size_type size()const{return size_;}
+  size_type capacity()const{return capacity_;}
 
   void room_for_one()
   {
@@ -73,7 +74,7 @@ public:
     }
   }
 
-  void reserve(std::size_t c)
+  void reserve(size_type c)
   {
     if(c>capacity_)set_capacity(c);
   }
@@ -85,7 +86,7 @@ public:
 
   pointer begin()const{return ptrs();}
   pointer end()const{return ptrs()+size_;}
-  pointer at(std::size_t n)const{return ptrs()+n;}
+  pointer at(size_type n)const{return ptrs()+n;}
 
   void push_back(value_type x)
   {
@@ -117,8 +118,8 @@ public:
   }
 
 private:
-  std::size_t                      size_;
-  std::size_t                      capacity_;
+  size_type                        size_;
+  size_type                        capacity_;
   auto_space<value_type,Allocator> spc;
 
   pointer ptrs()const
@@ -126,7 +127,7 @@ private:
     return spc.data();
   }
 
-  void set_capacity(std::size_t c)
+  void set_capacity(size_type c)
   {
     auto_space<value_type,Allocator> spc1(spc.get_allocator(),c+1);
     node_impl_type::transfer(begin(),end()+1,spc1.data());

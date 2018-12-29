@@ -181,13 +181,15 @@ public:
 
   typedef iterator                                   const_iterator;
 
-  typedef std::size_t                                size_type;      
-  typedef std::ptrdiff_t                             difference_type;
 #ifdef BOOST_NO_CXX11_ALLOCATOR
+  typedef typename allocator_type::size_type         size_type;      
+  typedef typename allocator_type::difference_type   difference_type;
   typedef typename allocator_type::pointer           pointer;
   typedef typename allocator_type::const_pointer     const_pointer;
 #else
   typedef std::allocator_traits<allocator_type>      allocator_traits;
+  typedef typename allocator_traits::size_type       size_type;      
+  typedef typename allocator_traits::difference_type difference_type;
   typedef typename allocator_traits::pointer         pointer;
   typedef typename allocator_traits::const_pointer   const_pointer;
 #endif
@@ -527,7 +529,7 @@ public:
   size_type count(const CompatibleKey& x,const CompatibleCompare& comp)const
   {
     std::pair<iterator,iterator> p=equal_range(x,comp);
-    size_type n=std::distance(p.first,p.second);
+    size_type n=static_cast<size_type>(std::distance(p.first,p.second));
     return n;
   }
 

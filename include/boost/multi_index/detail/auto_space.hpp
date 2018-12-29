@@ -49,13 +49,15 @@ struct auto_space:private noncopyable
     Allocator,T
   >::type allocator;
 #ifdef BOOST_NO_CXX11_ALLOCATOR
-  typedef typename allocator::pointer pointer;
+  typedef typename allocator::pointer   pointer;
+  typedef typename allocator::size_type size_type;
 #else
   typedef std::allocator_traits<allocator> traits;
-  typedef typename traits::pointer pointer;
+  typedef typename traits::pointer   pointer;
+  typedef typename traits::size_type size_type;
 #endif
 
-  explicit auto_space(const Allocator& al=Allocator(),std::size_t n=1):
+  explicit auto_space(const Allocator& al=Allocator(),size_type n=1):
   al_(al),n_(n),
 #ifdef BOOST_NO_CXX11_ALLOCATOR
   data_(n_?al_.allocate(n_):pointer(0))
@@ -86,9 +88,9 @@ struct auto_space:private noncopyable
   }
     
 private:
-  allocator   al_;
-  std::size_t n_;
-  pointer     data_;
+  allocator al_;
+  size_type n_;
+  pointer   data_;
 };
 
 template<typename T,typename Allocator>

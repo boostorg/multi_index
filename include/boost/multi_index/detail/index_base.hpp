@@ -1,4 +1,4 @@
-/* Copyright 2003-2017 Joaquin M Lopez Munoz.
+/* Copyright 2003-2018 Joaquin M Lopez Munoz.
  * Distributed under the Boost Software License, Version 1.0.
  * (See accompanying file LICENSE_1_0.txt or copy at
  * http://www.boost.org/LICENSE_1_0.txt)
@@ -27,6 +27,7 @@
 #include <boost/multi_index/detail/vartempl_support.hpp>
 #include <boost/multi_index_container_fwd.hpp>
 #include <boost/tuple/tuple.hpp>
+#include <memory>
 #include <utility>
 
 #if !defined(BOOST_MULTI_INDEX_DISABLE_SERIALIZATION)
@@ -86,6 +87,12 @@ protected:
 
 private:
   typedef Value                               value_type;
+#ifdef BOOST_NO_CXX11_ALLOCATOR
+  typedef typename Allocator::size_type       size_type;
+#else
+  typedef std::allocator_traits<Allocator>    traits;
+  typedef typename traits::size_type          size_type;
+#endif
 
 protected:
   explicit index_base(const ctor_args_list&,const Allocator&){}
@@ -215,9 +222,9 @@ protected:
 
   final_node_type* final_header()const{return final().header();}
 
-  bool        final_empty_()const{return final().empty_();}
-  std::size_t final_size_()const{return final().size_();}
-  std::size_t final_max_size_()const{return final().max_size_();}
+  bool      final_empty_()const{return final().empty_();}
+  size_type final_size_()const{return final().size_();}
+  size_type final_max_size_()const{return final().max_size_();}
 
   std::pair<final_node_type*,bool> final_insert_(const value_type& x)
     {return final().insert_(x);}

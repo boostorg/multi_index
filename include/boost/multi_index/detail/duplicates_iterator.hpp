@@ -1,4 +1,4 @@
-/* Copyright 2003-2013 Joaquin M Lopez Munoz.
+/* Copyright 2003-2018 Joaquin M Lopez Munoz.
  * Distributed under the Boost Software License, Version 1.0.
  * (See accompanying file LICENSE_1_0.txt or copy at
  * http://www.boost.org/LICENSE_1_0.txt)
@@ -32,7 +32,7 @@ class duplicates_iterator
 {
 public:
   typedef typename Node::value_type        value_type;
-  typedef std::ptrdiff_t                   difference_type;
+  typedef typename Node::difference_type   difference_type;
   typedef const typename Node::value_type* pointer;
   typedef const typename Node::value_type& reference;
   typedef std::forward_iterator_tag        iterator_category;

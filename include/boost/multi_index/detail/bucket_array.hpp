@@ -1,4 +1,4 @@
-/* Copyright 2003-2015 Joaquin M Lopez Munoz.
+/* Copyright 2003-2018 Joaquin M Lopez Munoz.
  * Distributed under the Boost Software License, Version 1.0.
  * (See accompanying file LICENSE_1_0.txt or copy at
  * http://www.boost.org/LICENSE_1_0.txt)
@@ -140,7 +140,7 @@ public:
 
   bucket_array(const Allocator& al,pointer end_,std::size_t size_):
     size_index_(super::size_index(size_)),
-    spc(al,super::sizes[size_index_]+1)
+    spc(al,static_cast<auto_space_size_type>(super::sizes[size_index_]+1))
   {
     clear(end_);
   }
@@ -173,8 +173,11 @@ public:
   }
 
 private:
-  std::size_t                               size_index_;
-  auto_space<base_node_impl_type,Allocator> spc;
+  typedef auto_space<base_node_impl_type,Allocator> auto_space;
+  typedef typename auto_space::size_type            auto_space_size_type;
+
+  std::size_t size_index_;
+  auto_space  spc;
 
   base_pointer buckets()const
   {

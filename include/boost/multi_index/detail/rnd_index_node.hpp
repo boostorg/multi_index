@@ -34,14 +34,16 @@ struct random_access_index_node_impl
   typedef typename
   boost::detail::allocator::rebind_to<
     Allocator,random_access_index_node_impl
-  >::type                                        node_allocator;
+  >::type                                          node_allocator;
 #ifdef BOOST_NO_CXX11_ALLOCATOR
-  typedef typename node_allocator::pointer       pointer;
-  typedef typename node_allocator::const_pointer const_pointer;
+  typedef typename node_allocator::pointer         pointer;
+  typedef typename node_allocator::const_pointer   const_pointer;
+  typedef typename node_allocator::difference_type difference_type;
 #else
-  typedef std::allocator_traits<node_allocator>  node_traits;
-  typedef typename node_traits::pointer          pointer;
-  typedef typename node_traits::const_pointer    const_pointer;
+  typedef std::allocator_traits<node_allocator>    node_traits;
+  typedef typename node_traits::pointer            pointer;
+  typedef typename node_traits::const_pointer      const_pointer;
+  typedef typename node_traits::difference_type    difference_type;
 #endif
   typedef typename
   boost::detail::allocator::rebind_to<
@@ -68,14 +70,14 @@ struct random_access_index_node_impl
     x=*(x->up()-1);
   }
 
-  static void advance(pointer& x,std::ptrdiff_t n)
+  static void advance(pointer& x,difference_type n)
   {
     x=*(x->up()+n);
   }
 
-  static std::ptrdiff_t distance(pointer x,pointer y)
+  static difference_type distance(pointer x,pointer y)
   {
-    return y->up()-x->up();
+    return static_cast<difference_type>(y->up()-x->up());
   }
 
   /* algorithmic stuff */
@@ -208,10 +210,11 @@ private:
   typedef random_access_index_node_trampoline<Super> trampoline;
 
 public:
-  typedef typename trampoline::impl_type     impl_type;
-  typedef typename trampoline::pointer       impl_pointer;
-  typedef typename trampoline::const_pointer const_impl_pointer;
-  typedef typename trampoline::ptr_pointer   impl_ptr_pointer;
+  typedef typename trampoline::impl_type         impl_type;
+  typedef typename trampoline::pointer           impl_pointer;
+  typedef typename trampoline::const_pointer     const_impl_pointer;
+  typedef typename trampoline::difference_type   difference_type;
+  typedef typename trampoline::ptr_pointer       impl_ptr_pointer;
 
   impl_ptr_pointer& up(){return trampoline::up();}
   impl_ptr_pointer  up()const{return trampoline::up();}
@@ -260,14 +263,14 @@ public:
     x=from_impl(xi);
   }
 
-  static void advance(random_access_index_node*& x,std::ptrdiff_t n)
+  static void advance(random_access_index_node*& x,difference_type n)
   {
     impl_pointer xi=x->impl();
     trampoline::advance(xi,n);
     x=from_impl(xi);
   }
 
-  static std::ptrdiff_t distance(
+  static difference_type distance(
     random_access_index_node* x,random_access_index_node* y)
   {
     return trampoline::distance(x->impl(),y->impl());
