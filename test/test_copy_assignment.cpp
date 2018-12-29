@@ -156,7 +156,8 @@ void test_copy_assignment()
 
   BOOST_TEST(i5==get<5>(es2));
 
-#if !defined(BOOST_NO_CXX11_HDR_INITIALIZER_LIST)
+#if !defined(BOOST_NO_CXX11_HDR_INITIALIZER_LIST)&&\
+    !BOOST_WORKAROUND(BOOST_MSVC,==1800) /* MSVC 12.0 chokes on what follows */
   employee_set es8({{0,"Rose",40,4512},{1,"Mary",38,3345},{2,"Jo",25,7102}});
   employee_set es9;
   es9={{0,"Rose",40,4512},{1,"Mary",38,3345},{2,"Jo",25,7102},
