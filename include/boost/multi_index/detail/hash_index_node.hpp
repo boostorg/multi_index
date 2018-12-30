@@ -15,9 +15,9 @@
 
 #include <boost/config.hpp> /* keep it first to prevent nasty warns in MSVC */
 #include <boost/detail/allocator_utilities.hpp>
+#include <boost/multi_index/detail/allocator_traits.hpp>
 #include <boost/multi_index/detail/raw_ptr.hpp>
 #include <utility>
-#include <memory>
 
 namespace boost{
 
@@ -103,31 +103,19 @@ struct hashed_index_base_node_impl
   typedef typename
   boost::detail::allocator::rebind_to<
     Allocator,hashed_index_base_node_impl
-  >::type                                          base_allocator;
+  >::type                                             base_allocator;
   typedef typename
   boost::detail::allocator::rebind_to<
     Allocator,
     hashed_index_node_impl<Allocator>
-  >::type                                          node_allocator;
-#ifdef BOOST_NO_CXX11_ALLOCATOR
-  typedef typename base_allocator::pointer         base_pointer;
-  typedef typename base_allocator::const_pointer   const_base_pointer;
-  typedef typename node_allocator::pointer         pointer;
-  typedef typename node_allocator::const_pointer   const_pointer;
-  typedef typename node_allocator::difference_type difference_type;
-#else
-  typedef std::allocator_traits<base_allocator>    base_allocator_traits;
-  typedef std::allocator_traits<node_allocator>    node_allocator_traits;
-
-  typedef typename base_allocator_traits::pointer  base_pointer;
-  typedef typename base_allocator_traits::
-    const_pointer                                  const_base_pointer;
-  typedef typename node_allocator_traits::pointer  pointer;
-  typedef typename node_allocator_traits::
-    const_pointer                                  const_pointer;
-  typedef typename node_allocator_traits::
-    difference_type                                difference_type;
-#endif
+  >::type                                             node_allocator;
+  typedef allocator_traits<base_allocator>            base_alloc_traits;
+  typedef allocator_traits<node_allocator>            node_alloc_traits;
+  typedef typename base_alloc_traits::pointer         base_pointer;
+  typedef typename base_alloc_traits::const_pointer   const_base_pointer;
+  typedef typename node_alloc_traits::pointer         pointer;
+  typedef typename node_alloc_traits::const_pointer   const_pointer;
+  typedef typename node_alloc_traits::difference_type difference_type;
 
   pointer& prior(){return prior_;}
   pointer  prior()const{return prior_;}

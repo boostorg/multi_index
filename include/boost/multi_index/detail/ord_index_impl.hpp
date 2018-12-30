@@ -53,6 +53,7 @@
 #include <boost/mpl/if.hpp>
 #include <boost/mpl/push_front.hpp>
 #include <boost/multi_index/detail/access_specifier.hpp>
+#include <boost/multi_index/detail/allocator_traits.hpp>
 #include <boost/multi_index/detail/bidir_node_iterator.hpp>
 #include <boost/multi_index/detail/do_not_copy_elements_tag.hpp>
 #include <boost/multi_index/detail/index_node_base.hpp>
@@ -69,7 +70,6 @@
 #include <boost/tuple/tuple.hpp>
 #include <boost/type_traits/is_same.hpp>
 #include <utility>
-#include <memory>
 
 #if !defined(BOOST_NO_CXX11_HDR_INITIALIZER_LIST)
 #include <initializer_list>
@@ -163,13 +163,8 @@ public:
     value_type,KeyFromValue,Compare>                 value_compare;
   typedef tuple<key_from_value,key_compare>          ctor_args;
   typedef typename super::final_allocator_type       allocator_type;
-#ifdef BOOST_NO_CXX11_ALLOCATOR
-  typedef typename allocator_type::reference         reference;
-  typedef typename allocator_type::const_reference   const_reference;
-#else
   typedef value_type&                                reference;
   typedef const value_type&                          const_reference;
-#endif
 
 #if defined(BOOST_MULTI_INDEX_ENABLE_SAFE_MODE)
   typedef safe_mode::safe_iterator<
@@ -181,18 +176,14 @@ public:
 
   typedef iterator                                   const_iterator;
 
-#ifdef BOOST_NO_CXX11_ALLOCATOR
-  typedef typename allocator_type::size_type         size_type;      
-  typedef typename allocator_type::difference_type   difference_type;
-  typedef typename allocator_type::pointer           pointer;
-  typedef typename allocator_type::const_pointer     const_pointer;
-#else
-  typedef std::allocator_traits<allocator_type>      allocator_traits;
-  typedef typename allocator_traits::size_type       size_type;      
-  typedef typename allocator_traits::difference_type difference_type;
-  typedef typename allocator_traits::pointer         pointer;
-  typedef typename allocator_traits::const_pointer   const_pointer;
-#endif
+private:
+  typedef allocator_traits<allocator_type>           alloc_traits;
+
+public:
+  typedef typename alloc_traits::size_type           size_type;      
+  typedef typename alloc_traits::difference_type     difference_type;
+  typedef typename alloc_traits::pointer             pointer;
+  typedef typename alloc_traits::const_pointer       const_pointer;
   typedef typename
     boost::reverse_iterator<iterator>                reverse_iterator;
   typedef typename

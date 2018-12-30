@@ -17,10 +17,10 @@
 #include <algorithm>
 #include <boost/detail/allocator_utilities.hpp>
 #include <boost/integer/common_factor_rt.hpp>
+#include <boost/multi_index/detail/allocator_traits.hpp>
 #include <boost/multi_index/detail/raw_ptr.hpp>
 #include <cstddef>
 #include <functional>
-#include <memory>
 
 namespace boost{
 
@@ -34,27 +34,18 @@ struct random_access_index_node_impl
   typedef typename
   boost::detail::allocator::rebind_to<
     Allocator,random_access_index_node_impl
-  >::type                                          node_allocator;
-#ifdef BOOST_NO_CXX11_ALLOCATOR
-  typedef typename node_allocator::pointer         pointer;
-  typedef typename node_allocator::const_pointer   const_pointer;
-  typedef typename node_allocator::difference_type difference_type;
-#else
-  typedef std::allocator_traits<node_allocator>    node_traits;
-  typedef typename node_traits::pointer            pointer;
-  typedef typename node_traits::const_pointer      const_pointer;
-  typedef typename node_traits::difference_type    difference_type;
-#endif
+  >::type                                             node_allocator;
+  typedef allocator_traits<node_allocator>            node_alloc_traits;
+  typedef typename node_alloc_traits::pointer         pointer;
+  typedef typename node_alloc_traits::const_pointer   const_pointer;
+  typedef typename node_alloc_traits::difference_type difference_type;
   typedef typename
   boost::detail::allocator::rebind_to<
     Allocator,pointer
-  >::type                                        ptr_allocator;
-#ifdef BOOST_NO_CXX11_ALLOCATOR
-  typedef typename ptr_allocator::pointer        ptr_pointer;
-#else
-  typedef std::allocator_traits<ptr_allocator>   ptr_traits;
-  typedef typename ptr_traits::pointer           ptr_pointer;
-#endif
+  >::type                                             ptr_allocator;
+  typedef allocator_traits<ptr_allocator>             ptr_alloc_traits;
+  typedef typename ptr_alloc_traits::pointer          ptr_pointer;
+
   ptr_pointer& up(){return up_;}
   ptr_pointer  up()const{return up_;}
 

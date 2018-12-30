@@ -15,8 +15,8 @@
 
 #include <boost/config.hpp> /* keep it first to prevent nasty warns in MSVC */
 #include <algorithm>
-#include <memory>
 #include <boost/detail/allocator_utilities.hpp>
+#include <boost/multi_index/detail/allocator_traits.hpp>
 #include <boost/multi_index/detail/raw_ptr.hpp>
 
 namespace boost{
@@ -33,17 +33,12 @@ struct sequenced_index_node_impl
   typedef typename
   boost::detail::allocator::rebind_to<
     Allocator,sequenced_index_node_impl
-  >::type                                            node_allocator;
-#ifdef BOOST_NO_CXX11_ALLOCATOR
-  typedef typename node_allocator::pointer           pointer;
-  typedef typename node_allocator::const_pointer     const_pointer;
-  typedef typename node_allocator::difference_type   difference_type;
-#else
-  typedef std::allocator_traits<node_allocator>      allocator_traits;
-  typedef typename allocator_traits::pointer         pointer;
-  typedef typename allocator_traits::const_pointer   const_pointer;
-  typedef typename allocator_traits::difference_type difference_type;
-#endif
+  >::type                                        node_allocator;
+  typedef allocator_traits<node_allocator>       alloc_traits;
+  typedef typename alloc_traits::pointer         pointer;
+  typedef typename alloc_traits::const_pointer   const_pointer;
+  typedef typename alloc_traits::difference_type difference_type;
+
   pointer& prior(){return prior_;}
   pointer  prior()const{return prior_;}
   pointer& next(){return next_;}

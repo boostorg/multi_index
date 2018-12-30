@@ -17,8 +17,8 @@
 #include <algorithm>
 #include <boost/detail/allocator_utilities.hpp>
 #include <boost/multi_index/detail/adl_swap.hpp>
+#include <boost/multi_index/detail/allocator_traits.hpp>
 #include <boost/noncopyable.hpp>
-#include <memory>
 
 namespace boost{
 
@@ -47,34 +47,16 @@ struct auto_space:private noncopyable
 {
   typedef typename boost::detail::allocator::rebind_to<
     Allocator,T
-  >::type allocator;
-#ifdef BOOST_NO_CXX11_ALLOCATOR
-  typedef typename allocator::pointer   pointer;
-  typedef typename allocator::size_type size_type;
-#else
-  typedef std::allocator_traits<allocator> traits;
-  typedef typename traits::pointer   pointer;
-  typedef typename traits::size_type size_type;
-#endif
+  >::type                                  allocator;
+  typedef allocator_traits<allocator>      alloc_traits;
+  typedef typename alloc_traits::pointer   pointer;
+  typedef typename alloc_traits::size_type size_type;
 
   explicit auto_space(const Allocator& al=Allocator(),size_type n=1):
-  al_(al),n_(n),
-#ifdef BOOST_NO_CXX11_ALLOCATOR
-  data_(n_?al_.allocate(n_):pointer(0))
-#else
-  data_(n_?traits::allocate(al_,n_):pointer(0))
-#endif
+  al_(al),n_(n),data_(n_?alloc_traits::allocate(al_,n_):pointer(0))
   {}
 
-  ~auto_space()
-  {
-    if(n_)
-#ifdef BOOST_NO_CXX11_ALLOCATOR
-      al_.deallocate(data_,n_);
-#else
-      traits::deallocate(al_,data_,n_);
-#endif
-  }
+  ~auto_space(){if(n_)alloc_traits::deallocate(al_,data_,n_);}
 
   Allocator get_allocator()const{return al_;}
 

@@ -16,11 +16,10 @@
 #include <boost/config.hpp> /* keep it first to prevent nasty warns in MSVC */
 #include <algorithm>
 #include <boost/detail/allocator_utilities.hpp>
+#include <boost/multi_index/detail/allocator_traits.hpp>
 #include <boost/multi_index/detail/auto_space.hpp>
 #include <boost/multi_index/detail/rnd_index_ptr_array.hpp>
 #include <boost/noncopyable.hpp>
-#include <cstddef>
-#include <memory>
 
 namespace boost{
 
@@ -95,12 +94,8 @@ protected:
   }
 
 private:
-#ifdef BOOST_NO_CXX11_ALLOCATOR
-  typedef typename Allocator::size_type         size_type;
-#else
-  typedef std::allocator_traits<Allocator>      allocator_traits;
-  typedef typename allocator_traits::size_type  size_type;
-#endif
+  typedef allocator_traits<Allocator>      alloc_traits;
+  typedef typename alloc_traits::size_type size_type;
 
   void preprocess()
   {

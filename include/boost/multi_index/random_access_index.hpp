@@ -28,6 +28,7 @@
 #include <boost/mpl/not.hpp>
 #include <boost/mpl/push_front.hpp>
 #include <boost/multi_index/detail/access_specifier.hpp>
+#include <boost/multi_index/detail/allocator_traits.hpp>
 #include <boost/multi_index/detail/do_not_copy_elements_tag.hpp>
 #include <boost/multi_index/detail/index_node_base.hpp>
 #include <boost/multi_index/detail/rnd_node_iterator.hpp>
@@ -44,7 +45,6 @@
 #include <functional>
 #include <stdexcept> 
 #include <utility>
-#include <memory>
 
 #if !defined(BOOST_NO_CXX11_HDR_INITIALIZER_LIST)
 #include<initializer_list>
@@ -96,59 +96,50 @@ class random_access_index:
 #pragma parse_mfunc_templ off
 #endif
 
-  typedef typename SuperMeta::type                   super;
+  typedef typename SuperMeta::type               super;
 
 protected:
   typedef random_access_index_node<
-    typename super::node_type>                       node_type;
+    typename super::node_type>                   node_type;
 
 private:
-  typedef typename node_type::impl_type              node_impl_type;
+  typedef typename node_type::impl_type          node_impl_type;
   typedef random_access_index_ptr_array<
-    typename super::final_allocator_type>            ptr_array;
-  typedef typename ptr_array::pointer                node_impl_ptr_pointer;
+    typename super::final_allocator_type>        ptr_array;
+  typedef typename ptr_array::pointer            node_impl_ptr_pointer;
 
 public:
   /* types */
 
-  typedef typename node_type::value_type             value_type;
-  typedef tuples::null_type                          ctor_args;
-  typedef typename super::final_allocator_type       allocator_type;
-#ifdef BOOST_NO_CXX11_ALLOCATOR
-  typedef typename allocator_type::reference         reference;
-  typedef typename allocator_type::const_reference   const_reference;
-#else
-  typedef value_type&                                reference;
-  typedef const value_type&                          const_reference;
-#endif
+  typedef typename node_type::value_type         value_type;
+  typedef tuples::null_type                      ctor_args;
+  typedef typename super::final_allocator_type   allocator_type;
+  typedef value_type&                            reference;
+  typedef const value_type&                      const_reference;
 
 #if defined(BOOST_MULTI_INDEX_ENABLE_SAFE_MODE)
   typedef safe_mode::safe_iterator<
     rnd_node_iterator<node_type>,
-    random_access_index>                             iterator;
+    random_access_index>                         iterator;
 #else
-  typedef rnd_node_iterator<node_type>               iterator;
+  typedef rnd_node_iterator<node_type>           iterator;
 #endif
 
-  typedef iterator                                   const_iterator;
+  typedef iterator                               const_iterator;
 
-#ifdef BOOST_NO_CXX11_ALLOCATOR
-  typedef typename allocator_type::pointer           pointer;
-  typedef typename allocator_type::const_pointer     const_pointer;
-  typedef typename allocator_type::size_type         size_type;
-  typedef typename allocator_type::difference_type   difference_type;
-#else
-  typedef std::allocator_traits<allocator_type>      allocator_traits;
-  typedef typename allocator_traits::pointer         pointer;
-  typedef typename allocator_traits::const_pointer   const_pointer;
-  typedef typename allocator_traits::size_type       size_type;
-  typedef typename allocator_traits::difference_type difference_type;
-#endif
+private:
+  typedef allocator_traits<allocator_type>       alloc_traits;
+
+public:
+  typedef typename alloc_traits::pointer         pointer;
+  typedef typename alloc_traits::const_pointer   const_pointer;
+  typedef typename alloc_traits::size_type       size_type;
+  typedef typename alloc_traits::difference_type difference_type;
   typedef typename
-    boost::reverse_iterator<iterator>                reverse_iterator;
+    boost::reverse_iterator<iterator>            reverse_iterator;
   typedef typename
-    boost::reverse_iterator<const_iterator>          const_reverse_iterator;
-  typedef TagList                                    tag_list;
+    boost::reverse_iterator<const_iterator>      const_reverse_iterator;
+  typedef TagList                                tag_list;
 
 protected:
   typedef typename super::final_node_type     final_node_type;

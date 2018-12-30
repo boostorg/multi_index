@@ -16,11 +16,10 @@
 #include <boost/config.hpp> /* keep it first to prevent nasty warns in MSVC */
 #include <algorithm>
 #include <boost/detail/allocator_utilities.hpp>
+#include <boost/multi_index/detail/allocator_traits.hpp>
 #include <boost/multi_index/detail/auto_space.hpp>
 #include <boost/multi_index/detail/rnd_index_node.hpp>
 #include <boost/noncopyable.hpp>
-#include <cstddef>
-#include <memory>
 
 namespace boost{
 
@@ -45,14 +44,9 @@ public:
   typedef typename boost::detail::allocator::rebind_to<
     Allocator,value_type
   >::type                                               value_allocator;
-#ifdef BOOST_NO_CXX11_ALLOCATOR
-  typedef typename value_allocator::pointer             pointer;
-  typedef typename value_allocator::size_type           size_type;
-#else
-  typedef std::allocator_traits<value_allocator>        allocator_traits;
-  typedef typename allocator_traits::pointer            pointer;
-  typedef typename allocator_traits::size_type          size_type;
-#endif
+  typedef allocator_traits<value_allocator>             alloc_traits;
+  typedef typename alloc_traits::pointer                pointer;
+  typedef typename alloc_traits::size_type              size_type;
 
   random_access_index_ptr_array(
     const Allocator& al,value_type end_,size_type sz):

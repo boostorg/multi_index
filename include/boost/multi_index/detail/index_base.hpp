@@ -21,13 +21,13 @@
 #include <boost/move/core.hpp>
 #include <boost/move/utility.hpp>
 #include <boost/mpl/vector.hpp>
+#include <boost/multi_index/detail/allocator_traits.hpp>
 #include <boost/multi_index/detail/copy_map.hpp>
 #include <boost/multi_index/detail/do_not_copy_elements_tag.hpp>
 #include <boost/multi_index/detail/node_type.hpp>
 #include <boost/multi_index/detail/vartempl_support.hpp>
 #include <boost/multi_index_container_fwd.hpp>
 #include <boost/tuple/tuple.hpp>
-#include <memory>
 #include <utility>
 
 #if !defined(BOOST_MULTI_INDEX_DISABLE_SERIALIZATION)
@@ -87,12 +87,8 @@ protected:
 
 private:
   typedef Value                               value_type;
-#ifdef BOOST_NO_CXX11_ALLOCATOR
-  typedef typename Allocator::size_type       size_type;
-#else
-  typedef std::allocator_traits<Allocator>    traits;
-  typedef typename traits::size_type          size_type;
-#endif
+  typedef allocator_traits<Allocator>         alloc_traits;
+  typedef typename alloc_traits::size_type    size_type;
 
 protected:
   explicit index_base(const ctor_args_list&,const Allocator&){}

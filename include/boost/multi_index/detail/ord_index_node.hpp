@@ -42,8 +42,8 @@
 
 #include <boost/config.hpp> /* keep it first to prevent nasty warns in MSVC */
 #include <cstddef>
-#include <memory>
 #include <boost/detail/allocator_utilities.hpp>
+#include <boost/multi_index/detail/allocator_traits.hpp>
 #include <boost/multi_index/detail/raw_ptr.hpp>
 
 #if !defined(BOOST_MULTI_INDEX_DISABLE_COMPRESSED_ORDERED_INDEX_NODES)
@@ -76,18 +76,11 @@ struct ordered_index_node_traits
     Allocator,
     ordered_index_node_impl<AugmentPolicy,Allocator>
   >::type                                            allocator;
-#ifdef BOOST_NO_CXX11_ALLOCATOR
-  typedef typename allocator::pointer                pointer;
-  typedef typename allocator::const_pointer          const_pointer;
-  typedef typename allocator::difference_type        difference_type;
-  typedef typename allocator::size_type              size_type;
-#else
-  typedef std::allocator_traits<allocator>           allocator_traits;
-  typedef typename allocator_traits::pointer         pointer;
-  typedef typename allocator_traits::const_pointer   const_pointer;
-  typedef typename allocator_traits::difference_type difference_type;
-  typedef typename allocator_traits::size_type       size_type;
-#endif
+  typedef allocator_traits<allocator>                alloc_traits;
+  typedef typename alloc_traits::pointer             pointer;
+  typedef typename alloc_traits::const_pointer       const_pointer;
+  typedef typename alloc_traits::difference_type     difference_type;
+  typedef typename alloc_traits::size_type           size_type;
 };
 
 template<typename AugmentPolicy,typename Allocator>

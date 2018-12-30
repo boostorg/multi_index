@@ -14,7 +14,6 @@
 #endif
 
 #include <boost/config.hpp> /* keep it first to prevent nasty warns in MSVC */
-#include <cstddef>
 #include <iterator>
 
 namespace boost{
