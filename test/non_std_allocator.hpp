@@ -12,10 +12,16 @@
 #define BOOST_MULTI_INDEX_TEST_NON_STD_ALLOCATOR_HPP
 
 #include <boost/config.hpp> /* keep it first to prevent nasty warns in MSVC */
+#include <boost/detail/workaround.hpp>
 #include <boost/throw_exception.hpp>
 #include <iterator>
 #include <cstddef>
 #include <stdexcept>
+
+#if BOOST_WORKAROUND(BOOST_MSVC,==1800)
+/* triggered by non_std_allocator::allocate's not returning a true pointer */
+#pragma warning(disable:4494)
+#endif
 
 template<typename T>
 class non_raw_pointer
