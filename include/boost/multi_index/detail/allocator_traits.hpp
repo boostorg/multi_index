@@ -84,7 +84,7 @@ struct allocator_traits
 
   static pointer   allocate(Allocator& a,size_type n){return a.allocate(n);}
   static pointer   allocate(Allocator& a,size_type n,const_void_pointer p)
-                     {return a.allocate(n.static_cast<const_pointer>(p));}
+                     {return a.allocate(n,static_cast<const_pointer>(p));}
   static void      deallocate(Allocator& a,pointer p,size_type n)
                      {a.deallocate(p,n);}
   static void      construct(Allocator& a,pointer p,const value_type& x)
