@@ -67,9 +67,8 @@ struct allocator_traits
     template rebind_to<void>::type            void_pointer;
   typedef typename pointer_traits<pointer>::
     template rebind_to<const void>::type      const_void_pointer;
-  typedef typename Allocator::value_type      value_type;
-  typedef typename Allocator::size_type       size_type;
   typedef typename Allocator::difference_type difference_type;
+  typedef typename Allocator::size_type       size_type;
 
   template<typename U>
   struct rebind_alloc
