@@ -19,6 +19,7 @@
 #include <boost/multi_index/detail/adl_swap.hpp>
 #include <boost/multi_index/detail/allocator_traits.hpp>
 #include <boost/noncopyable.hpp>
+#include <memory>
 
 namespace boost{
 
