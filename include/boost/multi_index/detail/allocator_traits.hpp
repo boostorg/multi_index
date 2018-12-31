@@ -115,7 +115,7 @@ struct allocator_traits
 #endif
 
   template<typename T>
-  static void     destroy(Allocator&,T* p){p->~T();}
+  static void destroy(Allocator&,T* p){p->~T();}
 
 #if BOOST_WORKAROUND(BOOST_MSVC,BOOST_TESTED_AT(1500))
 #pragma warning(pop)

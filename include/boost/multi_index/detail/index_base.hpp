@@ -103,7 +103,7 @@ protected:
   {
     x=final().allocate_node();
     BOOST_TRY{
-      final().construct_node(x,v);
+      final().construct_value(x,v);
     }
     BOOST_CATCH(...){
       final().deallocate_node(x);
@@ -117,7 +117,7 @@ protected:
   {
     x=final().allocate_node();
     BOOST_TRY{
-      final().construct_node(x,boost::move(const_cast<value_type&>(v)));
+      final().construct_value(x,boost::move(const_cast<value_type&>(v)));
     }
     BOOST_CATCH(...){
       final().deallocate_node(x);
@@ -152,12 +152,12 @@ protected:
 
   void erase_(node_type* x)
   {
-    final().destroy_node(static_cast<final_node_type*>(x));
+    final().destroy_value(static_cast<final_node_type*>(x));
   }
 
   void delete_node_(node_type* x)
   {
-    final().destroy_node(static_cast<final_node_type*>(x));
+    final().destroy_value(static_cast<final_node_type*>(x));
   }
 
   void clear_(){}

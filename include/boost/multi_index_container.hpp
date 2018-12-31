@@ -546,22 +546,22 @@ BOOST_MULTI_INDEX_PROTECTED_IF_MEMBER_TEMPLATE_FRIENDS:
       bfm_allocator::member,static_cast<node_pointer>(x),1);
   }
 
-  void construct_node(node_type* x,const Value& v)
+  void construct_value(node_type* x,const Value& v)
   {
     node_alloc_traits::construct(
       bfm_allocator::member,boost::addressof(x->value()),v);
   }
 
-  void construct_node(node_type* x,BOOST_RV_REF(Value) v)
+  void construct_value(node_type* x,BOOST_RV_REF(Value) v)
   {
     node_alloc_traits::construct(
       bfm_allocator::member,boost::addressof(x->value()),boost::move(v));
   }
 
   BOOST_MULTI_INDEX_OVERLOADS_TO_VARTEMPL_EXTRA_ARG(
-    void,construct_node,vartempl_construct_node_impl,node_type*,x)
+    void,construct_value,vartempl_construct_value_impl,node_type*,x)
 
-  void destroy_node(node_type* x)
+  void destroy_value(node_type* x)
   {
     node_alloc_traits::destroy(
       bfm_allocator::member,boost::addressof(x->value()));
@@ -611,7 +611,7 @@ BOOST_MULTI_INDEX_PROTECTED_IF_MEMBER_TEMPLATE_FRIENDS:
   {
     node_type* x=allocate_node();
     BOOST_TRY{
-      construct_node(x,t);
+      construct_value(x,t);
       BOOST_TRY{
         node_type* res=super::insert_(x->value(),x,detail::emplaced_tag());
         if(res==x){
@@ -619,13 +619,13 @@ BOOST_MULTI_INDEX_PROTECTED_IF_MEMBER_TEMPLATE_FRIENDS:
           return std::pair<node_type*,bool>(res,true);
         }
         else{
-          destroy_node(x);
+          destroy_value(x);
           deallocate_node(x);
           return std::pair<node_type*,bool>(res,false);
         }
       }
       BOOST_CATCH(...){
-        destroy_node(x);
+        destroy_value(x);
         BOOST_RETHROW;
       }
       BOOST_CATCH_END
@@ -653,7 +653,7 @@ BOOST_MULTI_INDEX_PROTECTED_IF_MEMBER_TEMPLATE_FRIENDS:
   {
     node_type* x=allocate_node();
     BOOST_TRY{
-      construct_node(x,BOOST_MULTI_INDEX_FORWARD_PARAM_PACK);
+      construct_value(x,BOOST_MULTI_INDEX_FORWARD_PARAM_PACK);
       BOOST_TRY{
         node_type* res=super::insert_(x->value(),x,detail::emplaced_tag());
         if(res==x){
@@ -661,13 +661,13 @@ BOOST_MULTI_INDEX_PROTECTED_IF_MEMBER_TEMPLATE_FRIENDS:
           return std::pair<node_type*,bool>(res,true);
         }
         else{
-          destroy_node(x);
+          destroy_value(x);
           deallocate_node(x);
           return std::pair<node_type*,bool>(res,false);
         }
       }
       BOOST_CATCH(...){
-        destroy_node(x);
+        destroy_value(x);
         BOOST_RETHROW;
       }
       BOOST_CATCH_END
@@ -710,7 +710,7 @@ BOOST_MULTI_INDEX_PROTECTED_IF_MEMBER_TEMPLATE_FRIENDS:
   {
     node_type* x=allocate_node();
     BOOST_TRY{
-      construct_node(x,t);
+      construct_value(x,t);
       BOOST_TRY{
         node_type* res=super::insert_(
           x->value(),position,x,detail::emplaced_tag());
@@ -719,13 +719,13 @@ BOOST_MULTI_INDEX_PROTECTED_IF_MEMBER_TEMPLATE_FRIENDS:
           return std::pair<node_type*,bool>(res,true);
         }
         else{
-          destroy_node(x);
+          destroy_value(x);
           deallocate_node(x);
           return std::pair<node_type*,bool>(res,false);
         }
       }
       BOOST_CATCH(...){
-        destroy_node(x);
+        destroy_value(x);
         BOOST_RETHROW;
       }
       BOOST_CATCH_END
@@ -756,7 +756,7 @@ BOOST_MULTI_INDEX_PROTECTED_IF_MEMBER_TEMPLATE_FRIENDS:
   {
     node_type* x=allocate_node();
     BOOST_TRY{
-      construct_node(x,BOOST_MULTI_INDEX_FORWARD_PARAM_PACK);
+      construct_value(x,BOOST_MULTI_INDEX_FORWARD_PARAM_PACK);
       BOOST_TRY{
         node_type* res=super::insert_(
           x->value(),position,x,detail::emplaced_tag());
@@ -765,13 +765,13 @@ BOOST_MULTI_INDEX_PROTECTED_IF_MEMBER_TEMPLATE_FRIENDS:
           return std::pair<node_type*,bool>(res,true);
         }
         else{
-          destroy_node(x);
+          destroy_value(x);
           deallocate_node(x);
           return std::pair<node_type*,bool>(res,false);
         }
       }
       BOOST_CATCH(...){
-        destroy_node(x);
+        destroy_value(x);
         BOOST_RETHROW;
       }
       BOOST_CATCH_END
@@ -998,7 +998,7 @@ BOOST_MULTI_INDEX_PROTECTED_IF_MEMBER_TEMPLATE_FRIENDS:
 
 private:
   template<BOOST_MULTI_INDEX_TEMPLATE_PARAM_PACK>
-  void vartempl_construct_node_impl(
+  void vartempl_construct_value_impl(
     node_type* x,BOOST_MULTI_INDEX_FUNCTION_PARAM_PACK)
   {
     node_alloc_traits::construct(
