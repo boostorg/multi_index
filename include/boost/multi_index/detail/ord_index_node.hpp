@@ -42,7 +42,6 @@
 
 #include <boost/config.hpp> /* keep it first to prevent nasty warns in MSVC */
 #include <cstddef>
-#include <boost/detail/allocator_utilities.hpp>
 #include <boost/multi_index/detail/allocator_traits.hpp>
 #include <boost/multi_index/detail/raw_ptr.hpp>
 
@@ -71,8 +70,7 @@ struct ordered_index_node_impl; /* fwd decl. */
 template<typename AugmentPolicy,typename Allocator>
 struct ordered_index_node_traits
 {
-  typedef typename
-  boost::detail::allocator::rebind_to<
+  typedef typename rebind_alloc_for<
     Allocator,
     ordered_index_node_impl<AugmentPolicy,Allocator>
   >::type                                            allocator;
@@ -580,7 +578,7 @@ template<typename AugmentPolicy,typename Super>
 struct ordered_index_node_trampoline:
   ordered_index_node_impl<
     AugmentPolicy,
-    typename boost::detail::allocator::rebind_to<
+    typename rebind_alloc_for<
       typename Super::allocator_type,
       char
     >::type
@@ -588,7 +586,7 @@ struct ordered_index_node_trampoline:
 {
   typedef ordered_index_node_impl<
     AugmentPolicy,
-    typename boost::detail::allocator::rebind_to<
+    typename rebind_alloc_for<
       typename Super::allocator_type,
       char
     >::type

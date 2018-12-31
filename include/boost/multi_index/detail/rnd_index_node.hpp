@@ -15,7 +15,6 @@
 
 #include <boost/config.hpp> /* keep it first to prevent nasty warns in MSVC */
 #include <algorithm>
-#include <boost/detail/allocator_utilities.hpp>
 #include <boost/integer/common_factor_rt.hpp>
 #include <boost/multi_index/detail/allocator_traits.hpp>
 #include <boost/multi_index/detail/raw_ptr.hpp>
@@ -31,16 +30,14 @@ namespace detail{
 template<typename Allocator>
 struct random_access_index_node_impl
 {
-  typedef typename
-  boost::detail::allocator::rebind_to<
+  typedef typename rebind_alloc_for<
     Allocator,random_access_index_node_impl
   >::type                                             node_allocator;
   typedef allocator_traits<node_allocator>            node_alloc_traits;
   typedef typename node_alloc_traits::pointer         pointer;
   typedef typename node_alloc_traits::const_pointer   const_pointer;
   typedef typename node_alloc_traits::difference_type difference_type;
-  typedef typename
-  boost::detail::allocator::rebind_to<
+  typedef typename rebind_alloc_for<
     Allocator,pointer
   >::type                                             ptr_allocator;
   typedef allocator_traits<ptr_allocator>             ptr_alloc_traits;
@@ -179,14 +176,14 @@ private:
 template<typename Super>
 struct random_access_index_node_trampoline:
   random_access_index_node_impl<
-    typename boost::detail::allocator::rebind_to<
+    typename rebind_alloc_for<
       typename Super::allocator_type,
       char
     >::type
   >
 {
   typedef random_access_index_node_impl<
-    typename boost::detail::allocator::rebind_to<
+    typename rebind_alloc_for<
       typename Super::allocator_type,
       char
     >::type

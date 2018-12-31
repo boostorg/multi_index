@@ -15,7 +15,6 @@
 
 #include <boost/config.hpp> /* keep it first to prevent nasty warns in MSVC */
 #include <boost/core/addressof.hpp>
-#include <boost/detail/allocator_utilities.hpp>
 #include <boost/detail/no_exceptions_support.hpp>
 #include <boost/detail/workaround.hpp>
 #include <boost/move/core.hpp>
@@ -63,10 +62,8 @@ protected:
   typedef multi_index_container<
     Value,IndexSpecifierList,Allocator>       final_type;
   typedef tuples::null_type                   ctor_args_list;
-  typedef typename 
-  boost::detail::allocator::rebind_to<
-    Allocator,
-    typename Allocator::value_type
+  typedef typename rebind_alloc_for<
+    Allocator,typename Allocator::value_type
   >::type                                     final_allocator_type;
   typedef mpl::vector0<>                      index_type_list;
   typedef mpl::vector0<>                      iterator_type_list;
@@ -106,7 +103,7 @@ protected:
   {
     x=final().allocate_node();
     BOOST_TRY{
-      boost::detail::allocator::construct(boost::addressof(x->value()),v);
+      final().construct_node(x,v);
     }
     BOOST_CATCH(...){
       final().deallocate_node(x);
@@ -120,15 +117,7 @@ protected:
   {
     x=final().allocate_node();
     BOOST_TRY{
-      /* This shoud have used a modified, T&&-compatible version of
-       * boost::detail::allocator::construct, but 
-       * <boost/detail/allocator_utilities.hpp> is too old and venerable to
-       * mess with; besides, it is a general internal utility and the imperfect
-       * perfect forwarding emulation of Boost.Move might break other libs.
-       */
-
-      new (boost::addressof(x->value()))
-        value_type(boost::move(const_cast<value_type&>(v)));
+      final().construct_node(x,boost::move(const_cast<value_type&>(v)));
     }
     BOOST_CATCH(...){
       final().deallocate_node(x);
@@ -163,12 +152,12 @@ protected:
 
   void erase_(node_type* x)
   {
-    boost::detail::allocator::destroy(boost::addressof(x->value()));
+    final().destroy_node(static_cast<final_node_type*>(x));
   }
 
   void delete_node_(node_type* x)
   {
-    boost::detail::allocator::destroy(boost::addressof(x->value()));
+    final().destroy_node(static_cast<final_node_type*>(x));
   }
 
   void clear_(){}

@@ -18,7 +18,6 @@
 #include <boost/config.hpp> /* keep it first to prevent nasty warns in MSVC */
 #include <algorithm>
 #include <boost/core/addressof.hpp>
-#include <boost/detail/allocator_utilities.hpp>
 #include <boost/detail/no_exceptions_support.hpp>
 #include <boost/detail/workaround.hpp>
 #include <boost/move/core.hpp>
@@ -85,14 +84,15 @@ namespace multi_index{
 template<typename Value,typename IndexSpecifierList,typename Allocator>
 class multi_index_container:
   private ::boost::base_from_member<
-    typename boost::detail::allocator::rebind_to<
+    typename detail::rebind_alloc_for<
       Allocator,
       typename detail::multi_index_node_type<
         Value,IndexSpecifierList,Allocator>::type
-    >::type>,
+    >::type
+  >,
   BOOST_MULTI_INDEX_PRIVATE_IF_MEMBER_TEMPLATE_FRIENDS detail::header_holder<
     typename detail::allocator_traits<
-      typename boost::detail::allocator::rebind_to<
+      typename detail::rebind_alloc_for<
         Allocator,
         typename detail::multi_index_node_type<
           Value,IndexSpecifierList,Allocator>::type
@@ -123,8 +123,7 @@ private:
 
   typedef typename detail::multi_index_base_type<
       Value,IndexSpecifierList,Allocator>::type   super;
-  typedef typename
-  boost::detail::allocator::rebind_to<
+  typedef typename detail::rebind_alloc_for<
     Allocator,
     typename super::node_type
   >::type                                          node_allocator;
@@ -543,7 +542,34 @@ BOOST_MULTI_INDEX_PROTECTED_IF_MEMBER_TEMPLATE_FRIENDS:
 
   void deallocate_node(node_type* x)
   {
-    node_alloc_traits::deallocate(bfm_allocator::member,static_cast<node_pointer>(x),1);
+    node_alloc_traits::deallocate(
+      bfm_allocator::member,static_cast<node_pointer>(x),1);
+  }
+
+  void construct_node(node_type* x,const Value& v)
+  {
+    node_alloc_traits::construct(
+      bfm_allocator::member,boost::addressof(x->value()),v);
+  }
+
+  void construct_node(node_type* x,BOOST_RV_REF(Value) v)
+  {
+    node_alloc_traits::construct(
+      bfm_allocator::member,boost::addressof(x->value()),boost::move(v));
+  }
+
+  template<BOOST_MULTI_INDEX_TEMPLATE_PARAM_PACK>
+  void construct_node(node_type* x,BOOST_MULTI_INDEX_FUNCTION_PARAM_PACK)
+  {
+    node_alloc_traits::construct(
+      bfm_allocator::member,boost::addressof(x->value()),
+      BOOST_MULTI_INDEX_FORWARD_PARAM_PACK);
+  }
+
+  void destroy_node(node_type* x)
+  {
+    node_alloc_traits::destroy(
+      bfm_allocator::member,boost::addressof(x->value()));
   }
 
   bool empty_()const
@@ -590,7 +616,7 @@ BOOST_MULTI_INDEX_PROTECTED_IF_MEMBER_TEMPLATE_FRIENDS:
   {
     node_type* x=allocate_node();
     BOOST_TRY{
-      new(boost::addressof(x->value())) value_type(t);
+      construct_node(x,value_type(t));
       BOOST_TRY{
         node_type* res=super::insert_(x->value(),x,detail::emplaced_tag());
         if(res==x){
@@ -598,13 +624,13 @@ BOOST_MULTI_INDEX_PROTECTED_IF_MEMBER_TEMPLATE_FRIENDS:
           return std::pair<node_type*,bool>(res,true);
         }
         else{
-          boost::detail::allocator::destroy(boost::addressof(x->value()));
+          destroy_node(x);
           deallocate_node(x);
           return std::pair<node_type*,bool>(res,false);
         }
       }
       BOOST_CATCH(...){
-        boost::detail::allocator::destroy(boost::addressof(x->value()));
+        destroy_node(x);
         BOOST_RETHROW;
       }
       BOOST_CATCH_END
@@ -632,8 +658,7 @@ BOOST_MULTI_INDEX_PROTECTED_IF_MEMBER_TEMPLATE_FRIENDS:
   {
     node_type* x=allocate_node();
     BOOST_TRY{
-      detail::vartempl_placement_new(
-        boost::addressof(x->value()),BOOST_MULTI_INDEX_FORWARD_PARAM_PACK);
+      construct_node(x,BOOST_MULTI_INDEX_FORWARD_PARAM_PACK);
       BOOST_TRY{
         node_type* res=super::insert_(x->value(),x,detail::emplaced_tag());
         if(res==x){
@@ -641,13 +666,13 @@ BOOST_MULTI_INDEX_PROTECTED_IF_MEMBER_TEMPLATE_FRIENDS:
           return std::pair<node_type*,bool>(res,true);
         }
         else{
-          boost::detail::allocator::destroy(boost::addressof(x->value()));
+          destroy_node(x);
           deallocate_node(x);
           return std::pair<node_type*,bool>(res,false);
         }
       }
       BOOST_CATCH(...){
-        boost::detail::allocator::destroy(boost::addressof(x->value()));
+        destroy_node(x);
         BOOST_RETHROW;
       }
       BOOST_CATCH_END
@@ -690,7 +715,7 @@ BOOST_MULTI_INDEX_PROTECTED_IF_MEMBER_TEMPLATE_FRIENDS:
   {
     node_type* x=allocate_node();
     BOOST_TRY{
-      new(boost::addressof(x->value())) value_type(t);
+      construct_node(x,value_type(t));
       BOOST_TRY{
         node_type* res=super::insert_(
           x->value(),position,x,detail::emplaced_tag());
@@ -699,13 +724,13 @@ BOOST_MULTI_INDEX_PROTECTED_IF_MEMBER_TEMPLATE_FRIENDS:
           return std::pair<node_type*,bool>(res,true);
         }
         else{
-          boost::detail::allocator::destroy(boost::addressof(x->value()));
+          destroy_node(x);
           deallocate_node(x);
           return std::pair<node_type*,bool>(res,false);
         }
       }
       BOOST_CATCH(...){
-        boost::detail::allocator::destroy(boost::addressof(x->value()));
+        destroy_node(x);
         BOOST_RETHROW;
       }
       BOOST_CATCH_END
@@ -736,8 +761,7 @@ BOOST_MULTI_INDEX_PROTECTED_IF_MEMBER_TEMPLATE_FRIENDS:
   {
     node_type* x=allocate_node();
     BOOST_TRY{
-      detail::vartempl_placement_new(
-        boost::addressof(x->value()),BOOST_MULTI_INDEX_FORWARD_PARAM_PACK);
+      construct_node(x,BOOST_MULTI_INDEX_FORWARD_PARAM_PACK);
       BOOST_TRY{
         node_type* res=super::insert_(
           x->value(),position,x,detail::emplaced_tag());
@@ -746,13 +770,13 @@ BOOST_MULTI_INDEX_PROTECTED_IF_MEMBER_TEMPLATE_FRIENDS:
           return std::pair<node_type*,bool>(res,true);
         }
         else{
-          boost::detail::allocator::destroy(boost::addressof(x->value()));
+          destroy_node(x);
           deallocate_node(x);
           return std::pair<node_type*,bool>(res,false);
         }
       }
       BOOST_CATCH(...){
-        boost::detail::allocator::destroy(boost::addressof(x->value()));
+        destroy_node(x);
         BOOST_RETHROW;
       }
       BOOST_CATCH_END

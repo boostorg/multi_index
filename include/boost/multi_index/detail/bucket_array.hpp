@@ -15,6 +15,7 @@
 
 #include <boost/config.hpp> /* keep it first to prevent nasty warns in MSVC */
 #include <algorithm>
+#include <boost/multi_index/detail/allocator_traits.hpp>
 #include <boost/multi_index/detail/auto_space.hpp>
 #include <boost/multi_index/detail/hash_index_node.hpp>
 #include <boost/noncopyable.hpp>
@@ -128,7 +129,7 @@ class bucket_array:bucket_array_base<>
 {
   typedef bucket_array_base<>                        super;
   typedef hashed_index_base_node_impl<
-    typename boost::detail::allocator::rebind_to<
+    typename rebind_alloc_for<
       Allocator,
       char
     >::type

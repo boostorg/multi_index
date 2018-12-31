@@ -15,7 +15,6 @@
 
 #include <boost/config.hpp> /* keep it first to prevent nasty warns in MSVC */
 #include <algorithm>
-#include <boost/detail/allocator_utilities.hpp>
 #include <boost/multi_index/detail/allocator_traits.hpp>
 #include <boost/multi_index/detail/auto_space.hpp>
 #include <boost/multi_index/detail/rnd_index_node.hpp>
@@ -33,20 +32,20 @@ template<typename Allocator>
 class random_access_index_ptr_array:private noncopyable
 {
   typedef random_access_index_node_impl<
-    typename boost::detail::allocator::rebind_to<
+    typename rebind_alloc_for<
       Allocator,
       char
     >::type
-  >                                                     node_impl_type;
+  >                                         node_impl_type;
 
 public:
-  typedef typename node_impl_type::pointer              value_type;
-  typedef typename boost::detail::allocator::rebind_to<
+  typedef typename node_impl_type::pointer  value_type;
+  typedef typename rebind_alloc_for<
     Allocator,value_type
-  >::type                                               value_allocator;
-  typedef allocator_traits<value_allocator>             alloc_traits;
-  typedef typename alloc_traits::pointer                pointer;
-  typedef typename alloc_traits::size_type              size_type;
+  >::type                                   value_allocator;
+  typedef allocator_traits<value_allocator> alloc_traits;
+  typedef typename alloc_traits::pointer    pointer;
+  typedef typename alloc_traits::size_type  size_type;
 
   random_access_index_ptr_array(
     const Allocator& al,value_type end_,size_type sz):

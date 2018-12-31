@@ -17,8 +17,8 @@
 #include <algorithm>
 #include <boost/core/addressof.hpp>
 #include <boost/detail/no_exceptions_support.hpp>
-#include <boost/multi_index/detail/auto_space.hpp>
 #include <boost/multi_index/detail/allocator_traits.hpp>
+#include <boost/multi_index/detail/auto_space.hpp>
 #include <boost/multi_index/detail/raw_ptr.hpp>
 #include <boost/noncopyable.hpp>
 #include <functional>
@@ -58,11 +58,11 @@ struct copy_map_entry
 template <typename Node,typename Allocator>
 class copy_map:private noncopyable
 {
-  typedef typename boost::detail::allocator::rebind_to<
+  typedef typename rebind_alloc_for<
     Allocator,Node
-  >::type                                               allocator_type;
-  typedef allocator_traits<allocator_type>              alloc_traits;
-  typedef typename alloc_traits::pointer                pointer;
+  >::type                                  allocator_type;
+  typedef allocator_traits<allocator_type> alloc_traits;
+  typedef typename alloc_traits::pointer   pointer;
 
 public:
   typedef const copy_map_entry<Node>*      const_iterator;
@@ -78,8 +78,8 @@ public:
   {
     if(!released){
       for(size_type i=0;i<n;++i){
-        boost::detail::allocator::destroy(
-          boost::addressof((spc.data()+i)->second->value()));
+        alloc_traits::destroy(
+          al_,boost::addressof((spc.data()+i)->second->value()));
         deallocate((spc.data()+i)->second);
       }
     }
@@ -93,8 +93,8 @@ public:
     (spc.data()+n)->first=node;
     (spc.data()+n)->second=raw_ptr<Node*>(allocate());
     BOOST_TRY{
-      boost::detail::allocator::construct(
-        boost::addressof((spc.data()+n)->second->value()),node->value());
+      alloc_traits::construct(
+        al_,boost::addressof((spc.data()+n)->second->value()),node->value());
     }
     BOOST_CATCH(...){
       deallocate((spc.data()+n)->second);

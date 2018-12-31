@@ -15,7 +15,6 @@
 
 #include <boost/config.hpp> /* keep it first to prevent nasty warns in MSVC */
 #include <algorithm>
-#include <boost/detail/allocator_utilities.hpp>
 #include <boost/multi_index/detail/allocator_traits.hpp>
 #include <boost/multi_index/detail/auto_space.hpp>
 #include <boost/multi_index/detail/rnd_index_ptr_array.hpp>
@@ -45,7 +44,7 @@ class random_access_index_loader_base:private noncopyable
 {
 protected:
   typedef random_access_index_node_impl<
-    typename boost::detail::allocator::rebind_to<
+    typename rebind_alloc_for<
       Allocator,
       char
     >::type

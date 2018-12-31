@@ -18,7 +18,10 @@
 #if !defined(BOOST_NO_CXX11_ALLOCATOR)
 #include <memory>
 #else
-#include <boost/core/pointer_traits.hpp>
+#include <boost/detail/workaround.hpp>
+#include <boost/move/core.hpp>
+#include <boost/multi_index/detail/vartempl_support.hpp>
+#include <new>
 #endif
 
 namespace boost{
@@ -38,16 +41,16 @@ struct allocator_traits:std::allocator_traits<Allocator>
 
   typedef std::allocator_traits<Allocator> super;
 
-  template<typename U>
+  template<typename T>
   struct rebind_alloc
   {
-    typedef typename super::template rebind_alloc<U> type;
+    typedef typename super::template rebind_alloc<T> type;
   };
 
-  template<typename U>
+  template<typename T>
   struct rebind_traits
   {
-    typedef typename super::template rebind_traits<U> type;
+    typedef typename super::template rebind_traits<T> type;
   };
 };
 
@@ -58,41 +61,77 @@ struct allocator_traits:std::allocator_traits<Allocator>
 template<typename Allocator>
 struct allocator_traits
 {
-
   typedef Allocator                           allocator_type;
   typedef typename Allocator::value_type      value_type;
   typedef typename Allocator::pointer         pointer;
   typedef typename Allocator::const_pointer   const_pointer;
-  typedef typename pointer_traits<pointer>::
-    template rebind_to<void>::type            void_pointer;
-  typedef typename pointer_traits<pointer>::
-    template rebind_to<const void>::type      const_void_pointer;
+
+  /* [const_]void_pointer not provided as boost::pointer_traits's
+   * rebind_to has been seen to fail with things like
+   * boost::interprocess::offset_ptr in relatively old environments.
+   */
+
   typedef typename Allocator::difference_type difference_type;
   typedef typename Allocator::size_type       size_type;
 
-  template<typename U>
+  template<typename T>
   struct rebind_alloc
   {
-    typedef typename Allocator::template rebind<U>::other type;
+    typedef typename Allocator::template rebind<T>::other type;
   };
 
-  template<typename U>
+  template<typename T>
   struct rebind_traits
   {
-    typedef allocator_traits<typename rebind_alloc<U>::type> type;
+    typedef allocator_traits<typename rebind_alloc<T>::type> type;
   };
 
   static pointer   allocate(Allocator& a,size_type n){return a.allocate(n);}
-  static pointer   allocate(Allocator& a,size_type n,const_void_pointer p)
-                     {return a.allocate(n,static_cast<const_pointer>(p));}
+  static pointer   allocate(Allocator& a,size_type n,const_pointer p)
+                                   /* should've been const_void_pointer p */
+                     {return a.allocate(n,p);} 
   static void      deallocate(Allocator& a,pointer p,size_type n)
                      {a.deallocate(p,n);}
-  static void      construct(Allocator& a,pointer p,const value_type& x)
-                     {a.construct(p,x);}
+  template<typename T>
+  static void      construct(Allocator&,T* p,const T& x)
+                     {::new (static_cast<void*>(p)) T(x);}
+  template<typename T>
+  static void      construct(Allocator&,T* p,BOOST_RV_REF(T) x)
+                     {::new (static_cast<void*>(p)) T(boost::move(x));}
+ 
+  template<typename T,BOOST_MULTI_INDEX_TEMPLATE_PARAM_PACK>
+  static void construct(Allocator&,T* p,BOOST_MULTI_INDEX_FUNCTION_PARAM_PACK)
+  {
+    vartempl_placement_new(p,BOOST_MULTI_INDEX_FORWARD_PARAM_PACK);
+  }
+
+#if BOOST_WORKAROUND(BOOST_MSVC,BOOST_TESTED_AT(1500))
+/* MSVC issues spurious warnings about unreferencend formal parameters in
+ * destroy<T> when T is a class with trivial dtor.
+ */
+
+#pragma warning(push)
+#pragma warning(disable:4100)
+#endif
+
+  template<typename T>
+  static void     destroy(Allocator&,T* p){p->~T();}
+
+#if BOOST_WORKAROUND(BOOST_MSVC,BOOST_TESTED_AT(1500))
+#pragma warning(pop)
+#endif
+
   static size_type max_size(Allocator& a)BOOST_NOEXCEPT{return a.max_size();}
 };
 
 #endif
+
+template<typename Allocator,typename T>
+struct rebind_alloc_for
+{
+  typedef typename allocator_traits<Allocator>::
+    template rebind_alloc<T>::type               type;
+};
 
 } /* namespace multi_index::detail */
 

@@ -15,7 +15,6 @@
 
 #include <boost/config.hpp> /* keep it first to prevent nasty warns in MSVC */
 #include <algorithm>
-#include <boost/detail/allocator_utilities.hpp>
 #include <boost/multi_index/detail/adl_swap.hpp>
 #include <boost/multi_index/detail/allocator_traits.hpp>
 #include <boost/noncopyable.hpp>
@@ -46,9 +45,9 @@ namespace detail{
 template<typename T,typename Allocator=std::allocator<T> >
 struct auto_space:private noncopyable
 {
-  typedef typename boost::detail::allocator::rebind_to<
-    Allocator,T
-  >::type                                  allocator;
+  typedef typename rebind_alloc_for<
+    Allocator,T>
+  ::type                                   allocator;
   typedef allocator_traits<allocator>      alloc_traits;
   typedef typename alloc_traits::pointer   pointer;
   typedef typename alloc_traits::size_type size_type;
