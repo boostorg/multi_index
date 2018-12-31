@@ -558,13 +558,8 @@ BOOST_MULTI_INDEX_PROTECTED_IF_MEMBER_TEMPLATE_FRIENDS:
       bfm_allocator::member,boost::addressof(x->value()),boost::move(v));
   }
 
-  template<BOOST_MULTI_INDEX_TEMPLATE_PARAM_PACK>
-  void construct_node(node_type* x,BOOST_MULTI_INDEX_FUNCTION_PARAM_PACK)
-  {
-    node_alloc_traits::construct(
-      bfm_allocator::member,boost::addressof(x->value()),
-      BOOST_MULTI_INDEX_FORWARD_PARAM_PACK);
-  }
+  BOOST_MULTI_INDEX_OVERLOADS_TO_VARTEMPL_EXTRA_ARG(
+    void,construct_node,vartempl_construct_node_impl,node_type*,x)
 
   void destroy_node(node_type* x)
   {
@@ -616,7 +611,7 @@ BOOST_MULTI_INDEX_PROTECTED_IF_MEMBER_TEMPLATE_FRIENDS:
   {
     node_type* x=allocate_node();
     BOOST_TRY{
-      construct_node(x,value_type(t));
+      construct_node(x,t);
       BOOST_TRY{
         node_type* res=super::insert_(x->value(),x,detail::emplaced_tag());
         if(res==x){
@@ -1002,6 +997,15 @@ BOOST_MULTI_INDEX_PROTECTED_IF_MEMBER_TEMPLATE_FRIENDS:
 #endif
 
 private:
+  template<BOOST_MULTI_INDEX_TEMPLATE_PARAM_PACK>
+  void vartempl_construct_node_impl(
+    node_type* x,BOOST_MULTI_INDEX_FUNCTION_PARAM_PACK)
+  {
+    node_alloc_traits::construct(
+      bfm_allocator::member,boost::addressof(x->value()),
+      BOOST_MULTI_INDEX_FORWARD_PARAM_PACK);
+  }
+
   size_type node_count;
 
 #if defined(BOOST_MULTI_INDEX_ENABLE_INVARIANT_CHECKING)&&\
