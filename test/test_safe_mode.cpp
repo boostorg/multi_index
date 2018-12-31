@@ -1,6 +1,6 @@
 /* Boost.MultiIndex test for safe_mode.
  *
- * Copyright 2003-2015 Joaquin M Lopez Munoz.
+ * Copyright 2003-2018 Joaquin M Lopez Munoz.
  * Distributed under the Boost Software License, Version 1.0.
  * (See accompanying file LICENSE_1_0.txt or copy at
  * http://www.boost.org/LICENSE_1_0.txt)
@@ -133,7 +133,8 @@ static void local_test_safe_mode(
       index_type& i3=Policy::index_from_container(c3);
       it=i3.end();
     }
-    it=it;
+    iterator it2;
+    it2=it;
   CATCH_SAFE_MODE(safe_mode::invalid_iterator)
 
   TRY_SAFE_MODE
@@ -211,8 +212,8 @@ static void local_test_safe_mode(
     index_type& i3=Policy::index_from_container(c3);
     iterator it=i3.end();
     i3.clear();
-    it=it;
-    BOOST_TEST(it==i3.end());
+    iterator it2=it;
+    BOOST_TEST(it2==i3.end());
   }
 }
 
