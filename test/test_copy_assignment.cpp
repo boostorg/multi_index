@@ -12,7 +12,7 @@
 
 #include <boost/config.hpp> /* keep it first to prevent nasty warns in MSVC */
 #include <algorithm>
-#include <boost/move/utility.hpp>
+#include <boost/move/utility_core.hpp>
 #include <list>
 #include <numeric>
 #include <vector>

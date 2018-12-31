@@ -20,6 +20,7 @@
 #else
 #include <boost/detail/workaround.hpp>
 #include <boost/move/core.hpp>
+#include <boost/move/utility_core.hpp>
 #include <boost/multi_index/detail/vartempl_support.hpp>
 #include <new>
 #endif
