@@ -30,6 +30,7 @@ Acknowledgements
 <h2>Contents</h2>
 
 <ul>
+  <li><a href="#boost_1_70">Boost 1.70 release</a></li>
   <li><a href="#boost_1_69">Boost 1.69 release</a></li>
   <li><a href="#boost_1_68">Boost 1.68 release</a></li>
   <li><a href="#boost_1_67">Boost 1.67 release</a></li>
@@ -58,6 +59,23 @@ Acknowledgements
   <li><a href="#boost_1_33_1">Boost 1.33.1 release</a></li>
   <li><a href="#boost_1_33">Boost 1.33 release</a></li>
 </ul>
+
+<h2><a name="boost_1_70">Boost 1.70 release</a></h2>
+
+<p>
+<ul>
+  <li><code>size_type</code> and <code>difference_type</code> are now
+    defined as the allocator's same-named types. This will not make any
+    difference in the vast majority of cases, but allows for some degree
+    of control of resulting internal structures via user-defined allocator
+    types (see
+    <a href="https://github.com/boostorg/multi_index/issues/17">issue #17</a>
+    for motivation). For the moment being, this change is <i>not</i> 
+    documented in the reference section (i.e., it has semi-official status).
+  </li>
+  <li>Maintenance work.</li>
+</ul>
+</p>
 
 <h2><a name="boost_1_69">Boost 1.69 release</a></h2>
 
@@ -600,7 +618,7 @@ Acknowledgements
 
 <br>
 
-<p>Revised August 17th 2018</p>
+<p>Revised December 30th 2018</p>
 
 <p>&copy; Copyright 2003-2018 Joaqu&iacute;n M L&oacute;pez Mu&ntilde;oz.
 Distributed under the Boost Software 

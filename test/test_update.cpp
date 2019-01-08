@@ -1,6 +1,6 @@
 /* Boost.MultiIndex test for replace(), modify() and modify_key().
  *
- * Copyright 2003-2013 Joaquin M Lopez Munoz.
+ * Copyright 2003-2018 Joaquin M Lopez Munoz.
  * Distributed under the Boost Software License, Version 1.0.
  * (See accompanying file LICENSE_1_0.txt or copy at
  * http://www.boost.org/LICENSE_1_0.txt)
@@ -43,8 +43,9 @@ struct assign_value
 template<class MultiIndexContainer>
 void test_stable_update()
 {
-  typedef typename MultiIndexContainer::iterator  iterator;
-  typedef typename MultiIndexContainer::size_type size_type;
+  typedef typename MultiIndexContainer::iterator        iterator;
+  typedef typename MultiIndexContainer::size_type       size_type;
+  typedef typename MultiIndexContainer::difference_type difference_type;
 
   MultiIndexContainer c;
   c.insert(0);
@@ -60,7 +61,7 @@ void test_stable_update()
     c.count(4)+c.count(5)+c.count(6)+c.count(7);
 
   for(size_type n=c.size();n--;){
-    iterator it=boost::next(c.begin(),n);
+    iterator it=boost::next(c.begin(),(difference_type)n);
 
     c.replace(it,*it);
     BOOST_TEST((size_type)std::distance(c.begin(),it)==n);
@@ -79,7 +80,7 @@ void test_stable_update()
                   c.count(5)+c.count(6)+c.count(7)+c.count(8)==num_elems);
       if(b){
         c=cpy;
-        it=boost::next(c.begin(),n);
+        it=boost::next(c.begin(),(difference_type)n);
       }
     }
   }

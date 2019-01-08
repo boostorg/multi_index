@@ -12,12 +12,13 @@
 
 #include <boost/config.hpp> /* keep it first to prevent nasty warns in MSVC */
 #include <algorithm>
-#include <boost/move/utility.hpp>
+#include <boost/move/utility_core.hpp>
 #include <list>
 #include <numeric>
 #include <vector>
 #include "pre_multi_index.hpp"
 #include "employee.hpp"
+#include "small_allocator.hpp"
 #include <boost/detail/lightweight_test.hpp>
 
 using namespace boost::multi_index;
@@ -155,7 +156,8 @@ void test_copy_assignment()
 
   BOOST_TEST(i5==get<5>(es2));
 
-#if !defined(BOOST_NO_CXX11_HDR_INITIALIZER_LIST)
+#if !defined(BOOST_NO_CXX11_HDR_INITIALIZER_LIST)&&\
+    !BOOST_WORKAROUND(BOOST_MSVC,==1800) /* MSVC 12.0 chokes on what follows */
   employee_set es8({{0,"Rose",40,4512},{1,"Mary",38,3345},{2,"Jo",25,7102}});
   employee_set es9;
   es9={{0,"Rose",40,4512},{1,"Mary",38,3345},{2,"Jo",25,7102},
@@ -243,4 +245,121 @@ void test_copy_assignment()
 }
 #endif
 
+  typedef small_allocator<int> small_alloc;
+  typedef multi_index_container<
+    int,
+    indexed_by<
+      ordered_unique<identity<int> >,
+      ranked_unique<identity<int> >,
+      hashed_unique<identity<int> >,
+      sequenced<>,
+      random_access<>
+    >,
+    small_alloc
+  > small_container;
+  typedef small_container::nth_index<0>::type small_container_0;
+  typedef small_container::nth_index<1>::type small_container_1;
+  typedef small_container::nth_index<2>::type small_container_2;
+  typedef small_container::nth_index<3>::type small_container_3;
+  typedef small_container::nth_index<4>::type small_container_4;
+
+  BOOST_STATIC_ASSERT((
+    boost::is_same<small_container::size_type,small_alloc::size_type>::value));
+  BOOST_STATIC_ASSERT((
+    boost::is_same<
+      small_container::difference_type,small_alloc::difference_type>::value));
+  BOOST_STATIC_ASSERT((
+    boost::is_same<small_container_0::size_type,small_alloc::size_type>::value));
+  BOOST_STATIC_ASSERT((
+    boost::is_same<
+      small_container_0::difference_type,small_alloc::difference_type>::value));
+  BOOST_STATIC_ASSERT((
+    boost::is_same<small_container_1::size_type,small_alloc::size_type>::value));
+  BOOST_STATIC_ASSERT((
+    boost::is_same<
+      small_container_1::difference_type,small_alloc::difference_type>::value));
+  BOOST_STATIC_ASSERT((
+    boost::is_same<small_container_2::size_type,small_alloc::size_type>::value));
+  BOOST_STATIC_ASSERT((
+    boost::is_same<
+      small_container_2::difference_type,small_alloc::difference_type>::value));
+  BOOST_STATIC_ASSERT((
+    boost::is_same<small_container_3::size_type,small_alloc::size_type>::value));
+  BOOST_STATIC_ASSERT((
+    boost::is_same<
+      small_container_3::difference_type,small_alloc::difference_type>::value));
+  BOOST_STATIC_ASSERT((
+    boost::is_same<small_container_4::size_type,small_alloc::size_type>::value));
+  BOOST_STATIC_ASSERT((
+    boost::is_same<
+      small_container_4::difference_type,small_alloc::difference_type>::value));
+
+  small_container        sc;
+  small_container_0&     sc0=sc.get<0>();
+  small_container_1&     sc1=sc.get<1>();
+  small_container_2&     sc2=sc.get<2>();
+  small_container_3&     sc3=sc.get<3>();
+  small_container_4&     sc4=sc.get<4>();
+  small_alloc::size_type s,
+                         ms=(small_alloc::size_type)(-1);
+
+  sc.insert(0);
+
+  s=sc0.size();
+  BOOST_TEST(sc0.max_size()<=ms);
+  s=sc0.erase(1);
+  s=sc0.count(0);
+  s=sc0.count(0,std::less<int>());
+
+  s=sc1.size();
+  BOOST_TEST(sc1.max_size()<=ms);
+  s=sc1.erase(1);
+  s=sc1.count(0);
+  s=sc1.count(0,std::less<int>());
+  (void)sc1.nth(s);
+  s=sc1.rank(sc1.begin());
+  s=sc1.find_rank(0);
+  s=sc1.find_rank(0,std::less<int>());
+  s=sc1.lower_bound_rank(0);
+  s=sc1.lower_bound_rank(0,std::less<int>());
+  s=sc1.upper_bound_rank(0);
+  s=sc1.upper_bound_rank(0,std::less<int>());
+  s=sc1.equal_range_rank(0).first;
+  s=sc1.equal_range_rank(0).second;
+  s=sc1.range_rank(unbounded,unbounded).first;
+  s=sc1.range_rank(unbounded,unbounded).second;
+
+  s=sc2.size();
+  BOOST_TEST(sc2.max_size()<=ms);
+  s=sc2.erase(1);
+  s=sc2.count(0);
+  s=sc2.count(0,boost::hash<int>(),std::equal_to<int>());
+  s=sc2.bucket_count();
+  BOOST_TEST(sc2.max_bucket_count()<=ms);
+  BOOST_TEST(sc2.bucket_size((small_alloc::size_type)(0))<=ms);
+  BOOST_TEST(sc2.bucket_size(0)<=ms);
+  (void)sc2.begin(0);
+  (void)sc2.end(0);
+  (void)sc2.cbegin(0);
+  (void)sc2.cend(0);
+  sc2.rehash(2);
+  sc2.reserve(2);
+
+  s=sc3.size();
+  BOOST_TEST(sc3.max_size()<=ms);
+  sc3.resize(0);
+  sc3.resize(0,0);
+  sc3.assign((small_alloc::size_type)(1),0);
+  sc3.insert(sc3.begin(),(small_alloc::size_type)(0),0);
+
+  s=sc4.size();
+  BOOST_TEST(sc4.max_size()<=ms);
+  BOOST_TEST(sc4.capacity()<=ms);
+  sc4.reserve(0);
+  sc4.resize(0);
+  sc4.resize(0,0);
+  sc4.assign((small_alloc::size_type)(1),0);
+  (void)sc4[0];
+  (void)sc4.at(0);
+  sc4.insert(sc4.begin(),(small_alloc::size_type)(0),0);
 }

@@ -1,6 +1,6 @@
 /* Boost.MultiIndex test for modifier memfuns.
  *
- * Copyright 2003-2017 Joaquin M Lopez Munoz.
+ * Copyright 2003-2018 Joaquin M Lopez Munoz.
  * Distributed under the Boost Software License, Version 1.0.
  * (See accompanying file LICENSE_1_0.txt or copy at
  * http://www.boost.org/LICENSE_1_0.txt)
@@ -15,6 +15,7 @@
 #include <boost/enable_shared_from_this.hpp>
 #include <boost/iterator/iterator_facade.hpp>
 #include <boost/move/core.hpp>
+#include <boost/move/utility_core.hpp>
 #include <boost/next_prior.hpp>
 #include <boost/shared_ptr.hpp>
 #include <iterator>

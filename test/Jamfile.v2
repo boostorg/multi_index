@@ -24,7 +24,15 @@ rule change-test_update-exe-name ( name : type ? : property-set )
     {
         return test_updat.exe ;
     }
-} 
+}
+
+project
+    : requirements
+      <toolset>msvc:<define>_SCL_SECURE_NO_WARNINGS
+      <toolset>msvc:<define>_CRT_SECURE_NO_WARNINGS
+      <toolset>msvc:<define>_SILENCE_ALL_CXX17_DEPRECATION_WARNINGS
+      <toolset>msvc:<cxxflags>/wd4494
+    ;
 
 obj boost_multi_index_key_supported : check_bmi_key_supported.cpp  ;
 explicit boost_multi_index_key_supported ;
