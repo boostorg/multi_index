@@ -505,11 +505,9 @@ Currently, Boost.MultiIndex provides the following index types:
     <code>std::list</code>: they arrange the elements as if in a bidirectional
     list.</li>
   <li>Hashed indices provide fast access to the elements through hashing
-    techniques, in a similar way as non-standard <code>hash_set</code>s provided
-    by some vendors. Recently, <i>unordered associative containers</i> have been
-    proposed as part of an extension of the C++ standard library known
-    in the standardization commitee as TR1. Hashed indices closely model this
-    proposal.</li>
+    techniques, in a similar way as unordered associative containers
+    <code>std::unordered_set</code> (if duplicates are not allowed) and
+    <code>std::unordered_multiset</code> (if they are).</li>
   <li>Random access indices provide an interface similar to that of
     sequenced indices, and additionally feature random access iterators
     and positional access to the elements.</li>
@@ -1252,9 +1250,9 @@ Index types
 
 <br>
 
-<p>Revised November 24th 2015</p>
+<p>Revised February 20th 2019</p>
 
-<p>&copy; Copyright 2003-2015 Joaqu&iacute;n M L&oacute;pez Mu&ntilde;oz.
+<p>&copy; Copyright 2003-2019 Joaqu&iacute;n M L&oacute;pez Mu&ntilde;oz.
 Distributed under the Boost Software 
 License, Version 1.0. (See accompanying file <a href="../../../../LICENSE_1_0.txt">
 LICENSE_1_0.txt</a> or copy at <a href="http://www.boost.org/LICENSE_1_0.txt">
