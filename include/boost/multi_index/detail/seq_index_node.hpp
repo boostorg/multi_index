@@ -54,7 +54,7 @@ struct sequenced_index_node_impl
     x->prior()=header->prior();
     x->next()=header;
     x->prior()->next()=x->next()->prior()=x;
-  };
+  }
 
   static void unlink(pointer x)
   {

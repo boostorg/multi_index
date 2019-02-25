@@ -1427,10 +1427,10 @@ protected:
     const ctor_args_list& args_list,const allocator_type& al):
     super(args_list,al){}
 
-  ordered_index(const ordered_index& x):super(x){};
+  ordered_index(const ordered_index& x):super(x){}
 
   ordered_index(const ordered_index& x,do_not_copy_elements_tag):
-    super(x,do_not_copy_elements_tag()){};
+    super(x,do_not_copy_elements_tag()){}
 };
 
 /* comparison */
