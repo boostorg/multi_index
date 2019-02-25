@@ -843,7 +843,7 @@ private:
   void link(node_type* x)
   {
     node_impl_type::link(x->impl(),header()->impl());
-  };
+  }
 
   static void unlink(node_type* x)
   {

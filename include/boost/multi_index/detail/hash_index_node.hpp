@@ -408,7 +408,7 @@ struct hashed_index_node_alg<Node,hashed_non_unique_tag>
       buc->prior()=x;
       x->next()->prior()=x;
     }
-  };
+  }
 
   static void link(pointer x,pointer first,pointer last)
   {
