@@ -1,4 +1,4 @@
-/* Copyright 2003-2018 Joaquin M Lopez Munoz.
+/* Copyright 2003-2019 Joaquin M Lopez Munoz.
  * Distributed under the Boost Software License, Version 1.0.
  * (See accompanying file LICENSE_1_0.txt or copy at
  * http://www.boost.org/LICENSE_1_0.txt)
@@ -408,7 +408,7 @@ struct hashed_index_node_alg<Node,hashed_non_unique_tag>
       buc->prior()=x;
       x->next()->prior()=x;
     }
-  };
+  }
 
   static void link(pointer x,pointer first,pointer last)
   {

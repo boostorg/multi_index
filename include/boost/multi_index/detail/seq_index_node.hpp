@@ -1,4 +1,4 @@
-/* Copyright 2003-2018 Joaquin M Lopez Munoz.
+/* Copyright 2003-2019 Joaquin M Lopez Munoz.
  * Distributed under the Boost Software License, Version 1.0.
  * (See accompanying file LICENSE_1_0.txt or copy at
  * http://www.boost.org/LICENSE_1_0.txt)
@@ -54,7 +54,7 @@ struct sequenced_index_node_impl
     x->prior()=header->prior();
     x->next()=header;
     x->prior()->next()=x->next()->prior()=x;
-  };
+  }
 
   static void unlink(pointer x)
   {

@@ -1,4 +1,4 @@
-/* Copyright 2003-2018 Joaquin M Lopez Munoz.
+/* Copyright 2003-2019 Joaquin M Lopez Munoz.
  * Distributed under the Boost Software License, Version 1.0.
  * (See accompanying file LICENSE_1_0.txt or copy at
  * http://www.boost.org/LICENSE_1_0.txt)
@@ -843,7 +843,7 @@ private:
   void link(node_type* x)
   {
     node_impl_type::link(x->impl(),header()->impl());
-  };
+  }
 
   static void unlink(node_type* x)
   {

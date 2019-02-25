@@ -1,4 +1,4 @@
-/* Copyright 2003-2018 Joaquin M Lopez Munoz.
+/* Copyright 2003-2019 Joaquin M Lopez Munoz.
  * Distributed under the Boost Software License, Version 1.0.
  * (See accompanying file LICENSE_1_0.txt or copy at
  * http://www.boost.org/LICENSE_1_0.txt)
@@ -1427,10 +1427,10 @@ protected:
     const ctor_args_list& args_list,const allocator_type& al):
     super(args_list,al){}
 
-  ordered_index(const ordered_index& x):super(x){};
+  ordered_index(const ordered_index& x):super(x){}
 
   ordered_index(const ordered_index& x,do_not_copy_elements_tag):
-    super(x,do_not_copy_elements_tag()){};
+    super(x,do_not_copy_elements_tag()){}
 };
 
 /* comparison */
