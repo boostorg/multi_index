@@ -1,4 +1,4 @@
-/* Copyright 2003-2018 Joaquin M Lopez Munoz.
+/* Copyright 2003-2019 Joaquin M Lopez Munoz.
  * Distributed under the Boost Software License, Version 1.0.
  * (See accompanying file LICENSE_1_0.txt or copy at
  * http://www.boost.org/LICENSE_1_0.txt)
@@ -143,8 +143,7 @@ struct ordered_index_node_compressed_base
   struct color_ref
   {
     color_ref(uintptr_type* r_):r(r_){}
-
-    color_ref(color_ref const& x):r(x.r){}
+    color_ref(const color_ref& x):r(x.r){}
     
     operator ordered_index_color()const
     {
@@ -170,8 +169,7 @@ struct ordered_index_node_compressed_base
   struct parent_ref
   {
     parent_ref(uintptr_type* r_):r(r_){}
-
-    parent_ref(parent_ref const& x):r(x.r){}
+    parent_ref(const parent_ref& x):r(x.r){}
     
     operator pointer()const
     {
