@@ -56,7 +56,9 @@ Compiler specifics
     <code>"boost/multi_index/mem_fun.hpp"</code> synopsis</a>
     <ul>
       <li><a href="#const_mem_fun">Class template <code>const_mem_fun</code></a></li>
+      <li><a href="#cv_mem_fun">Class templates <code>cv_mem_fun</code>, <code>cref_mem_fun</code> and <code>cvref_mem_fun</code></a></li>
       <li><a href="#mem_fun">Class template <code>mem_fun</code></a></li>
+      <li><a href="#volatile_mem_fun">Class templates <code>volatile_mem_fun</code>, <code>ref_mem_fun</code> and <code>vref_mem_fun</code></a></li>
       <li><a href="#const_mem_fun_explicit">Class templates <code>const_mem_fun_explicit</code> and <code>mem_fun_explicit</code></a></li>
       <li><a href="#boost_multi_index_const_mem_fun">Macros <code>BOOST_MULTI_INDEX_CONST_MEM_FUN</code> and <code>BOOST_MULTI_INDEX_MEM_FUN</code></a></li>
     </ul>
@@ -141,17 +143,22 @@ for every <code>k1</code> of type <code>const KeyFromValue</code> and
 </p>
 
 <p>
-Boost.MultiIndex provides six general-purpose key extractors:
+Boost.MultiIndex provides twelve general-purpose key extractors:
 <ul>
   <li><a href="#identity"><code>identity</code></a>,</li>
   <li><a href="#member"><code>member</code></a>,</li>
-  <li><a href="#const_mem_fun"><code>const_mem_fun</code></a>,</li>
-  <li><a href="#mem_fun"><code>mem_fun</code></a>,</li>
+  <li><a href="#const_mem_fun"><code>const_mem_fun</code></a>
+     (and three <a href="#cv_mem_fun">variants</a>),
+  </li>
+  <li><a href="#mem_fun"><code>mem_fun</code></a>
+     (and three <a href="#volatile_mem_fun">variants</a>),
+  </li>
   <li><a href="#global_fun"><code>global_fun</code></a> and</li>
   <li><a href="#composite_key"><code>composite_key</code></a>,</li>
 </ul>
 plus, in C++17 compliant environments, an alias template <a href="#key"><code>key</code></a>
-allowing for a very terse specification of the latter five extractors.
+allowing for a very terse specification of the previous extractors
+(except <code>identity</code>).
 </p>
 
 <h3><a name="chained_pointers">Chained pointers</a></h3>
@@ -429,8 +436,32 @@ to plain <code>member</code> because it provides a slightly more concise syntax.
 <span class=keyword>template</span><span class=special>&lt;</span><span class=keyword>class</span> <span class=identifier>Class</span><span class=special>,</span><span class=keyword>typename</span> <span class=identifier>Type</span><span class=special>,</span><span class=identifier>Type</span> <span class=special>(</span><span class=identifier>Class</span><span class=special>::*</span><span class=identifier>PtrToMemberFunction</span><span class=special>)()</span><span class=keyword>const</span><span class=special>&gt;</span>
 <span class=keyword>struct</span> <span class=identifier>const_mem_fun</span><span class=special>;</span>
 
+<span class=keyword>template</span><span class=special>&lt;</span>
+  <span class=keyword>class</span> <span class=identifier>Class</span><span class=special>,</span><span class=keyword>typename</span> <span class=identifier>Type</span><span class=special>,</span><span class=identifier>Type</span> <span class=special>(</span><span class=identifier>Class</span><span class=special>::*</span><span class=identifier>PtrToMemberFunction</span><span class=special>)()</span><span class=keyword>const</span> <span class=keyword>volatile</span>
+<span class=special>&gt;</span>
+<span class=keyword>struct</span> <span class=identifier>cv_mem_fun</span><span class=special>;</span>
+
+<span class=keyword>template</span><span class=special>&lt;</span><span class=keyword>class</span> <span class=identifier>Class</span><span class=special>,</span><span class=keyword>typename</span> <span class=identifier>Type</span><span class=special>,</span><span class=identifier>Type</span> <span class=special>(</span><span class=identifier>Class</span><span class=special>::*</span><span class=identifier>PtrToMemberFunction</span><span class=special>)()</span><span class=keyword>const</span><span class=special>&amp;</span><span class=special>&gt;</span>
+<span class=keyword>struct</span> <span class=identifier>cref_mem_fun</span><span class=special>;</span>
+
+<span class=keyword>template</span><span class=special>&lt;</span>
+  <span class=keyword>class</span> <span class=identifier>Class</span><span class=special>,</span><span class=keyword>typename</span> <span class=identifier>Type</span><span class=special>,</span><span class=identifier>Type</span> <span class=special>(</span><span class=identifier>Class</span><span class=special>::*</span><span class=identifier>PtrToMemberFunction</span><span class=special>)()</span><span class=keyword>const</span> <span class=keyword>volatile</span><span class=special>&amp;</span>
+<span class=special>&gt;</span>
+<span class=keyword>struct</span> <span class=identifier>cvref_mem_fun</span><span class=special>;</span>
+
 <span class=keyword>template</span><span class=special>&lt;</span><span class=keyword>class</span> <span class=identifier>Class</span><span class=special>,</span><span class=keyword>typename</span> <span class=identifier>Type</span><span class=special>,</span><span class=identifier>Type</span> <span class=special>(</span><span class=identifier>Class</span><span class=special>::*</span><span class=identifier>PtrToMemberFunction</span><span class=special>)()&gt;</span>
 <span class=keyword>struct</span> <span class=identifier>mem_fun</span><span class=special>;</span>
+
+<span class=keyword>template</span><span class=special>&lt;</span><span class=keyword>class</span> <span class=identifier>Class</span><span class=special>,</span><span class=keyword>typename</span> <span class=identifier>Type</span><span class=special>,</span><span class=identifier>Type</span> <span class=special>(</span><span class=identifier>Class</span><span class=special>::*</span><span class=identifier>PtrToMemberFunction</span><span class=special>)()</span><span class=keyword>volatile</span><span class=special>&gt;</span>
+<span class=keyword>struct</span> <span class=identifier>volatile_mem_fun</span><span class=special>;</span>
+
+<span class=keyword>template</span><span class=special>&lt;</span><span class=keyword>class</span> <span class=identifier>Class</span><span class=special>,</span><span class=keyword>typename</span> <span class=identifier>Type</span><span class=special>,</span><span class=identifier>Type</span> <span class=special>(</span><span class=identifier>Class</span><span class=special>::*</span><span class=identifier>PtrToMemberFunction</span><span class=special>)()</span><span class=special>&amp;</span><span class=special>&gt;</span>
+<span class=keyword>struct</span> <span class=identifier>ref_mem_fun</span><span class=special>;</span>
+
+<span class=keyword>template</span><span class=special>&lt;</span>
+  <span class=keyword>class</span> <span class=identifier>Class</span><span class=special>,</span><span class=keyword>typename</span> <span class=identifier>Type</span><span class=special>,</span><span class=identifier>Type</span> <span class=special>(</span><span class=identifier>Class</span><span class=special>::*</span><span class=identifier>PtrToMemberFunction</span><span class=special>)()</span><span class=keyword>volatile</span><span class=special>&amp;</span>
+<span class=special>&gt;</span>
+<span class=keyword>struct</span> <span class=identifier>vref_mem_fun</span><span class=special>;</span>
 
 <span class=keyword>template</span><span class=special>&lt;</span>
   <span class=keyword>class</span> <span class=identifier>Class</span><span class=special>,</span><span class=keyword>typename</span> <span class=identifier>Type</span><span class=special>,</span>
@@ -526,6 +557,20 @@ object chained-pointed to by <code>x</code>.
 <b>Returns:</b> <code>(x.get().*PtrToMemberFunction)()</code>.
 </blockquote>
 
+<h3><a name="cv_mem_fun">Class templates <code>cv_mem_fun</code>, <code>cref_mem_fun</code> and <code>cvref_mem_fun</code></a></h3>
+
+<p>
+These <a href="#key_extractors"><code>Key Extractors</code></a> are variants of
+<a href="#const_mem_fun"><code>const_mem_fun</code></a> used in the case that the
+passed member function is:
+<ul>
+  <li><code>const volatile</code> (<code>cv_mem_fun</code>),</li>
+  <li><code>const &amp;</code>-qualified (<code>cref_mem_fun</code>),</li>
+  <li><code>const volatile &amp;</code>-qualified (<code>cvref_mem_fun</code>).</li>
+</ul>
+Other than this, their interface is exactly the same as that of <code>const_mem_fun</code>.
+</p>
+
 <h3><a name="mem_fun">Class template <code>mem_fun</code></a></h3>
 
 <p>
@@ -583,6 +628,20 @@ object chained-pointed to by <code>x</code>.
 <blockquote>
 <b>Returns:</b> <code>(x.get().*PtrToMemberFunction)()</code>.
 </blockquote>
+
+<h3><a name="volatile_mem_fun">Class templates <code>volatile_mem_fun</code>, <code>ref_mem_fun</code> and <code>vref_mem_fun</code></a></h3>
+
+<p>
+These <a href="#key_extractors"><code>Key Extractors</code></a> are variants of
+<a href="#mem_fun"><code>mem_fun</code></a> used in the case that the
+passed member function is:
+<ul>
+  <li><code>volatile</code> (<code>volatile_mem_fun</code>),</li>
+  <li><code>&amp;</code>-qualified (<code>ref_mem_fun</code>),</li>
+  <li><code>volatile &amp;</code>-qualified (<code>vref_mem_fun</code>).</li>
+</ul>
+Other than this, their interface is exactly the same as that of <code>mem_fun</code>.
+</p>
 
 <h3><a name="const_mem_fun_explicit">Class templates <code>const_mem_fun_explicit</code> and <code>mem_fun_explicit</code></a></h3>
 
@@ -2106,13 +2165,40 @@ resolves to:
      if <code>Key</code> is of type <code>Type Class::*</code>,
   </li>
   <li><a href="#const_mem_fun"><code>const_mem_fun&lt;Class,Type,Key&gt;</code></a>
-     if <code>Key</code> is of type <code>Type (Class::*)()const</code>,
+     if <code>Key</code> is of type <code>Type (Class::*)()const</code>
+     (with ot without <code>noexcept</code>-specification),
+  </li>
+  <li><a href="#cv_mem_fun"><code>cv_mem_fun&lt;Class,Type,Key&gt;</code></a>
+     if <code>Key</code> is of type <code>Type (Class::*)()const volatile</code>
+     (with ot without <code>noexcept</code>-specification),
+  </li>
+  <li><a href="#cv_mem_fun"><code>cref_mem_fun&lt;Class,Type,Key&gt;</code></a>
+     if <code>Key</code> is of type <code>Type (Class::*)()const&amp;</code>
+     (with ot without <code>noexcept</code>-specification),
+  </li>
+  <li><a href="#cv_mem_fun"><code>cvref_mem_fun&lt;Class,Type,Key&gt;</code></a>
+     if <code>Key</code> is of type <code>Type (Class::*)()const volatile&amp;</code>
+     (with ot without <code>noexcept</code>-specification),
   </li>
   <li><a href="#mem_fun"><code>mem_fun&lt;Class,Type,Key&gt;</code></a>
-     if <code>Key</code> is of type <code>Type (Class::*)()</code>,
+     if <code>Key</code> is of type <code>Type (Class::*)()</code>
+     (with ot without <code>noexcept</code>-specification),
+  </li>
+  <li><a href="#volatile_mem_fun"><code>volatile_mem_fun&lt;Class,Type,Key&gt;</code></a>
+     if <code>Key</code> is of type <code>Type (Class::*)()volatile</code>
+     (with ot without <code>noexcept</code>-specification),
+  </li>
+  <li><a href="#volatile_mem_fun"><code>ref_mem_fun&lt;Class,Type,Key&gt;</code></a>
+     if <code>Key</code> is of type <code>Type (Class::*)()&amp;</code>
+     (with ot without <code>noexcept</code>-specification),
+  </li>
+  <li><a href="#volatile_mem_fun"><code>vref_mem_fun&lt;Class,Type,Key&gt;</code></a>
+     if <code>Key</code> is of type <code>Type (Class::*)()volatile&amp;</code>
+     (with ot without <code>noexcept</code>-specification),
   </li>
   <li><a href="#global_fun"><code>global_fun&lt;Value,Type,Key&gt;</code></a>
-     if <code>Key</code> is of type <code>Type (*)(Value)</code>,
+     if <code>Key</code> is of type <code>Type (*)(Value)</code>
+     (with ot without <code>noexcept</code>-specification),
   </li>
 </ul>
 and engenders undefined behavior otherwise. When passed two or more arguments,
@@ -2150,9 +2236,9 @@ Compiler specifics
 
 <br>
 
-<p>Revised August 22nd 2018</p>
+<p>Revised June 9th 2019</p>
 
-<p>&copy; Copyright 2003-2018 Joaqu&iacute;n M L&oacute;pez Mu&ntilde;oz.
+<p>&copy; Copyright 2003-2019 Joaqu&iacute;n M L&oacute;pez Mu&ntilde;oz.
 Distributed under the Boost Software 
 License, Version 1.0. (See accompanying file <a href="../../../../LICENSE_1_0.txt">
 LICENSE_1_0.txt</a> or copy at <a href="http://www.boost.org/LICENSE_1_0.txt">

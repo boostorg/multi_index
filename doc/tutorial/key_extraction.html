@@ -39,8 +39,11 @@ Container creation
     <ul>
       <li><a href="#identity"><code>identity</code></a></li>
       <li><a href="#member"><code>member</code></a></li>
-      <li><a href="#const_mem_fun"><code>const_mem_fun</code>
-        and <code>mem_fun</code></a></li>
+      <li><a href="#const_mem_fun"><code>const_mem_fun</code> and <code>mem_fun</code></a>
+        <ul>
+          <li><a href="#x_mem_fun">Variants for other types of member functions</a></li>
+        </ul>
+      </li>
       <li><a href="#global_fun"><code>global_fun</code></a></li>
     </ul>
   </li>
@@ -246,10 +249,97 @@ of Boost.MultiIndex key extractors</a>.
 provides a complete program showing how to use <code>const_mem_fun</code>.
 <p>
 
+<h4><a name="x_mem_fun">Variants for other types of member functions</a></h4>
+
+<p>
+Consider the following, non-compiling code:
+</p>
+
+<blockquote><pre>
+<span class=keyword>struct</span> <span class=identifier>employee</span>
+<span class=special>{</span>
+  <span class=special>...</span>
+  <span class=identifier>std</span><span class=special>::</span><span class=identifier>size_t</span> <span class=identifier>salary</span><span class=special>()</span><span class=keyword>const</span><span class=special><b>&amp;</b>;</span> <span class=comment>// note the &amp;</span>
+<span class=special>};</span>
+
+<span class=keyword>typedef</span> <span class=identifier>multi_index_container</span><span class=special>&lt;</span>
+  <span class=identifier>employee</span><span class=special>,</span>
+  <span class=identifier>indexed_by</span><span class=special>&lt;</span>
+    <span class=special>...</span>
+    <span class=identifier>ordered_non_unique</span><span class=special>&lt;</span>
+      <span class=comment>// compiler error: can't convert &amp;employee::salary to
+      // std::size_t (employee::*)() const</span>
+      <span class=identifier><b>const_mem_fun</b></span><span class=special>&lt;</span><span class=identifier>employee</span><span class=special>,</span><span class=identifier>std</span><span class=special>::</span><span class=identifier>size_t</span><span class=special>,&amp;</span><span class=identifier>employee</span><span class=special>::</span><span class=identifier>salary</span><span class=special>&gt;</span>
+    <span class=special>&gt;</span>
+  <span class=special>&gt;</span>
+<span class=special>&gt;</span> <span class=identifier>employee_set</span><span class=special>;</span>
+</pre></blockquote>
+
+<p>
+The problem here is that the type of <code>&amp;employee::salary</code>, which is
+<a href="https://en.cppreference.com/w/cpp/language/member_functions#const-.2C_volatile-.2C_and_ref-qualified_member_functions">ref-qualified</a>,
+does not match exactly what <code>const_mem_fun</code> expects. Fortunatey, Boost.MultiIndex
+provides a variant to fit:
+</p>
+
+<blockquote><pre>
+<span class=keyword>typedef</span> <span class=identifier>multi_index_container</span><span class=special>&lt;</span>
+  <span class=identifier>employee</span><span class=special>,</span>
+  <span class=identifier>indexed_by</span><span class=special>&lt;</span>
+    <span class=special>...</span>
+    <span class=identifier>ordered_non_unique</span><span class=special>&lt;</span>
+      <span class=identifier><b>cref_mem_fun</b></span><span class=special>&lt;</span><span class=identifier>employee</span><span class=special>,</span><span class=identifier>std</span><span class=special>::</span><span class=identifier>size_t</span><span class=special>,&amp;</span><span class=identifier>employee</span><span class=special>::</span><span class=identifier>salary</span><span class=special>&gt;</span>
+    <span class=special>&gt;</span>
+  <span class=special>&gt;</span>
+<span class=special>&gt;</span> <span class=identifier>employee_set</span><span class=special>;</span>
+</pre></blockquote>
+
+<p>
+This is the list of all available variants of <code>const_mem_fun</code> and
+<code>mem_fun</code>:
+</p>
+
+<p align="center">
+<table cellspacing="0">
+  <caption><b>Variants of <code>const_mem_fun</code> and <code>mem_fun</code>.</b></caption>
+<tr>
+  <th>&nbsp;Member function example&nbsp;</th>
+  <th>Suitable extractor</th>
+  <th>Behaves as</th>
+</tr>
+<tr>
+  <td><code>int f()const volatile</code></td>
+  <td><a href="../reference/key_extraction.html#cv_mem_fun"><code>cv_mem_fun</code></a><code>&lt;int,X,&amp;X::f&gt;</code></td>
+  <td align="center" rowspan="3">&nbsp;<code>const_mem_fun</code>&nbsp;</td>
+</tr>
+<tr>
+  <td><code>int f()const&amp;</code></td>
+  <td><a href="../reference/key_extraction.html#cv_mem_fun"><code>cref_mem_fun</code></a><code>&lt;int,X,&amp;X::f&gt;</code></td>
+</tr>
+<tr>
+  <td><code>int f()const volatile&amp;</code></td>
+  <td><a href="../reference/key_extraction.html#cv_mem_fun"><code>cvref_mem_fun</code></a><code>&lt;int,X,&amp;X::f&gt;</code></td>
+</tr>
+<tr>
+  <td><code>int f()volatile</code></td>
+  <td><a href="../reference/key_extraction.html#volatile_mem_fun"><code>volatile_mem_fun</code></a><code>&lt;int,X,&amp;X::f&gt;</code></td>
+  <td align="center" rowspan="3"><code>mem_fun</code></td>
+</tr>
+<tr>
+  <td><code>int f()&amp;</code></td>
+  <td><a href="../reference/key_extraction.html#volatile_mem_fun"><code>ref_mem_fun</code></a><code>&lt;int,X,&amp;X::f&gt;</code></td>
+</tr>
+<tr>
+  <td><code>int f()volatile&amp;</code></td>
+  <td><a href="../reference/key_extraction.html#volatile_mem_fun"><code>vref_mem_fun</code></a><code>&lt;int,X,&amp;X::f&gt;</code></td>
+</tr>
+</table>
+</p>
+
 <h3><a name="global_fun"><code>global_fun</code></a></h3>
 
 <p>
-Whereas <code>const_mem_fun</code> and <code>mem_fun</code> are based on a
+Whereas <code>const_mem_fun</code> and its variants are based on a
 given member function of the base type from where the key is extracted,
 <a href="../reference/key_extraction.html#global_fun"><code>global_fun</code></a>
 takes a global function (or static member function) accepting the base
@@ -638,8 +728,10 @@ which results in the exact same defined type, as
 <a href="../reference/key_extraction.html#key"><code>key</code></a> constructs are mere
 aliases for the old syntax. <code>key</code> can be used to shorten the specification of
 <a href="../reference/key_extraction.html#member"><code>member</code></a>,
-<a href="../reference/key_extraction.html#const_mem_fun"><code>const_mem_fun</code></a>,
-<a href="../reference/key_extraction.html#mem_fun"><code>mem_fun</code></a>,
+<a href="../reference/key_extraction.html#const_mem_fun"><code>const_mem_fun</code></a>
+(and <a href="../reference/key_extraction.html#cv_mem_fun">variants</a>),
+<a href="../reference/key_extraction.html#mem_fun"><code>mem_fun</code></a>
+(and <a href="../reference/key_extraction.html#volatile_mem_fun">variants</a>),
 <a href="../reference/key_extraction.html#global_fun"><code>global_fun</code></a>
 and, with additional terseness benefits,
 <a href="../reference/key_extraction.html#composite_key"><code>composite_key</code></a>:
@@ -1034,9 +1126,9 @@ Container creation
 
 <br>
 
-<p>Revised August 18th 2018</p>
+<p>Revised June 9th 2019</p>
 
-<p>&copy; Copyright 2003-2018 Joaqu&iacute;n M L&oacute;pez Mu&ntilde;oz.
+<p>&copy; Copyright 2003-2019 Joaqu&iacute;n M L&oacute;pez Mu&ntilde;oz.
 Distributed under the Boost Software 
 License, Version 1.0. (See accompanying file <a href="../../../../LICENSE_1_0.txt">
 LICENSE_1_0.txt</a> or copy at <a href="http://www.boost.org/LICENSE_1_0.txt">
