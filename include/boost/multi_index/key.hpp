@@ -24,7 +24,18 @@
 
 #define BOOST_MULTI_INDEX_KEY_SUPPORTED
 
+#include <boost/detail/workaround.hpp>
 #include <type_traits>
+
+#if BOOST_WORKAROUND(BOOST_LIBSTDCXX_VERSION,<50100)
+/* https://bugs.llvm.org/show_bug.cgi?id=20084 */
+
+#include <boost/type_traits/is_function.hpp>
+
+#define BOOST_MULTI_INDEX_KEY_IS_FUNCTION boost::is_function
+#else
+#define BOOST_MULTI_INDEX_KEY_IS_FUNCTION std::is_function
+#endif
 
 namespace boost{
 
@@ -40,7 +51,9 @@ struct typed_key_impl;
 template<typename Class,typename Type,Type Class::*PtrToMember>
 struct typed_key_impl<
   Type Class::*,PtrToMember,
-  typename std::enable_if<!std::is_function<Type>::value>::type
+  typename std::enable_if<
+    !BOOST_MULTI_INDEX_KEY_IS_FUNCTION<Type>::value
+  >::type
 >
 {
   using value_type=Class;
@@ -183,6 +196,8 @@ using key=typename detail::limited_size_key_impl<Keys...>::type;
 } /* namespace multi_index */
 
 } /* namespace boost */
+
+#undef BOOST_MULTI_INDEX_KEY_IS_FUNCTION
 
 #endif
 #endif
