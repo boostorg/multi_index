@@ -17,9 +17,15 @@
 #include <boost/detail/workaround.hpp>
 
 #if !defined(BOOST_NO_CXX11_HDR_TYPE_TRAITS)||\
-    BOOST_WORKAROUND(_LIBCPP_VERSION,<50100)
-/* Ref-qualified function types not properly supported, maybe related to
+    BOOST_WORKAROUND(_LIBCPP_VERSION,<30700)||\
+    BOOST_WORKAROUND(BOOST_LIBSTDCXX_VERSION,<40802)
+/* libc++: std::is_function<void() const> fails,
  * https://bugs.llvm.org/show_bug.cgi?id=20084
+ *
+ * libstdc++-v3: std::is_function does not support ref-qualified function types,
+ * https://github.com/gcc-mirror/gcc/commit/
+ *   2fa630fb50ba29d8e891c52a75aaec261b07874e#
+ *   diff-6547f965a8d66bf35a6388fcf404aaa3
  */
 
 #include <boost/type_traits/is_function.hpp>
