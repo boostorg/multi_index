@@ -25,6 +25,7 @@
 #define BOOST_MULTI_INDEX_KEY_SUPPORTED
 
 #include <boost/multi_index/detail/is_function.hpp>
+#include <boost/preprocessor/facilities/empty.hpp>
 #include <type_traits>
 
 namespace boost{
@@ -88,7 +89,8 @@ template<typename R,typename C,typename... Args>                \
 struct remove_noexcept<R(C::*)(Args...,...)qualifier noexcept>  \
   {using type=R(C::*)(Args...,...)qualifier;};
 
-BOOST_MULTI_INDEX_KEY_REMOVE_MEMFUN_NOEXCEPT()
+BOOST_MULTI_INDEX_KEY_REMOVE_MEMFUN_NOEXCEPT(BOOST_PP_EMPTY())
+                                             /* VS warns without dummy arg */
 BOOST_MULTI_INDEX_KEY_REMOVE_MEMFUN_NOEXCEPT(const)
 BOOST_MULTI_INDEX_KEY_REMOVE_MEMFUN_NOEXCEPT(volatile)
 BOOST_MULTI_INDEX_KEY_REMOVE_MEMFUN_NOEXCEPT(const volatile)
