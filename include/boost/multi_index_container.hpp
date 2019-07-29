@@ -164,9 +164,9 @@ public:
   /* construct/copy/destroy */
 
   multi_index_container():
-    bfm_allocator(allocator_type()),
-    super(ctor_args_list(),bfm_allocator::member),
-    node_count(0)
+    super(ctor_args_list(), bfm_allocator::member),
+    node_count(0),
+    bfm_allocator(allocator_type())
   {
     BOOST_MULTI_INDEX_CHECK_INVARIANT;
   }
@@ -194,16 +194,16 @@ public:
   }
 
   explicit multi_index_container(const allocator_type& al):
-    bfm_allocator(al),
-    super(ctor_args_list(),bfm_allocator::member),
-    node_count(0)
+    super(ctor_args_list(), bfm_allocator::member),
+    node_count(0),
+    bfm_allocator(al)
   {
     BOOST_MULTI_INDEX_CHECK_INVARIANT;
   }
   
   template<typename InputIterator>
   multi_index_container(
-    InputIterator first,InputIterator last,
+    InputIterator first, InputIterator last,
 
 #if BOOST_WORKAROUND(__IBMCPP__,<=600)
     /* VisualAge seems to have an ETI issue with the default values
@@ -221,9 +221,9 @@ public:
     const allocator_type& al=allocator_type()):
 #endif
 
-    bfm_allocator(al),
     super(args_list,bfm_allocator::member),
-    node_count(0)
+    node_count(0),
+    bfm_allocator(al)
   {
     BOOST_MULTI_INDEX_CHECK_INVARIANT;
     BOOST_TRY{
@@ -246,9 +246,9 @@ public:
     std::initializer_list<Value> list,
     const ctor_args_list& args_list=ctor_args_list(),
     const allocator_type& al=allocator_type()):
-    bfm_allocator(al),
-    super(args_list,bfm_allocator::member),
-    node_count(0)
+    super(args_list, bfm_allocator::member),
+    node_count(0),
+    bfm_allocator(al)
   {
     BOOST_MULTI_INDEX_CHECK_INVARIANT;
     BOOST_TRY{
@@ -271,10 +271,10 @@ public:
 
   multi_index_container(
     const multi_index_container<Value,IndexSpecifierList,Allocator>& x):
-    bfm_allocator(x.bfm_allocator::member),
-    bfm_header(),
     super(x),
-    node_count(0)
+    node_count(0),
+    bfm_allocator(x.bfm_allocator::member),
+    bfm_header()
   {
     copy_map_type map(bfm_allocator::member,x.size(),x.header(),header());
     for(const_iterator it=x.begin(),it_end=x.end();it!=it_end;++it){
@@ -292,10 +292,10 @@ public:
   }
 
   multi_index_container(BOOST_RV_REF(multi_index_container) x):
+    super(x, detail::do_not_copy_elements_tag()),
+    node_count(0),
     bfm_allocator(x.bfm_allocator::member),
-    bfm_header(),
-    super(x,detail::do_not_copy_elements_tag()),
-    node_count(0)
+    bfm_header()
   {
     BOOST_MULTI_INDEX_CHECK_INVARIANT;
     BOOST_MULTI_INDEX_CHECK_INVARIANT_OF(x);
