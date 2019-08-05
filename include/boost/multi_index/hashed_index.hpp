@@ -318,6 +318,17 @@ public:
     return position;
   }
 
+  template<typename PreErase>
+  iterator erase(iterator position,PreErase pre_erase)
+  {
+    BOOST_MULTI_INDEX_CHECK_VALID_ITERATOR(position);
+    BOOST_MULTI_INDEX_CHECK_DEREFERENCEABLE_ITERATOR(position);
+    BOOST_MULTI_INDEX_CHECK_IS_OWNER(position,*this);
+    BOOST_MULTI_INDEX_HASHED_INDEX_CHECK_INVARIANT;
+    this->final_erase_(pre_erase,static_cast<final_node_type*>(position++.get_node()));
+    return position;
+  }
+
   size_type erase(key_param_type k)
   {
     BOOST_MULTI_INDEX_HASHED_INDEX_CHECK_INVARIANT;

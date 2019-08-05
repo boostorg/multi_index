@@ -359,6 +359,17 @@ public:
     this->final_erase_(static_cast<final_node_type*>(position++.get_node()));
     return position;
   }
+
+  template<typename PreErase>
+  iterator erase(iterator position,PreErase pre_erase)
+  {
+    BOOST_MULTI_INDEX_CHECK_VALID_ITERATOR(position);
+    BOOST_MULTI_INDEX_CHECK_DEREFERENCEABLE_ITERATOR(position);
+    BOOST_MULTI_INDEX_CHECK_IS_OWNER(position,*this);
+    BOOST_MULTI_INDEX_SEQ_INDEX_CHECK_INVARIANT;
+    this->final_erase_(pre_erase,static_cast<final_node_type*>(position++.get_node()));
+    return position;
+  }
   
   iterator erase(iterator first,iterator last)
   {

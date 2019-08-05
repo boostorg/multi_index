@@ -254,6 +254,9 @@ protected:
 
   void final_erase_(final_node_type* x){final().erase_(x);}
 
+  template<typename PreErase>
+  void final_erase_(PreErase& pre_erase,final_node_type* x){final().erase_(pre_erase,x);}
+
   void final_delete_node_(final_node_type* x){final().delete_node_(x);}
   void final_delete_all_nodes_(){final().delete_all_nodes_();}
   void final_clear_(){final().clear_();}

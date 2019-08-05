@@ -791,6 +791,21 @@ BOOST_MULTI_INDEX_PROTECTED_IF_MEMBER_TEMPLATE_FRIENDS:
     deallocate_node(x);
   }
 
+  template<typename PreErase>
+  void erase_(PreErase& pre_erase,node_type* x)
+  {
+    BOOST_TRY{
+      pre_erase(const_cast<value_type&>(x->value()));
+    }
+    BOOST_CATCH(...){
+      this->erase_(x);
+      BOOST_RETHROW;
+    }
+    BOOST_CATCH_END
+
+    erase_(x);
+  }
+
   void delete_node_(node_type* x)
   {
     super::delete_node_(x);
