@@ -30,6 +30,7 @@ Acknowledgements
 <h2>Contents</h2>
 
 <ul>
+  <li><a href="#boost_1_73">Boost 1.73 release</a></li>
   <li><a href="#boost_1_71">Boost 1.71 release</a></li>
   <li><a href="#boost_1_70">Boost 1.70 release</a></li>
   <li><a href="#boost_1_69">Boost 1.69 release</a></li>
@@ -60,6 +61,19 @@ Acknowledgements
   <li><a href="#boost_1_33_1">Boost 1.33.1 release</a></li>
   <li><a href="#boost_1_33">Boost 1.33 release</a></li>
 </ul>
+
+<h2><a name="boost_1_73">Boost 1.73 release</a></h2>
+
+<p>
+<ul>
+  <li>Swapping of internal <code>KeyFromValue</code>, <code>Compare</code>, <code>Hash</code>
+    and <code>Pred</code> objects now selects the appropriate <code>swap</code>
+    function between <code>std::swap</code> and ADL candidates,
+    in accordance with standard specifications in <b>[swappable.requirements]</b>
+    (<a href="https://github.com/boostorg/multi_index/issues/29">issue #29</a>).
+  </li>
+</ul>
+</p>
 
 <h2><a name="boost_1_71">Boost 1.71 release</a></h2>
 
@@ -635,7 +649,7 @@ Acknowledgements
 
 <br>
 
-<p>Revised June 9th 2019</p>
+<p>Revised November 9th 2019</p>
 
 <p>&copy; Copyright 2003-2019 Joaqu&iacute;n M L&oacute;pez Mu&ntilde;oz.
 Distributed under the Boost Software 
