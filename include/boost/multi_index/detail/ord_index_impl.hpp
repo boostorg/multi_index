@@ -53,6 +53,7 @@
 #include <boost/mpl/if.hpp>
 #include <boost/mpl/push_front.hpp>
 #include <boost/multi_index/detail/access_specifier.hpp>
+#include <boost/multi_index/detail/adl_swap.hpp>
 #include <boost/multi_index/detail/allocator_traits.hpp>
 #include <boost/multi_index/detail/bidir_node_iterator.hpp>
 #include <boost/multi_index/detail/do_not_copy_elements_tag.hpp>
@@ -774,8 +775,8 @@ BOOST_MULTI_INDEX_PROTECTED_IF_MEMBER_TEMPLATE_FRIENDS:
     ordered_index_impl<
       KeyFromValue,Compare,SuperMeta,TagList,Category,AugmentPolicy>& x)
   {
-    std::swap(key,x.key);
-    std::swap(comp_,x.comp_);
+    adl_swap(key,x.key);
+    adl_swap(comp_,x.comp_);
 
 #if defined(BOOST_MULTI_INDEX_ENABLE_SAFE_MODE)
     safe_super::swap(x);
