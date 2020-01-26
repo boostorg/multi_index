@@ -390,7 +390,7 @@ public:
 
 #undef BOOST_MULTI_INDEX_IF_CONSTEXPR 
 #if defined(BOOST_NO_CXX17_IF_CONSTEXPR)&&defined(BOOST_MSVC)
-#pragma warning(pop)
+#pragma warning(pop) /* C4127 */
 #endif
   }
 

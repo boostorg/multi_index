@@ -64,6 +64,11 @@ inline std::size_t hash_value(const move_tracker& x)
 } /* namespace boost */
 #endif
 
+#if defined(BOOST_MSVC)
+#pragma warning(push)
+#pragma warning(disable:4355) /* this used in base member initializer list */
+#endif
+
 template<
   typename T,
   typename Propagate=boost::true_type,typename AlwaysEqual=boost::true_type
@@ -99,6 +104,10 @@ private:
 
   const void* root;
 };
+
+#if defined(BOOST_MSVC)
+#pragma warning(pop) /* C4355 */
+#endif
 
 #if defined(BOOST_NO_CXX17_IF_CONSTEXPR)&&defined(BOOST_MSVC)
 #pragma warning(push)
@@ -182,7 +191,7 @@ void test_allocator_awareness_for()
 }
 
 #if defined(BOOST_NO_CXX17_IF_CONSTEXPR)&&defined(BOOST_MSVC)
-#pragma warning(pop)
+#pragma warning(pop) /* C4127 */
 #endif
 
 void test_allocator_awareness()
