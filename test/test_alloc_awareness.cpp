@@ -32,6 +32,9 @@ struct move_tracker
 
   int  n;
   bool move_cted;
+
+private:
+  BOOST_COPYABLE_AND_MOVABLE(move_tracker)
 };
 
 inline bool operator==(const move_tracker& x,const move_tracker& y)
