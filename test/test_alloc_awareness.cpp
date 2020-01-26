@@ -155,6 +155,8 @@ void test_allocator_awareness_for()
     BOOST_TEST(c2==c);
   }
   {
+    const bool          element_transfer=Propagate||AlwaysEqual;
+
     container           c2(c);
     const move_tracker* pfirst=&*c2.begin();
     container           c3(root2);
@@ -162,8 +164,8 @@ void test_allocator_awareness_for()
     BOOST_TEST(c3.get_allocator().comes_from(Propagate?root1:root2));
     BOOST_TEST(c3==c);
     BOOST_TEST(c2.empty());
-    BOOST_TEST(AlwaysEqual==(&*c3.begin()==pfirst));
-    BOOST_TEST(!AlwaysEqual==(c3.begin()->move_cted));
+    BOOST_TEST(element_transfer==(&*c3.begin()==pfirst));
+    BOOST_TEST(!element_transfer==(c3.begin()->move_cted));
   }
   if(Propagate||AlwaysEqual){
     container           c2(c);
