@@ -29,6 +29,9 @@ struct move_tracker
   move_tracker(int n):n(n),move_cted(false){}
   move_tracker(const move_tracker& x):n(x.n),move_cted(false){}
   move_tracker(BOOST_RV_REF(move_tracker) x):n(x.n),move_cted(true){}
+  move_tracker& operator=(BOOST_COPY_ASSIGN_REF(move_tracker) x)
+    {n=x.n;return *this;}
+  move_tracker& operator=(BOOST_RV_REF(move_tracker) x){n=x.n;return *this;}
 
   int  n;
   bool move_cted;
