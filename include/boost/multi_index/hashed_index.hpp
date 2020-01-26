@@ -1,4 +1,4 @@
-/* Copyright 2003-2019 Joaquin M Lopez Munoz.
+/* Copyright 2003-2020 Joaquin M Lopez Munoz.
  * Distributed under the Boost Software License, Version 1.0.
  * (See accompanying file LICENSE_1_0.txt or copy at
  * http://www.boost.org/LICENSE_1_0.txt)
@@ -876,13 +876,15 @@ BOOST_MULTI_INDEX_PROTECTED_IF_MEMBER_TEMPLATE_FRIENDS:
 #endif
   }
 
+  template<typename BoolConstant>
   void swap_(
-    hashed_index<KeyFromValue,Hash,Pred,SuperMeta,TagList,Category>& x)
+    hashed_index<KeyFromValue,Hash,Pred,SuperMeta,TagList,Category>& x,
+    BoolConstant swap_allocators)
   {
     adl_swap(key,x.key);
     adl_swap(hash_,x.hash_);
     adl_swap(eq_,x.eq_);
-    buckets.swap(x.buckets);
+    buckets.swap(x.buckets,swap_allocators);
     std::swap(mlf,x.mlf);
     std::swap(max_load,x.max_load);
 
@@ -890,7 +892,7 @@ BOOST_MULTI_INDEX_PROTECTED_IF_MEMBER_TEMPLATE_FRIENDS:
     safe_super::swap(x);
 #endif
 
-    super::swap_(x);
+    super::swap_(x,swap_allocators);
   }
 
   void swap_elements_(

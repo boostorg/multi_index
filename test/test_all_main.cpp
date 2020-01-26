@@ -1,6 +1,6 @@
 /* Boost.MultiIndex test suite.
  *
- * Copyright 2003-2018 Joaquin M Lopez Munoz.
+ * Copyright 2003-2020 Joaquin M Lopez Munoz.
  * Distributed under the Boost Software License, Version 1.0.
  * (See accompanying file LICENSE_1_0.txt or copy at
  * http://www.boost.org/LICENSE_1_0.txt)
@@ -9,6 +9,7 @@
  */
 
 #include <boost/detail/lightweight_test.hpp>
+#include "test_alloc_awareness.hpp"
 #include "test_basic.hpp"
 #include "test_capacity.hpp"
 #include "test_comparison.hpp"
@@ -35,6 +36,7 @@
 
 int main()
 {
+  test_allocator_awareness();
   test_basic();
   test_capacity();
   test_comparison();

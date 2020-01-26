@@ -1,4 +1,4 @@
-/* Copyright 2003-2019 Joaquin M Lopez Munoz.
+/* Copyright 2003-2020 Joaquin M Lopez Munoz.
  * Distributed under the Boost Software License, Version 1.0.
  * (See accompanying file LICENSE_1_0.txt or copy at
  * http://www.boost.org/LICENSE_1_0.txt)
@@ -720,13 +720,15 @@ BOOST_MULTI_INDEX_PROTECTED_IF_MEMBER_TEMPLATE_FRIENDS:
 #endif
   }
 
-  void swap_(sequenced_index<SuperMeta,TagList>& x)
+  template<typename BoolConstant>
+  void swap_(
+    sequenced_index<SuperMeta,TagList>& x,BoolConstant swap_allocators)
   {
 #if defined(BOOST_MULTI_INDEX_ENABLE_SAFE_MODE)
     safe_super::swap(x);
 #endif
 
-    super::swap_(x);
+    super::swap_(x,swap_allocators);
   }
 
   void swap_elements_(sequenced_index<SuperMeta,TagList>& x)

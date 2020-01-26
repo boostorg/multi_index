@@ -66,6 +66,9 @@ Acknowledgements
 
 <p>
 <ul>
+  <li><code>multi_index_container</code> is now
+    <a href="https://en.cppreference.com/w/cpp/named_req/AllocatorAwareContainer"><code>AllocatorAware</code></a>.
+  </li>
   <li>Swapping of internal <code>KeyFromValue</code>, <code>Compare</code>, <code>Hash</code>
     and <code>Pred</code> objects now selects the appropriate <code>swap</code>
     function between <code>std::swap</code> and ADL candidates,
@@ -654,7 +657,7 @@ Acknowledgements
 
 <br>
 
-<p>Revised January 21st 2020</p>
+<p>Revised January 25th 2020</p>
 
 <p>&copy; Copyright 2003-2020 Joaqu&iacute;n M L&oacute;pez Mu&ntilde;oz.
 Distributed under the Boost Software 
