@@ -384,7 +384,7 @@ public:
     }
     else{
       multi_index_container y(boost::move(x),this->get_allocator());
-      swap_(y,boost::true_type() /* swap_allocators */);
+      swap_(y,boost::false_type() /* swap_allocators */);
     }
     return *this;
 
