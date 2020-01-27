@@ -21,8 +21,7 @@
 #include <boost/multi_index/random_access_index.hpp>
 #include <boost/multi_index/ranked_index.hpp>
 #include <boost/multi_index/sequenced_index.hpp>
-#include <boost/type_traits/integral_constant.hpp>
-#include <memory>
+#include "rooted_allocator.hpp"
 
 struct move_tracker
 {
@@ -64,51 +63,6 @@ inline std::size_t hash_value(const move_tracker& x)
 } /* namespace boost */
 #endif
 
-#if defined(BOOST_MSVC)
-#pragma warning(push)
-#pragma warning(disable:4355) /* this used in base member initializer list */
-#endif
-
-template<
-  typename T,
-  typename Propagate=boost::true_type,typename AlwaysEqual=boost::true_type
->
-struct rooted_allocator:std::allocator<T>
-{
-  typedef Propagate   propagate_on_container_copy_assignment;
-  typedef Propagate   propagate_on_container_move_assignment;
-  typedef Propagate   propagate_on_container_swap;
-  typedef AlwaysEqual is_always_equal;
-  template<typename U>
-  struct rebind{typedef rooted_allocator<U,Propagate,AlwaysEqual> other;};
-
-  rooted_allocator():root(0){}
-  explicit rooted_allocator(int):root(this){}
-  template<typename U>
-  rooted_allocator(const rooted_allocator<U,Propagate,AlwaysEqual>& x):
-    root(x.root){}
-
-  template<typename U>
-  bool operator==(const rooted_allocator<U,Propagate,AlwaysEqual>& x)const
-    {return AlwaysEqual::value?true:root==x.root;}
-  template<typename U>
-  bool operator!=(const rooted_allocator<U,Propagate,AlwaysEqual>& x)const
-    {return !(*this==x);}
-
-  template<typename U>
-  bool comes_from(const rooted_allocator<U,Propagate,AlwaysEqual>& x)const
-    {return root==&x;}
-
-private:
-  template<typename,typename,typename> friend struct rooted_allocator;
-
-  const void* root;
-};
-
-#if defined(BOOST_MSVC)
-#pragma warning(pop) /* C4355 */
-#endif
-
 #if defined(BOOST_NO_CXX17_IF_CONSTEXPR)&&defined(BOOST_MSVC)
 #pragma warning(push)
 #pragma warning(disable:4127) /* conditional expression is constant */
@@ -119,11 +73,7 @@ void test_allocator_awareness_for()
 {
   using namespace boost::multi_index;
 
-  typedef rooted_allocator<
-    move_tracker,
-    boost::integral_constant<bool, Propagate>,
-    boost::integral_constant<bool, AlwaysEqual>
-  >                                             allocator;
+  typedef rooted_allocator<move_tracker,Propagate,AlwaysEqual> allocator;
   typedef multi_index_container<
     move_tracker,
     indexed_by<
@@ -134,7 +84,7 @@ void test_allocator_awareness_for()
       sequenced<>
     >,
     allocator
-  >                                             container;
+  >                                                            container;
 
   allocator root1(0),root2(0);
   container c(root1);
