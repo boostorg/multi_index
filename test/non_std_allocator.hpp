@@ -1,6 +1,6 @@
 /* Used in Boost.MultiIndex tests.
  *
- * Copyright 2003-2018 Joaquin M Lopez Munoz.
+ * Copyright 2003-2020 Joaquin M Lopez Munoz.
  * Distributed under the Boost Software License, Version 1.0.
  * (See accompanying file LICENSE_1_0.txt or copy at
  * http://www.boost.org/LICENSE_1_0.txt)
@@ -113,6 +113,7 @@ public:
   non_std_allocator(){}
   non_std_allocator(const non_std_allocator<T>&){}
   template<class U>non_std_allocator(const non_std_allocator<U>&,int=0){}
+  non_std_allocator& operator=(const non_std_allocator<T>&){return *this;}
 
   pointer allocate(size_type n)
   {
