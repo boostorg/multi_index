@@ -1,6 +1,6 @@
 /* Boost.MultiIndex test for range().
  *
- * Copyright 2003-2015 Joaquin M Lopez Munoz.
+ * Copyright 2003-2020 Joaquin M Lopez Munoz.
  * Distributed under the Boost Software License, Version 1.0.
  * (See accompanying file LICENSE_1_0.txt or copy at
  * http://www.boost.org/LICENSE_1_0.txt)
@@ -12,7 +12,7 @@
 
 #include <boost/config.hpp> /* keep it first to prevent nasty warns in MSVC */
 #include <algorithm>
-#include <boost/bind.hpp>
+#include <boost/bind/bind.hpp>
 #include <boost/detail/lightweight_test.hpp>
 #include "pre_multi_index.hpp"
 #include <boost/multi_index_container.hpp>
