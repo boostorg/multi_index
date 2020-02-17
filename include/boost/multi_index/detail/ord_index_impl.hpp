@@ -78,7 +78,7 @@
 
 #if !defined(BOOST_MULTI_INDEX_DISABLE_SERIALIZATION)
 #include <boost/archive/archive_exception.hpp>
-#include <boost/bind.hpp>
+#include <boost/bind/bind.hpp>
 #include <boost/multi_index/detail/duplicates_iterator.hpp>
 #include <boost/throw_exception.hpp> 
 #endif
