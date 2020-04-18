@@ -1455,7 +1455,7 @@ are instantiations of <code>std::equal_to</code>.
 <code>CompositeKeyResult</code> must be an instantiation of
 <code>composite_key_result</code> for some type
 <code>composite_key&lt;KeyFromValue0,...,KeyFromValuen></code>.
-<code>std::equal:to&lt;CompositeKeyResult>::operator()</code> is
+<code>std::equal_to&lt;CompositeKeyResult>::operator()</code> is
 then equivalent to
 <code>composite_key_equal_to&lt;Pred0,...,Predn>::operator()</code>, taking
 <blockquote>
@@ -1758,7 +1758,7 @@ then equivalent to
 In addition to the requirements on <code>Comparei</code> imposed by
 <code>composite_key_compare</code>, each of these types must be
 <code>DefaultConstructible</code>. <code>std::less&lt;CompositeKeyResult></code>
-is <code>CopyConstructible</code>, <code>CopyConstructible</code>
+is <code>DefaultConstructible</code>, <code>CopyConstructible</code>
 and <code>CopyAssignable</code>.
 </p>
 
@@ -1841,7 +1841,7 @@ then equivalent to
 In addition to the requirements on <code>Comparei</code> imposed by
 <code>composite_key_compare</code>, each of these types must be
 <code>DefaultConstructible</code>. <code>std::greater&lt;CompositeKeyResult></code>
-is <code>CopyConstructible</code>, <code>CopyConstructible</code>
+is <code>DefaultConstructible</code>, <code>CopyConstructible</code>
 and <code>CopyAssignable</code>.
 </p>
 
@@ -2166,39 +2166,39 @@ resolves to:
   </li>
   <li><a href="#const_mem_fun"><code>const_mem_fun&lt;Class,Type,Key&gt;</code></a>
      if <code>Key</code> is of type <code>Type (Class::*)()const</code>
-     (with ot without <code>noexcept</code>-specification),
+     (with or without <code>noexcept</code>-specification),
   </li>
   <li><a href="#cv_mem_fun"><code>cv_mem_fun&lt;Class,Type,Key&gt;</code></a>
      if <code>Key</code> is of type <code>Type (Class::*)()const volatile</code>
-     (with ot without <code>noexcept</code>-specification),
+     (with or without <code>noexcept</code>-specification),
   </li>
   <li><a href="#cv_mem_fun"><code>cref_mem_fun&lt;Class,Type,Key&gt;</code></a>
      if <code>Key</code> is of type <code>Type (Class::*)()const&amp;</code>
-     (with ot without <code>noexcept</code>-specification),
+     (with or without <code>noexcept</code>-specification),
   </li>
   <li><a href="#cv_mem_fun"><code>cvref_mem_fun&lt;Class,Type,Key&gt;</code></a>
      if <code>Key</code> is of type <code>Type (Class::*)()const volatile&amp;</code>
-     (with ot without <code>noexcept</code>-specification),
+     (with or without <code>noexcept</code>-specification),
   </li>
   <li><a href="#mem_fun"><code>mem_fun&lt;Class,Type,Key&gt;</code></a>
      if <code>Key</code> is of type <code>Type (Class::*)()</code>
-     (with ot without <code>noexcept</code>-specification),
+     (with or without <code>noexcept</code>-specification),
   </li>
   <li><a href="#volatile_mem_fun"><code>volatile_mem_fun&lt;Class,Type,Key&gt;</code></a>
      if <code>Key</code> is of type <code>Type (Class::*)()volatile</code>
-     (with ot without <code>noexcept</code>-specification),
+     (with or without <code>noexcept</code>-specification),
   </li>
   <li><a href="#volatile_mem_fun"><code>ref_mem_fun&lt;Class,Type,Key&gt;</code></a>
      if <code>Key</code> is of type <code>Type (Class::*)()&amp;</code>
-     (with ot without <code>noexcept</code>-specification),
+     (with or without <code>noexcept</code>-specification),
   </li>
   <li><a href="#volatile_mem_fun"><code>vref_mem_fun&lt;Class,Type,Key&gt;</code></a>
      if <code>Key</code> is of type <code>Type (Class::*)()volatile&amp;</code>
-     (with ot without <code>noexcept</code>-specification),
+     (with or without <code>noexcept</code>-specification),
   </li>
   <li><a href="#global_fun"><code>global_fun&lt;Value,Type,Key&gt;</code></a>
      if <code>Key</code> is of type <code>Type (*)(Value)</code>
-     (with ot without <code>noexcept</code>-specification),
+     (with or without <code>noexcept</code>-specification),
   </li>
 </ul>
 and engenders undefined behavior otherwise. When passed two or more arguments,
@@ -2236,9 +2236,9 @@ Compiler specifics
 
 <br>
 
-<p>Revised June 9th 2019</p>
+<p>Revised April 18th 2020</p>
 
-<p>&copy; Copyright 2003-2019 Joaqu&iacute;n M L&oacute;pez Mu&ntilde;oz.
+<p>&copy; Copyright 2003-2020 Joaqu&iacute;n M L&oacute;pez Mu&ntilde;oz.
 Distributed under the Boost Software 
 License, Version 1.0. (See accompanying file <a href="../../../../LICENSE_1_0.txt">
 LICENSE_1_0.txt</a> or copy at <a href="http://www.boost.org/LICENSE_1_0.txt">
