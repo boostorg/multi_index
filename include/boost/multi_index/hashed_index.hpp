@@ -107,10 +107,11 @@ class hashed_index:
 
 protected:
   typedef hashed_index_node<
-    typename super::index_node_type,Category>    index_node_type;
+    typename super::index_node_type>             index_node_type;
 
 private:
-  typedef typename index_node_type::node_alg     node_alg;
+  typedef typename index_node_type::
+    template node_alg<Category>::type            node_alg;
   typedef typename index_node_type::impl_type    node_impl_type;
   typedef typename node_impl_type::pointer       node_impl_pointer;
   typedef typename node_impl_type::base_pointer  node_impl_base_pointer;
@@ -144,19 +145,20 @@ public:
   typedef safe_mode::safe_iterator<
     hashed_index_iterator<
       index_node_type,bucket_array_type,
+      Category,
       hashed_index_global_iterator_tag>,
     hashed_index>                                iterator;
 #else
   typedef hashed_index_iterator<
     index_node_type,bucket_array_type,
-    hashed_index_global_iterator_tag>            iterator;
+    Category,hashed_index_global_iterator_tag>   iterator;
 #endif
 
   typedef iterator                               const_iterator;
 
   typedef hashed_index_iterator<
     index_node_type,bucket_array_type,
-    hashed_index_local_iterator_tag>             local_iterator;
+    Category,hashed_index_local_iterator_tag>    local_iterator;
   typedef local_iterator                         const_local_iterator;
 
   typedef TagList                                tag_list;
@@ -1698,7 +1700,7 @@ struct hashed_unique
   template<typename Super>
   struct node_class
   {
-    typedef detail::hashed_index_node<Super,detail::hashed_unique_tag> type;
+    typedef detail::hashed_index_node<Super> type;
   };
 
   template<typename SuperMeta>
@@ -1723,8 +1725,7 @@ struct hashed_non_unique
   template<typename Super>
   struct node_class
   {
-    typedef detail::hashed_index_node<
-      Super,detail::hashed_non_unique_tag> type;
+    typedef detail::hashed_index_node<Super> type;
   };
 
   template<typename SuperMeta>
