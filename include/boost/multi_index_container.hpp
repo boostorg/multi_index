@@ -133,7 +133,7 @@ private:
       Value,IndexSpecifierList,Allocator>::type    super;
   typedef typename detail::rebind_alloc_for<
     Allocator,
-    typename super::node_type
+    typename super::index_node_type
   >::type                                          node_allocator;
   typedef detail::allocator_traits<node_allocator> node_alloc_traits;
   typedef typename node_alloc_traits::pointer      node_pointer;
@@ -166,7 +166,7 @@ public:
 
   /* global project() needs to see this publicly */
 
-  typedef typename super::node_type node_type;
+  typedef typename super::final_node_type         final_node_type;
 
   /* construct/copy/destroy */
 
@@ -503,7 +503,8 @@ public:
     BOOST_MULTI_INDEX_CHECK_IS_OWNER(
       it,static_cast<typename IteratorType::container_type&>(*this));
 
-    return index_type::make_iterator(static_cast<node_type*>(it.get_node()));
+    return index_type::make_iterator(
+      static_cast<final_node_type*>(it.get_node()));
   }
 
   template<int N,typename IteratorType>
@@ -520,7 +521,8 @@ public:
     BOOST_MULTI_INDEX_CHECK_VALID_ITERATOR(it);
     BOOST_MULTI_INDEX_CHECK_IS_OWNER(
       it,static_cast<const typename IteratorType::container_type&>(*this));
-    return index_type::make_iterator(static_cast<node_type*>(it.get_node()));
+    return index_type::make_iterator(
+      static_cast<final_node_type*>(it.get_node()));
   }
 #endif
 
@@ -552,7 +554,8 @@ public:
     BOOST_MULTI_INDEX_CHECK_VALID_ITERATOR(it);
     BOOST_MULTI_INDEX_CHECK_IS_OWNER(
       it,static_cast<typename IteratorType::container_type&>(*this));
-    return index_type::make_iterator(static_cast<node_type*>(it.get_node()));
+    return index_type::make_iterator(
+      static_cast<final_node_type*>(it.get_node()));
   }
 
   template<typename Tag,typename IteratorType>
@@ -569,7 +572,8 @@ public:
     BOOST_MULTI_INDEX_CHECK_VALID_ITERATOR(it);
     BOOST_MULTI_INDEX_CHECK_IS_OWNER(
       it,static_cast<const typename IteratorType::container_type&>(*this));
-    return index_type::make_iterator(static_cast<node_type*>(it.get_node()));
+    return index_type::make_iterator(
+      static_cast<final_node_type*>(it.get_node()));
   }
 #endif
 
@@ -640,38 +644,38 @@ BOOST_MULTI_INDEX_PROTECTED_IF_MEMBER_TEMPLATE_FRIENDS:
     BOOST_MULTI_INDEX_CHECK_INVARIANT;
   }
 
-  node_type* header()const
+  final_node_type* header()const
   {
     return &*bfm_header::member;
   }
 
-  node_type* allocate_node()
+  final_node_type* allocate_node()
   {
     return &*node_alloc_traits::allocate(bfm_allocator::member,1);
   }
 
-  void deallocate_node(node_type* x)
+  void deallocate_node(final_node_type* x)
   {
     node_alloc_traits::deallocate(
       bfm_allocator::member,static_cast<node_pointer>(x),1);
   }
 
-  void construct_value(node_type* x,const Value& v)
+  void construct_value(final_node_type* x,const Value& v)
   {
     node_alloc_traits::construct(
       bfm_allocator::member,boost::addressof(x->value()),v);
   }
 
-  void construct_value(node_type* x,BOOST_RV_REF(Value) v)
+  void construct_value(final_node_type* x,BOOST_RV_REF(Value) v)
   {
     node_alloc_traits::construct(
       bfm_allocator::member,boost::addressof(x->value()),boost::move(v));
   }
 
   BOOST_MULTI_INDEX_OVERLOADS_TO_VARTEMPL_EXTRA_ARG(
-    void,construct_value,vartempl_construct_value_impl,node_type*,x)
+    void,construct_value,vartempl_construct_value_impl,final_node_type*,x)
 
-  void destroy_value(node_type* x)
+  void destroy_value(final_node_type* x)
   {
     node_alloc_traits::destroy(
       bfm_allocator::member,boost::addressof(x->value()));
@@ -693,45 +697,46 @@ BOOST_MULTI_INDEX_PROTECTED_IF_MEMBER_TEMPLATE_FRIENDS:
   }
 
   template<typename Variant>
-  std::pair<node_type*,bool> insert_(const Value& v,Variant variant)
+  std::pair<final_node_type*,bool> insert_(const Value& v,Variant variant)
   {
-    node_type* x=0;
-    node_type* res=super::insert_(v,x,variant);
+    final_node_type* x=0;
+    final_node_type* res=super::insert_(v,x,variant);
     if(res==x){
       ++node_count;
-      return std::pair<node_type*,bool>(res,true);
+      return std::pair<final_node_type*,bool>(res,true);
     }
     else{
-      return std::pair<node_type*,bool>(res,false);
+      return std::pair<final_node_type*,bool>(res,false);
     }
   }
 
-  std::pair<node_type*,bool> insert_(const Value& v)
+  std::pair<final_node_type*,bool> insert_(const Value& v)
   {
     return insert_(v,detail::lvalue_tag());
   }
 
-  std::pair<node_type*,bool> insert_rv_(const Value& v)
+  std::pair<final_node_type*,bool> insert_rv_(const Value& v)
   {
     return insert_(v,detail::rvalue_tag());
   }
 
   template<typename T>
-  std::pair<node_type*,bool> insert_ref_(T& t)
+  std::pair<final_node_type*,bool> insert_ref_(T& t)
   {
-    node_type* x=allocate_node();
+    final_node_type* x=allocate_node();
     BOOST_TRY{
       construct_value(x,t);
       BOOST_TRY{
-        node_type* res=super::insert_(x->value(),x,detail::emplaced_tag());
+        final_node_type* res=super::insert_(
+          x->value(),x,detail::emplaced_tag());
         if(res==x){
           ++node_count;
-          return std::pair<node_type*,bool>(res,true);
+          return std::pair<final_node_type*,bool>(res,true);
         }
         else{
           destroy_value(x);
           deallocate_node(x);
-          return std::pair<node_type*,bool>(res,false);
+          return std::pair<final_node_type*,bool>(res,false);
         }
       }
       BOOST_CATCH(...){
@@ -747,33 +752,34 @@ BOOST_MULTI_INDEX_PROTECTED_IF_MEMBER_TEMPLATE_FRIENDS:
     BOOST_CATCH_END
   }
 
-  std::pair<node_type*,bool> insert_ref_(const value_type& x)
+  std::pair<final_node_type*,bool> insert_ref_(const value_type& x)
   {
     return insert_(x);
   }
 
-  std::pair<node_type*,bool> insert_ref_(value_type& x)
+  std::pair<final_node_type*,bool> insert_ref_(value_type& x)
   {
     return insert_(x);
   }
 
   template<BOOST_MULTI_INDEX_TEMPLATE_PARAM_PACK>
-  std::pair<node_type*,bool> emplace_(
+  std::pair<final_node_type*,bool> emplace_(
     BOOST_MULTI_INDEX_FUNCTION_PARAM_PACK)
   {
-    node_type* x=allocate_node();
+    final_node_type* x=allocate_node();
     BOOST_TRY{
       construct_value(x,BOOST_MULTI_INDEX_FORWARD_PARAM_PACK);
       BOOST_TRY{
-        node_type* res=super::insert_(x->value(),x,detail::emplaced_tag());
+        final_node_type* res=super::insert_(
+          x->value(),x,detail::emplaced_tag());
         if(res==x){
           ++node_count;
-          return std::pair<node_type*,bool>(res,true);
+          return std::pair<final_node_type*,bool>(res,true);
         }
         else{
           destroy_value(x);
           deallocate_node(x);
-          return std::pair<node_type*,bool>(res,false);
+          return std::pair<final_node_type*,bool>(res,false);
         }
       }
       BOOST_CATCH(...){
@@ -790,48 +796,50 @@ BOOST_MULTI_INDEX_PROTECTED_IF_MEMBER_TEMPLATE_FRIENDS:
   }
 
   template<typename Variant>
-  std::pair<node_type*,bool> insert_(
-    const Value& v,node_type* position,Variant variant)
+  std::pair<final_node_type*,bool> insert_(
+    const Value& v,final_node_type* position,Variant variant)
   {
-    node_type* x=0;
-    node_type* res=super::insert_(v,position,x,variant);
+    final_node_type* x=0;
+    final_node_type* res=super::insert_(v,position,x,variant);
     if(res==x){
       ++node_count;
-      return std::pair<node_type*,bool>(res,true);
+      return std::pair<final_node_type*,bool>(res,true);
     }
     else{
-      return std::pair<node_type*,bool>(res,false);
+      return std::pair<final_node_type*,bool>(res,false);
     }
   }
 
-  std::pair<node_type*,bool> insert_(const Value& v,node_type* position)
+  std::pair<final_node_type*,bool> insert_(
+    const Value& v,final_node_type* position)
   {
     return insert_(v,position,detail::lvalue_tag());
   }
 
-  std::pair<node_type*,bool> insert_rv_(const Value& v,node_type* position)
+  std::pair<final_node_type*,bool> insert_rv_(
+    const Value& v,final_node_type* position)
   {
     return insert_(v,position,detail::rvalue_tag());
   }
 
   template<typename T>
-  std::pair<node_type*,bool> insert_ref_(
-    T& t,node_type* position)
+  std::pair<final_node_type*,bool> insert_ref_(
+    T& t,final_node_type* position)
   {
-    node_type* x=allocate_node();
+    final_node_type* x=allocate_node();
     BOOST_TRY{
       construct_value(x,t);
       BOOST_TRY{
-        node_type* res=super::insert_(
+        final_node_type* res=super::insert_(
           x->value(),position,x,detail::emplaced_tag());
         if(res==x){
           ++node_count;
-          return std::pair<node_type*,bool>(res,true);
+          return std::pair<final_node_type*,bool>(res,true);
         }
         else{
           destroy_value(x);
           deallocate_node(x);
-          return std::pair<node_type*,bool>(res,false);
+          return std::pair<final_node_type*,bool>(res,false);
         }
       }
       BOOST_CATCH(...){
@@ -847,37 +855,37 @@ BOOST_MULTI_INDEX_PROTECTED_IF_MEMBER_TEMPLATE_FRIENDS:
     BOOST_CATCH_END
   }
 
-  std::pair<node_type*,bool> insert_ref_(
-    const value_type& x,node_type* position)
+  std::pair<final_node_type*,bool> insert_ref_(
+    const value_type& x,final_node_type* position)
   {
     return insert_(x,position);
   }
 
-  std::pair<node_type*,bool> insert_ref_(
-    value_type& x,node_type* position)
+  std::pair<final_node_type*,bool> insert_ref_(
+    value_type& x,final_node_type* position)
   {
     return insert_(x,position);
   }
 
   template<BOOST_MULTI_INDEX_TEMPLATE_PARAM_PACK>
-  std::pair<node_type*,bool> emplace_hint_(
-    node_type* position,
+  std::pair<final_node_type*,bool> emplace_hint_(
+    final_node_type* position,
     BOOST_MULTI_INDEX_FUNCTION_PARAM_PACK)
   {
-    node_type* x=allocate_node();
+    final_node_type* x=allocate_node();
     BOOST_TRY{
       construct_value(x,BOOST_MULTI_INDEX_FORWARD_PARAM_PACK);
       BOOST_TRY{
-        node_type* res=super::insert_(
+        final_node_type* res=super::insert_(
           x->value(),position,x,detail::emplaced_tag());
         if(res==x){
           ++node_count;
-          return std::pair<node_type*,bool>(res,true);
+          return std::pair<final_node_type*,bool>(res,true);
         }
         else{
           destroy_value(x);
           deallocate_node(x);
-          return std::pair<node_type*,bool>(res,false);
+          return std::pair<final_node_type*,bool>(res,false);
         }
       }
       BOOST_CATCH(...){
@@ -893,14 +901,14 @@ BOOST_MULTI_INDEX_PROTECTED_IF_MEMBER_TEMPLATE_FRIENDS:
     BOOST_CATCH_END
   }
 
-  void erase_(node_type* x)
+  void erase_(final_node_type* x)
   {
     --node_count;
     super::erase_(x);
     deallocate_node(x);
   }
 
-  void delete_node_(node_type* x)
+  void delete_node_(final_node_type* x)
   {
     super::delete_node_(x);
     deallocate_node(x);
@@ -953,18 +961,18 @@ BOOST_MULTI_INDEX_PROTECTED_IF_MEMBER_TEMPLATE_FRIENDS:
     std::swap(node_count,x.node_count);
   }
 
-  bool replace_(const Value& k,node_type* x)
+  bool replace_(const Value& k,final_node_type* x)
   {
     return super::replace_(k,x,detail::lvalue_tag());
   }
 
-  bool replace_rv_(const Value& k,node_type* x)
+  bool replace_rv_(const Value& k,final_node_type* x)
   {
     return super::replace_(k,x,detail::rvalue_tag());
   }
 
   template<typename Modifier>
-  bool modify_(Modifier& mod,node_type* x)
+  bool modify_(Modifier& mod,final_node_type* x)
   {
     BOOST_TRY{
       mod(const_cast<value_type&>(x->value()));
@@ -992,7 +1000,7 @@ BOOST_MULTI_INDEX_PROTECTED_IF_MEMBER_TEMPLATE_FRIENDS:
   }
 
   template<typename Modifier,typename Rollback>
-  bool modify_(Modifier& mod,Rollback& back_,node_type* x)
+  bool modify_(Modifier& mod,Rollback& back_,final_node_type* x)
   {
     BOOST_TRY{
       mod(const_cast<value_type&>(x->value()));
@@ -1094,7 +1102,7 @@ BOOST_MULTI_INDEX_PROTECTED_IF_MEMBER_TEMPLATE_FRIENDS:
 
     for(std::size_t n=0;n<s;++n){
       detail::archive_constructed<Value> value("item",ar,value_version);
-      std::pair<node_type*,bool> p=insert_rv_(
+      std::pair<final_node_type*,bool> p=insert_rv_(
         value.get(),super::end().get_node());
       if(!p.second)throw_exception(
         archive::archive_exception(
@@ -1126,7 +1134,7 @@ BOOST_MULTI_INDEX_PROTECTED_IF_MEMBER_TEMPLATE_FRIENDS:
 private:
   template<BOOST_MULTI_INDEX_TEMPLATE_PARAM_PACK>
   void vartempl_construct_value_impl(
-    node_type* x,BOOST_MULTI_INDEX_FUNCTION_PARAM_PACK)
+    final_node_type* x,BOOST_MULTI_INDEX_FUNCTION_PARAM_PACK)
   {
     node_alloc_traits::construct(
       bfm_allocator::member,boost::addressof(x->value()),
@@ -1307,7 +1315,7 @@ project(
 #endif
 
   return detail::converter<multi_index_type,index_type>::iterator(
-    m,static_cast<typename multi_index_type::node_type*>(it.get_node()));
+    m,static_cast<typename multi_index_type::final_node_type*>(it.get_node()));
 }
 
 template<
@@ -1343,7 +1351,7 @@ project(
 #endif
 
   return detail::converter<multi_index_type,index_type>::const_iterator(
-    m,static_cast<typename multi_index_type::node_type*>(it.get_node()));
+    m,static_cast<typename multi_index_type::final_node_type*>(it.get_node()));
 }
 
 /* projection of iterators by tag */
@@ -1393,7 +1401,7 @@ project(
 #endif
 
   return detail::converter<multi_index_type,index_type>::iterator(
-    m,static_cast<typename multi_index_type::node_type*>(it.get_node()));
+    m,static_cast<typename multi_index_type::final_node_type*>(it.get_node()));
 }
 
 template<
@@ -1430,7 +1438,7 @@ project(
 #endif
 
   return detail::converter<multi_index_type,index_type>::const_iterator(
-    m,static_cast<typename multi_index_type::node_type*>(it.get_node()));
+    m,static_cast<typename multi_index_type::final_node_type*>(it.get_node()));
 }
 
 /* Comparison. Simple forward to first index. */

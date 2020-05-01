@@ -107,11 +107,11 @@ class hashed_index:
 
 protected:
   typedef hashed_index_node<
-    typename super::node_type,Category>          node_type;
+    typename super::index_node_type,Category>    index_node_type;
 
 private:
-  typedef typename node_type::node_alg           node_alg;
-  typedef typename node_type::impl_type          node_impl_type;
+  typedef typename index_node_type::node_alg     node_alg;
+  typedef typename index_node_type::impl_type    node_impl_type;
   typedef typename node_impl_type::pointer       node_impl_pointer;
   typedef typename node_impl_type::base_pointer  node_impl_base_pointer;
   typedef bucket_array<
@@ -121,7 +121,7 @@ public:
   /* types */
 
   typedef typename KeyFromValue::result_type     key_type;
-  typedef typename node_type::value_type         value_type;
+  typedef typename index_node_type::value_type   value_type;
   typedef KeyFromValue                           key_from_value;
   typedef Hash                                   hasher;
   typedef Pred                                   key_equal;
@@ -143,19 +143,19 @@ public:
 #if defined(BOOST_MULTI_INDEX_ENABLE_SAFE_MODE)
   typedef safe_mode::safe_iterator<
     hashed_index_iterator<
-      node_type,bucket_array_type,
+      index_node_type,bucket_array_type,
       hashed_index_global_iterator_tag>,
     hashed_index>                                iterator;
 #else
   typedef hashed_index_iterator<
-    node_type,bucket_array_type,
+    index_node_type,bucket_array_type,
     hashed_index_global_iterator_tag>            iterator;
 #endif
 
   typedef iterator                               const_iterator;
 
   typedef hashed_index_iterator<
-    node_type,bucket_array_type,
+    index_node_type,bucket_array_type,
     hashed_index_local_iterator_tag>             local_iterator;
   typedef local_iterator                         const_local_iterator;
 
@@ -235,9 +235,17 @@ public:
   /* iterators */
 
   iterator begin()BOOST_NOEXCEPT
-    {return make_iterator(node_type::from_impl(header()->next()->prior()));}
+  {
+    return make_iterator(
+      index_node_type::from_impl(header()->next()->prior()));
+  
+  }
   const_iterator begin()const BOOST_NOEXCEPT
-    {return make_iterator(node_type::from_impl(header()->next()->prior()));}
+  {
+    return make_iterator(
+      index_node_type::from_impl(header()->next()->prior()));
+  }
+
   iterator       end()BOOST_NOEXCEPT{return make_iterator(header());}
   const_iterator end()const BOOST_NOEXCEPT{return make_iterator(header());}
   const_iterator cbegin()const BOOST_NOEXCEPT{return begin();}
@@ -245,12 +253,14 @@ public:
 
   iterator iterator_to(const value_type& x)
   {
-    return make_iterator(node_from_value<node_type>(boost::addressof(x)));
+    return make_iterator(
+      node_from_value<index_node_type>(boost::addressof(x)));
   }
 
   const_iterator iterator_to(const value_type& x)const
   {
-    return make_iterator(node_from_value<node_type>(boost::addressof(x)));
+    return make_iterator(
+      node_from_value<index_node_type>(boost::addressof(x)));
   }
 
   /* modifiers */
@@ -326,13 +336,13 @@ public:
     std::size_t buc=buckets.position(hash_(k));
     for(node_impl_pointer x=buckets.at(buc)->prior();
         x!=node_impl_pointer(0);x=node_alg::next_to_inspect(x)){
-      if(eq_(k,key(node_type::from_impl(x)->value()))){
+      if(eq_(k,key(index_node_type::from_impl(x)->value()))){
         node_impl_pointer y=end_of_range(x);
         size_type         s=0;
         do{
           node_impl_pointer z=node_alg::after(x);
           this->final_erase_(
-            static_cast<final_node_type*>(node_type::from_impl(x)));
+            static_cast<final_node_type*>(index_node_type::from_impl(x)));
           x=z;
           ++s;
         }while(x!=y);
@@ -556,7 +566,7 @@ public:
   {
     node_impl_pointer x=buckets.at(n)->prior();
     if(x==node_impl_pointer(0))return end(n);
-    return make_local_iterator(node_type::from_impl(x));
+    return make_local_iterator(index_node_type::from_impl(x));
   }
 
   local_iterator end(size_type n)
@@ -575,13 +585,13 @@ public:
   local_iterator local_iterator_to(const value_type& x)
   {
     return make_local_iterator(
-      node_from_value<node_type>(boost::addressof(x)));
+      node_from_value<index_node_type>(boost::addressof(x)));
   }
 
   const_local_iterator local_iterator_to(const value_type& x)const
   {
     return make_local_iterator(
-      node_from_value<node_type>(boost::addressof(x)));
+      node_from_value<index_node_type>(boost::addressof(x)));
   }
 
   /* hash policy */
@@ -666,33 +676,33 @@ BOOST_MULTI_INDEX_PROTECTED_IF_MEMBER_TEMPLATE_FRIENDS:
   }
 
 #if defined(BOOST_MULTI_INDEX_ENABLE_SAFE_MODE)
-  iterator make_iterator(node_type* node)
+  iterator make_iterator(index_node_type* node)
   {
     return iterator(node,this);
   }
 
-  const_iterator make_iterator(node_type* node)const
+  const_iterator make_iterator(index_node_type* node)const
   {
     return const_iterator(node,const_cast<hashed_index*>(this));
   }
 #else
-  iterator make_iterator(node_type* node)
+  iterator make_iterator(index_node_type* node)
   {
     return iterator(node);
   }
 
-  const_iterator make_iterator(node_type* node)const
+  const_iterator make_iterator(index_node_type* node)const
   {
     return const_iterator(node);
   }
 #endif
 
-  local_iterator make_local_iterator(node_type* node)
+  local_iterator make_local_iterator(index_node_type* node)
   {
     return local_iterator(node);
   }
 
-  const_local_iterator make_local_iterator(node_type* node)const
+  const_local_iterator make_local_iterator(index_node_type* node)const
   {
     return const_local_iterator(node);
   }
@@ -715,8 +725,8 @@ BOOST_MULTI_INDEX_PROTECTED_IF_MEMBER_TEMPLATE_FRIENDS:
       do{
         node_impl_pointer prev_org=org->prior(),
                           prev_cpy=
-          static_cast<node_type*>(map.find(static_cast<final_node_type*>(
-            node_type::from_impl(prev_org))))->impl();
+          static_cast<index_node_type*>(map.find(static_cast<final_node_type*>(
+            index_node_type::from_impl(prev_org))))->impl();
         cpy->prior()=prev_cpy;
         if(node_alg::is_first_of_bucket(org)){
           node_impl_base_pointer buc_org=prev_org->next(),
@@ -747,8 +757,8 @@ BOOST_MULTI_INDEX_PROTECTED_IF_MEMBER_TEMPLATE_FRIENDS:
       do{
         node_impl_pointer next_org=node_alg::after(org),
                           next_cpy=
-          static_cast<node_type*>(map.find(static_cast<final_node_type*>(
-            node_type::from_impl(next_org))))->impl();
+          static_cast<index_node_type*>(map.find(static_cast<final_node_type*>(
+            index_node_type::from_impl(next_org))))->impl();
         if(node_alg::is_first_of_bucket(next_org)){
           node_impl_base_pointer buc_org=org->next(),
                                  buc_cpy=
@@ -764,15 +774,17 @@ BOOST_MULTI_INDEX_PROTECTED_IF_MEMBER_TEMPLATE_FRIENDS:
           else{
             cpy->next()=
               node_impl_type::base_pointer_from(
-                static_cast<node_type*>(map.find(static_cast<final_node_type*>(
-                  node_type::from_impl(
-                    node_impl_type::pointer_from(org->next())))))->impl());
+                static_cast<index_node_type*>(
+                  map.find(static_cast<final_node_type*>(
+                    index_node_type::from_impl(
+                      node_impl_type::pointer_from(org->next())))))->impl());
           }
 
           if(next_org->prior()!=org){
             next_cpy->prior()=
-              static_cast<node_type*>(map.find(static_cast<final_node_type*>(
-                node_type::from_impl(next_org->prior()))))->impl();
+              static_cast<index_node_type*>(
+                map.find(static_cast<final_node_type*>(
+                  index_node_type::from_impl(next_org->prior()))))->impl();
           }
           else{
             next_cpy->prior()=cpy;
@@ -796,17 +808,18 @@ BOOST_MULTI_INDEX_PROTECTED_IF_MEMBER_TEMPLATE_FRIENDS:
     link_info   pos(buckets.at(buc));
     if(!link_point(v,pos)){
       return static_cast<final_node_type*>(
-        node_type::from_impl(node_impl_type::pointer_from(pos)));
+        index_node_type::from_impl(node_impl_type::pointer_from(pos)));
     }
 
     final_node_type* res=super::insert_(v,x,variant);
-    if(res==x)link(static_cast<node_type*>(x),pos);
+    if(res==x)link(static_cast<index_node_type*>(x),pos);
     return res;
   }
 
   template<typename Variant>
   final_node_type* insert_(
-    value_param_type v,node_type* position,final_node_type*& x,Variant variant)
+    value_param_type v,index_node_type* position,
+    final_node_type*& x,Variant variant)
   {
     reserve_for_insert(size()+1);
 
@@ -814,15 +827,15 @@ BOOST_MULTI_INDEX_PROTECTED_IF_MEMBER_TEMPLATE_FRIENDS:
     link_info   pos(buckets.at(buc));
     if(!link_point(v,pos)){
       return static_cast<final_node_type*>(
-        node_type::from_impl(node_impl_type::pointer_from(pos)));
+        index_node_type::from_impl(node_impl_type::pointer_from(pos)));
     }
 
     final_node_type* res=super::insert_(v,position,x,variant);
-    if(res==x)link(static_cast<node_type*>(x),pos);
+    if(res==x)link(static_cast<index_node_type*>(x),pos);
     return res;
   }
 
-  void erase_(node_type* x)
+  void erase_(index_node_type* x)
   {
     unlink(x);
     super::erase_(x);
@@ -842,7 +855,7 @@ BOOST_MULTI_INDEX_PROTECTED_IF_MEMBER_TEMPLATE_FRIENDS:
     for(node_impl_pointer x_end=header()->impl(),x=x_end->prior();x!=x_end;){
       node_impl_pointer y=x->prior();
       this->final_delete_node_(
-        static_cast<final_node_type*>(node_type::from_impl(x)));
+        static_cast<final_node_type*>(index_node_type::from_impl(x)));
       x=y;
     }
   }
@@ -861,7 +874,7 @@ BOOST_MULTI_INDEX_PROTECTED_IF_MEMBER_TEMPLATE_FRIENDS:
         first->next()->prior()=first;
       }
       this->final_delete_node_(
-        static_cast<final_node_type*>(node_type::from_impl(x)));
+        static_cast<final_node_type*>(index_node_type::from_impl(x)));
       x=y;
     }
   }
@@ -910,7 +923,7 @@ BOOST_MULTI_INDEX_PROTECTED_IF_MEMBER_TEMPLATE_FRIENDS:
   }
 
   template<typename Variant>
-  bool replace_(value_param_type v,node_type* x,Variant variant)
+  bool replace_(value_param_type v,index_node_type* x,Variant variant)
   {
     if(eq_(key(v),key(x->value()))){
       return super::replace_(v,x,variant);
@@ -936,7 +949,7 @@ BOOST_MULTI_INDEX_PROTECTED_IF_MEMBER_TEMPLATE_FRIENDS:
     BOOST_CATCH_END
   }
 
-  bool modify_(node_type* x)
+  bool modify_(index_node_type* x)
   {
     std::size_t buc;
     bool        b; 
@@ -998,7 +1011,7 @@ BOOST_MULTI_INDEX_PROTECTED_IF_MEMBER_TEMPLATE_FRIENDS:
     BOOST_CATCH_END
   }
 
-  bool modify_rollback_(node_type* x)
+  bool modify_rollback_(index_node_type* x)
   {
     std::size_t buc=find_bucket(x->value());
     if(in_place(x->impl(),key(x->value()),buc)){
@@ -1024,7 +1037,7 @@ BOOST_MULTI_INDEX_PROTECTED_IF_MEMBER_TEMPLATE_FRIENDS:
     BOOST_CATCH_END
   }
 
-  bool check_rollback_(node_type* x)const
+  bool check_rollback_(index_node_type* x)const
   {
     std::size_t buc=find_bucket(x->value());
     return in_place(x->impl(),key(x->value()),buc)&&super::check_rollback_(x);
@@ -1062,7 +1075,7 @@ BOOST_MULTI_INDEX_PROTECTED_IF_MEMBER_TEMPLATE_FRIENDS:
       if(it2==it2_last)return false;
 
       const_iterator it_last=make_iterator(
-        node_type::from_impl(end_of_range(it.get_node()->impl())));
+        index_node_type::from_impl(end_of_range(it.get_node()->impl())));
       if(std::distance(it,it_last)!=std::distance(it2,it2_last))return false;
 
       /* From is_permutation code in
@@ -1140,7 +1153,7 @@ BOOST_MULTI_INDEX_PROTECTED_IF_MEMBER_TEMPLATE_FRIENDS:
 #endif
 
 private:
-  node_type* header()const{return this->final_header();}
+  index_node_type* header()const{return this->final_header();}
 
   std::size_t find_bucket(value_param_type v)const
   {
@@ -1173,7 +1186,7 @@ private:
   {
     for(node_impl_pointer x=pos->prior();x!=node_impl_pointer(0);
         x=node_alg::after_local(x)){
-      if(eq_(key(v),key(node_type::from_impl(x)->value()))){
+      if(eq_(key(v),key(index_node_type::from_impl(x)->value()))){
         pos=node_impl_type::base_pointer_from(x);
         return false;
       }
@@ -1186,7 +1199,7 @@ private:
   {
     for(node_impl_pointer x=pos.first->prior();x!=node_impl_pointer(0);
         x=node_alg::next_to_inspect(x)){
-      if(eq_(key(v),key(node_type::from_impl(x)->value()))){
+      if(eq_(key(v),key(index_node_type::from_impl(x)->value()))){
         pos.first=node_impl_type::base_pointer_from(x);
         pos.last=node_impl_type::base_pointer_from(last_of_range(x));
         return true;
@@ -1214,8 +1227,8 @@ private:
       node_impl_pointer yy=node_impl_type::pointer_from(y);
       return
         eq_(
-          key(node_type::from_impl(x)->value()),
-          key(node_type::from_impl(yy)->value()))?yy:x;
+          key(index_node_type::from_impl(x)->value()),
+          key(index_node_type::from_impl(yy)->value()))?yy:x;
     }
     else if(z->prior()==x)               /* last of bucket */
       return x;
@@ -1241,8 +1254,8 @@ private:
     if(z==x){                      /* range of size 1 or 2 */
       node_impl_pointer yy=node_impl_type::pointer_from(y);
       if(!eq_(
-           key(node_type::from_impl(x)->value()),
-           key(node_type::from_impl(yy)->value())))yy=x;
+           key(index_node_type::from_impl(x)->value()),
+           key(index_node_type::from_impl(yy)->value())))yy=x;
       return yy->next()->prior()==yy?
                node_impl_type::pointer_from(yy->next()):
                yy->next()->prior();
@@ -1255,17 +1268,18 @@ private:
                z->next()->prior();
   }
 
-  void link(node_type* x,const link_info& pos)
+  void link(index_node_type* x,const link_info& pos)
   {
     link(x,pos,Category());
   }
 
-  void link(node_type* x,node_impl_base_pointer pos,hashed_unique_tag)
+  void link(index_node_type* x,node_impl_base_pointer pos,hashed_unique_tag)
   {
     node_alg::link(x->impl(),pos,header()->impl());
   }
 
-  void link(node_type* x,const link_info_non_unique& pos,hashed_non_unique_tag)
+  void link(
+    index_node_type* x,const link_info_non_unique& pos,hashed_non_unique_tag)
   {
     if(pos.last==node_impl_base_pointer(0)){
       node_alg::link(x->impl(),pos.first,header()->impl());
@@ -1278,14 +1292,14 @@ private:
     }
   }
 
-  void unlink(node_type* x)
+  void unlink(index_node_type* x)
   {
     node_alg::unlink(x->impl());
   }
 
   typedef typename node_alg::unlink_undo unlink_undo;
 
-  void unlink(node_type* x,unlink_undo& undo)
+  void unlink(index_node_type* x,unlink_undo& undo)
   {
     node_alg::unlink(x->impl(),undo);
   }
@@ -1328,7 +1342,7 @@ private:
           node_impl_pointer x=end_->prior();
 
           /* only this can possibly throw */
-          std::size_t h=hash_(key(node_type::from_impl(x)->value()));
+          std::size_t h=hash_(key(index_node_type::from_impl(x)->value()));
 
           hashes.data()[i]=h;
           node_ptrs.data()[i]=x;
@@ -1381,7 +1395,7 @@ private:
           if(x==end_)break;
 
           /* only this can possibly throw */
-          std::size_t h=hash_(key(node_type::from_impl(x)->value()));
+          std::size_t h=hash_(key(index_node_type::from_impl(x)->value()));
 
           hashes.data()[i]=h;
           node_ptrs.data()[i]=x;
@@ -1435,7 +1449,7 @@ private:
     for(node_impl_pointer y=buckets.at(buc)->prior();
         y!=node_impl_pointer(0);y=node_alg::after_local(y)){
       if(y==x)found=true;
-      else if(eq_(k,key(node_type::from_impl(y)->value())))return false;
+      else if(eq_(k,key(index_node_type::from_impl(y)->value())))return false;
     }
     return found;
   }
@@ -1452,13 +1466,13 @@ private:
           /* in place <-> equal to some other member of the group */
           return eq_(
             k,
-            key(node_type::from_impl(
+            key(index_node_type::from_impl(
               node_impl_type::pointer_from(y->next()))->value()));
         }
         else{
           node_impl_pointer z=
             node_alg::after_local(y->next()->prior()); /* end of range */
-          if(eq_(k,key(node_type::from_impl(y)->value()))){
+          if(eq_(k,key(index_node_type::from_impl(y)->value()))){
             if(found)return false; /* x lies outside */
             do{
               if(y==x)return true;
@@ -1480,7 +1494,7 @@ private:
           range_size=1;
           found=true;
         }
-        else if(eq_(k,key(node_type::from_impl(y)->value()))){
+        else if(eq_(k,key(index_node_type::from_impl(y)->value()))){
           if(range_size==0&&found)return false;
           if(range_size==1&&!found)return false;
           if(range_size==2)return false;
@@ -1498,7 +1512,7 @@ private:
   }
 
 #if defined(BOOST_MULTI_INDEX_ENABLE_SAFE_MODE)
-  void detach_iterators(node_type* x)
+  void detach_iterators(index_node_type* x)
   {
     iterator it=make_iterator(x);
     safe_mode::detach_equivalent_iterators(it);
@@ -1548,8 +1562,8 @@ private:
     std::size_t buc=buckets.position(hash(k));
     for(node_impl_pointer x=buckets.at(buc)->prior();
         x!=node_impl_pointer(0);x=node_alg::next_to_inspect(x)){
-      if(eq(k,key(node_type::from_impl(x)->value()))){
-        return make_iterator(node_type::from_impl(x));
+      if(eq(k,key(index_node_type::from_impl(x)->value()))){
+        return make_iterator(index_node_type::from_impl(x));
       }
     }
     return end();
@@ -1575,7 +1589,7 @@ private:
     std::size_t buc=buckets.position(hash(k));
     for(node_impl_pointer x=buckets.at(buc)->prior();
         x!=node_impl_pointer(0);x=node_alg::next_to_inspect(x)){
-      if(eq(k,key(node_type::from_impl(x)->value()))){
+      if(eq(k,key(index_node_type::from_impl(x)->value()))){
         size_type         res=0;
         node_impl_pointer y=end_of_range(x);
         do{
@@ -1608,10 +1622,10 @@ private:
     std::size_t buc=buckets.position(hash(k));
     for(node_impl_pointer x=buckets.at(buc)->prior();
         x!=node_impl_pointer(0);x=node_alg::next_to_inspect(x)){
-      if(eq(k,key(node_type::from_impl(x)->value()))){
+      if(eq(k,key(index_node_type::from_impl(x)->value()))){
         return std::pair<iterator,iterator>(
-          make_iterator(node_type::from_impl(x)),
-          make_iterator(node_type::from_impl(end_of_range(x))));
+          make_iterator(index_node_type::from_impl(x)),
+          make_iterator(index_node_type::from_impl(end_of_range(x))));
       }
     }
     return std::pair<iterator,iterator>(end(),end());

@@ -56,7 +56,7 @@ template<typename Value,typename IndexSpecifierList,typename Allocator>
 class index_base
 {
 protected:
-  typedef index_node_base<Value,Allocator>    node_type;
+  typedef index_node_base<Value,Allocator>    index_node_type;
   typedef typename multi_index_node_type<
     Value,IndexSpecifierList,Allocator>::type final_node_type;
   typedef multi_index_container<
@@ -74,10 +74,10 @@ protected:
 
 #if !defined(BOOST_MULTI_INDEX_DISABLE_SERIALIZATION)
   typedef index_saver<
-    node_type,
+    index_node_type,
     final_allocator_type>                     index_saver_type;
   typedef index_loader<
-    node_type,
+    index_node_type,
     final_node_type,
     final_allocator_type>                     index_loader_type;
 #endif
@@ -133,29 +133,29 @@ protected:
   }
 
   final_node_type* insert_(
-    const value_type& v,node_type*,final_node_type*& x,lvalue_tag)
+    const value_type& v,index_node_type*,final_node_type*& x,lvalue_tag)
   {
     return insert_(v,x,lvalue_tag());
   }
 
   final_node_type* insert_(
-    const value_type& v,node_type*,final_node_type*& x,rvalue_tag)
+    const value_type& v,index_node_type*,final_node_type*& x,rvalue_tag)
   {
     return insert_(v,x,rvalue_tag());
   }
 
   final_node_type* insert_(
-    const value_type&,node_type*,final_node_type*& x,emplaced_tag)
+    const value_type&,index_node_type*,final_node_type*& x,emplaced_tag)
   {
     return x;
   }
 
-  void erase_(node_type* x)
+  void erase_(index_node_type* x)
   {
     final().destroy_value(static_cast<final_node_type*>(x));
   }
 
-  void delete_node_(node_type* x)
+  void delete_node_(index_node_type* x)
   {
     final().destroy_value(static_cast<final_node_type*>(x));
   }
@@ -170,23 +170,23 @@ protected:
 
   void swap_elements_(index_base<Value,IndexSpecifierList,Allocator>&){}
 
-  bool replace_(const value_type& v,node_type* x,lvalue_tag)
+  bool replace_(const value_type& v,index_node_type* x,lvalue_tag)
   {
     x->value()=v;
     return true;
   }
 
-  bool replace_(const value_type& v,node_type* x,rvalue_tag)
+  bool replace_(const value_type& v,index_node_type* x,rvalue_tag)
   {
     x->value()=boost::move(const_cast<value_type&>(v));
     return true;
   }
 
-  bool modify_(node_type*){return true;}
+  bool modify_(index_node_type*){return true;}
 
-  bool modify_rollback_(node_type*){return true;}
+  bool modify_rollback_(index_node_type*){return true;}
 
-  bool check_rollback_(node_type*)const{return true;}
+  bool check_rollback_(index_node_type*)const{return true;}
 
 #if !defined(BOOST_MULTI_INDEX_DISABLE_SERIALIZATION)
   /* serialization */
