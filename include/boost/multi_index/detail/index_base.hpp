@@ -155,11 +155,6 @@ protected:
     final().destroy_value(static_cast<final_node_type*>(x));
   }
 
-  void delete_node_(index_node_type* x)
-  {
-    final().destroy_value(static_cast<final_node_type*>(x));
-  }
-
   void clear_(){}
 
   template<typename BoolConstant>

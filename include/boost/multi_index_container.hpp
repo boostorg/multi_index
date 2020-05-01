@@ -910,7 +910,7 @@ BOOST_MULTI_INDEX_PROTECTED_IF_MEMBER_TEMPLATE_FRIENDS:
 
   void delete_node_(final_node_type* x)
   {
-    super::delete_node_(x);
+    destroy_value(x);
     deallocate_node(x);
   }
 
