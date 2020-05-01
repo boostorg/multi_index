@@ -734,8 +734,7 @@ BOOST_MULTI_INDEX_PROTECTED_IF_MEMBER_TEMPLATE_FRIENDS:
           return std::pair<final_node_type*,bool>(res,true);
         }
         else{
-          destroy_value(x);
-          deallocate_node(x);
+          delete_node_(x);
           return std::pair<final_node_type*,bool>(res,false);
         }
       }
@@ -777,8 +776,7 @@ BOOST_MULTI_INDEX_PROTECTED_IF_MEMBER_TEMPLATE_FRIENDS:
           return std::pair<final_node_type*,bool>(res,true);
         }
         else{
-          destroy_value(x);
-          deallocate_node(x);
+          delete_node_(x);
           return std::pair<final_node_type*,bool>(res,false);
         }
       }
@@ -837,8 +835,7 @@ BOOST_MULTI_INDEX_PROTECTED_IF_MEMBER_TEMPLATE_FRIENDS:
           return std::pair<final_node_type*,bool>(res,true);
         }
         else{
-          destroy_value(x);
-          deallocate_node(x);
+          delete_node_(x);
           return std::pair<final_node_type*,bool>(res,false);
         }
       }
@@ -883,8 +880,7 @@ BOOST_MULTI_INDEX_PROTECTED_IF_MEMBER_TEMPLATE_FRIENDS:
           return std::pair<final_node_type*,bool>(res,true);
         }
         else{
-          destroy_value(x);
-          deallocate_node(x);
+          delete_node_(x);
           return std::pair<final_node_type*,bool>(res,false);
         }
       }
@@ -904,8 +900,8 @@ BOOST_MULTI_INDEX_PROTECTED_IF_MEMBER_TEMPLATE_FRIENDS:
   void erase_(final_node_type* x)
   {
     --node_count;
-    super::erase_(x);
-    deallocate_node(x);
+    super::extract_(x);
+    delete_node_(x);
   }
 
   void delete_node_(final_node_type* x)
@@ -985,14 +981,14 @@ BOOST_MULTI_INDEX_PROTECTED_IF_MEMBER_TEMPLATE_FRIENDS:
 
     BOOST_TRY{
       if(!super::modify_(x)){
-        deallocate_node(x);
+        delete_node_(x);
         --node_count;
         return false;
       }
       else return true;
     }
     BOOST_CATCH(...){
-      deallocate_node(x);
+      delete_node_(x);
       --node_count;
       BOOST_RETHROW;
     }

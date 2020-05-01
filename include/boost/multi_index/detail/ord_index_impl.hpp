@@ -755,11 +755,11 @@ BOOST_MULTI_INDEX_PROTECTED_IF_MEMBER_TEMPLATE_FRIENDS:
     return res;
   }
 
-  void erase_(index_node_type* x)
+  void extract_(index_node_type* x)
   {
-    node_impl_type::rebalance_for_erase(
+    node_impl_type::rebalance_for_extract(
       x->impl(),header()->parent(),header()->left(),header()->right());
-    super::erase_(x);
+    super::extract_(x);
 
 #if defined(BOOST_MULTI_INDEX_ENABLE_SAFE_MODE)
     detach_iterators(x);
@@ -818,7 +818,7 @@ BOOST_MULTI_INDEX_PROTECTED_IF_MEMBER_TEMPLATE_FRIENDS:
     index_node_type* next=x;
     index_node_type::increment(next);
 
-    node_impl_type::rebalance_for_erase(
+    node_impl_type::rebalance_for_extract(
       x->impl(),header()->parent(),header()->left(),header()->right());
 
     BOOST_TRY{
@@ -844,17 +844,17 @@ BOOST_MULTI_INDEX_PROTECTED_IF_MEMBER_TEMPLATE_FRIENDS:
       b=in_place(x->value(),x,Category());
     }
     BOOST_CATCH(...){
-      erase_(x);
+      extract_(x);
       BOOST_RETHROW;
     }
     BOOST_CATCH_END
     if(!b){
-      node_impl_type::rebalance_for_erase(
+      node_impl_type::rebalance_for_extract(
         x->impl(),header()->parent(),header()->left(),header()->right());
       BOOST_TRY{
         link_info inf;
         if(!link_point(key(x->value()),inf,Category())){
-          super::erase_(x);
+          super::extract_(x);
 
 #if defined(BOOST_MULTI_INDEX_ENABLE_SAFE_MODE)
           detach_iterators(x);
@@ -864,7 +864,7 @@ BOOST_MULTI_INDEX_PROTECTED_IF_MEMBER_TEMPLATE_FRIENDS:
         node_impl_type::link(x->impl(),inf.side,inf.pos,header()->impl());
       }
       BOOST_CATCH(...){
-        super::erase_(x);
+        super::extract_(x);
 
 #if defined(BOOST_MULTI_INDEX_ENABLE_SAFE_MODE)
         detach_iterators(x);
@@ -877,7 +877,7 @@ BOOST_MULTI_INDEX_PROTECTED_IF_MEMBER_TEMPLATE_FRIENDS:
 
     BOOST_TRY{
       if(!super::modify_(x)){
-        node_impl_type::rebalance_for_erase(
+        node_impl_type::rebalance_for_extract(
           x->impl(),header()->parent(),header()->left(),header()->right());
 
 #if defined(BOOST_MULTI_INDEX_ENABLE_SAFE_MODE)
@@ -889,7 +889,7 @@ BOOST_MULTI_INDEX_PROTECTED_IF_MEMBER_TEMPLATE_FRIENDS:
       else return true;
     }
     BOOST_CATCH(...){
-      node_impl_type::rebalance_for_erase(
+      node_impl_type::rebalance_for_extract(
         x->impl(),header()->parent(),header()->left(),header()->right());
 
 #if defined(BOOST_MULTI_INDEX_ENABLE_SAFE_MODE)
@@ -910,7 +910,7 @@ BOOST_MULTI_INDEX_PROTECTED_IF_MEMBER_TEMPLATE_FRIENDS:
     index_node_type* next=x;
     index_node_type::increment(next);
 
-    node_impl_type::rebalance_for_erase(
+    node_impl_type::rebalance_for_extract(
       x->impl(),header()->parent(),header()->left(),header()->right());
 
     BOOST_TRY{
@@ -1383,7 +1383,7 @@ private:
     else index_node_type::increment(position);
 
     if(position!=x){
-      node_impl_type::rebalance_for_erase(
+      node_impl_type::rebalance_for_extract(
         x->impl(),header()->parent(),header()->left(),header()->right());
       node_impl_type::restore(
         x->impl(),position->impl(),header()->impl());

@@ -837,10 +837,10 @@ BOOST_MULTI_INDEX_PROTECTED_IF_MEMBER_TEMPLATE_FRIENDS:
     return res;
   }
 
-  void erase_(index_node_type* x)
+  void extract_(index_node_type* x)
   {
     unlink(x);
-    super::erase_(x);
+    super::extract_(x);
 
 #if defined(BOOST_MULTI_INDEX_ENABLE_SAFE_MODE)
     detach_iterators(x);
@@ -960,7 +960,7 @@ BOOST_MULTI_INDEX_PROTECTED_IF_MEMBER_TEMPLATE_FRIENDS:
       b=in_place(x->impl(),key(x->value()),buc);
     }
     BOOST_CATCH(...){
-      erase_(x);
+      extract_(x);
       BOOST_RETHROW;
     }
     BOOST_CATCH_END
@@ -969,7 +969,7 @@ BOOST_MULTI_INDEX_PROTECTED_IF_MEMBER_TEMPLATE_FRIENDS:
       BOOST_TRY{
         link_info pos(buckets.at(buc));
         if(!link_point(x->value(),pos)){
-          super::erase_(x);
+          super::extract_(x);
 
 #if defined(BOOST_MULTI_INDEX_ENABLE_SAFE_MODE)
           detach_iterators(x);
@@ -979,7 +979,7 @@ BOOST_MULTI_INDEX_PROTECTED_IF_MEMBER_TEMPLATE_FRIENDS:
         link(x,pos);
       }
       BOOST_CATCH(...){
-        super::erase_(x);
+        super::extract_(x);
 
 #if defined(BOOST_MULTI_INDEX_ENABLE_SAFE_MODE)
       detach_iterators(x);

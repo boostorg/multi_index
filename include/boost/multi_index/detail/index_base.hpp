@@ -150,10 +150,7 @@ protected:
     return x;
   }
 
-  void erase_(index_node_type* x)
-  {
-    final().destroy_value(static_cast<final_node_type*>(x));
-  }
+  void extract_(index_node_type*){}
 
   void clear_(){}
 
