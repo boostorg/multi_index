@@ -34,6 +34,7 @@
 #include <boost/multi_index/detail/hash_index_iterator.hpp>
 #include <boost/multi_index/detail/index_node_base.hpp>
 #include <boost/multi_index/detail/modify_key_adaptor.hpp>
+#include <boost/multi_index/detail/node_handle.hpp>
 #include <boost/multi_index/detail/promotes_arg.hpp>
 #include <boost/multi_index/detail/safe_mode.hpp>
 #include <boost/multi_index/detail/scope_guard.hpp>
@@ -161,6 +162,9 @@ public:
     Category,hashed_index_local_iterator_tag>    local_iterator;
   typedef local_iterator                         const_local_iterator;
 
+  typedef typename super::final_node_handle_type node_type;
+  typedef detail::insert_return_type<
+    iterator,node_type>                          insert_return_type;
   typedef TagList                                tag_list;
 
 protected:
@@ -320,6 +324,42 @@ public:
     insert(list.begin(),list.end());
   }
 #endif
+
+  insert_return_type insert(BOOST_RV_REF(node_type) nh)
+  {
+    if(nh)BOOST_MULTI_INDEX_CHECK_EQUAL_ALLOCATORS(*this,nh);
+    BOOST_MULTI_INDEX_HASHED_INDEX_CHECK_INVARIANT;
+    std::pair<final_node_type*,bool> p=this->final_insert_nh_(nh);
+    return insert_return_type(make_iterator(p.first),p.second,boost::move(nh));
+  }
+
+  iterator insert(const_iterator position,BOOST_RV_REF(node_type) nh)
+  {
+    BOOST_MULTI_INDEX_CHECK_VALID_ITERATOR(position);
+    BOOST_MULTI_INDEX_CHECK_IS_OWNER(position,*this);
+    if(nh)BOOST_MULTI_INDEX_CHECK_EQUAL_ALLOCATORS(*this,nh);
+    BOOST_MULTI_INDEX_HASHED_INDEX_CHECK_INVARIANT;
+    std::pair<final_node_type*,bool> p=this->final_insert_nh_(
+      nh,static_cast<final_node_type*>(position.get_node()));
+    return make_iterator(p.first);
+  }
+
+  node_type extract(const_iterator position)
+  {
+    BOOST_MULTI_INDEX_CHECK_VALID_ITERATOR(position);
+    BOOST_MULTI_INDEX_CHECK_DEREFERENCEABLE_ITERATOR(position);
+    BOOST_MULTI_INDEX_CHECK_IS_OWNER(position,*this);
+    BOOST_MULTI_INDEX_HASHED_INDEX_CHECK_INVARIANT;
+    return this->final_extract_(
+      static_cast<final_node_type*>(position.get_node()));
+  }
+
+  node_type extract(key_param_type x)
+  {
+    iterator position=find(x);
+    if(position==end())return node_type();
+    else return extract(position);
+  }
 
   iterator erase(iterator position)
   {

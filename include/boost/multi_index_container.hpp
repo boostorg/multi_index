@@ -365,15 +365,7 @@ public:
   multi_index_container<Value,IndexSpecifierList,Allocator>& operator=(
     BOOST_RV_REF(multi_index_container) x)
   {
-#if !defined(BOOST_NO_CXX17_IF_CONSTEXPR)
-#define BOOST_MULTI_INDEX_IF_CONSTEXPR if constexpr
-#else
-#define BOOST_MULTI_INDEX_IF_CONSTEXPR if
-#if defined(BOOST_MSVC)
-#pragma warning(push)
-#pragma warning(disable:4127) /* conditional expression is constant */
-#endif
-#endif
+#include <boost/multi_index/detail/define_if_constexpr_macro.hpp>
 
     BOOST_MULTI_INDEX_IF_CONSTEXPR(
       node_alloc_traits::propagate_on_container_move_assignment::value){
@@ -388,10 +380,7 @@ public:
     }
     return *this;
 
-#undef BOOST_MULTI_INDEX_IF_CONSTEXPR 
-#if defined(BOOST_NO_CXX17_IF_CONSTEXPR)&&defined(BOOST_MSVC)
-#pragma warning(pop) /* C4127 */
-#endif
+#include <boost/multi_index/detail/undef_if_constexpr_macro.hpp>
   }
 
 #if !defined(BOOST_NO_CXX11_HDR_INITIALIZER_LIST)
@@ -578,7 +567,8 @@ public:
 #endif
 
 BOOST_MULTI_INDEX_PROTECTED_IF_MEMBER_TEMPLATE_FRIENDS:
-  typedef typename super::copy_map_type copy_map_type;
+  typedef typename super::final_node_handle_type final_node_handle_type;
+  typedef typename super::copy_map_type          copy_map_type;
 
   multi_index_container(
     multi_index_container<Value,IndexSpecifierList,Allocator>& x,
@@ -761,6 +751,22 @@ BOOST_MULTI_INDEX_PROTECTED_IF_MEMBER_TEMPLATE_FRIENDS:
     return insert_(x);
   }
 
+  std::pair<final_node_type*,bool> insert_nh_(final_node_handle_type& nh)
+  {
+    if(!nh)return std::pair<final_node_type*,bool>(header(),false);
+    else{
+      final_node_type* x=nh.node;
+      final_node_type* res=super::insert_(
+        x->value(),x,detail::emplaced_tag());
+      if(res==x){
+        nh.release_node();
+        ++node_count;
+        return std::pair<final_node_type*,bool>(res,true);
+      }
+      else return std::pair<final_node_type*,bool>(res,false);
+    }
+  }
+
   template<BOOST_MULTI_INDEX_TEMPLATE_PARAM_PACK>
   std::pair<final_node_type*,bool> emplace_(
     BOOST_MULTI_INDEX_FUNCTION_PARAM_PACK)
@@ -864,6 +870,23 @@ BOOST_MULTI_INDEX_PROTECTED_IF_MEMBER_TEMPLATE_FRIENDS:
     return insert_(x,position);
   }
 
+  std::pair<final_node_type*,bool> insert_nh_(
+    final_node_handle_type& nh,final_node_type* position)
+  {
+    if(!nh)return std::pair<final_node_type*,bool>(header(),false);
+    else{
+      final_node_type* x=nh.node;
+      final_node_type* res=super::insert_(
+        x->value(),position,x,detail::emplaced_tag());
+      if(res==x){
+        nh.release_node();
+        ++node_count;
+        return std::pair<final_node_type*,bool>(res,true);
+      }
+      else return std::pair<final_node_type*,bool>(res,false);
+    }
+  }
+
   template<BOOST_MULTI_INDEX_TEMPLATE_PARAM_PACK>
   std::pair<final_node_type*,bool> emplace_hint_(
     final_node_type* position,
@@ -895,6 +918,13 @@ BOOST_MULTI_INDEX_PROTECTED_IF_MEMBER_TEMPLATE_FRIENDS:
       BOOST_RETHROW;
     }
     BOOST_CATCH_END
+  }
+
+  final_node_handle_type extract_(final_node_type* x)
+  {
+    --node_count;
+    super::extract_(x);
+    return final_node_handle_type(x,get_allocator());
   }
 
   void erase_(final_node_type* x)

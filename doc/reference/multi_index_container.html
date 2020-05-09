@@ -264,6 +264,7 @@ operators and functions associated with the index (vg. comparison and
   <span class=keyword>typedef</span> <b>implementation defined</b>   <span class=identifier>iterator_type_list</span><span class=special>;</span>
   <span class=keyword>typedef</span> <b>implementation defined</b>   <span class=identifier>const_iterator_type_list</span><span class=special>;</span>
   <span class=keyword>typedef</span> <span class=identifier>Allocator</span>                <span class=identifier>allocator_type</span><span class=special>;</span>
+  <span class=keyword>typedef</span> <b>implementation defined</b>   <span class=identifier>node_type</span><span class=special>;</span>
 
   <span class=comment>// nested class templates:</span>
 
@@ -562,6 +563,11 @@ duplicate <a href="indices.html#tags">tags</a>, either within a single
 index or in two different indices.
 </p>
 
+<p>
+In what follows, the number of indices of the <code>multi_index_container</code>
+is named <code>I</code>.
+</p>
+
 <h4><a name="types">Nested types</a></h4>
 
 <code>ctor_args_list</code>
@@ -624,6 +630,22 @@ iterators of the indices held by the <code>multi_index_container</code>, in the 
 as they were specified.
 </blockquote>
 
+<a name="node_type"><code>node_type</code></a>
+
+<blockquote>
+Node handle class following the standard specification at
+<b>[container.node]</b> (version for set containers).
+Two instantiations of <code>multi_index_container</code>
+have compatible nodes (i.e., the same <code>node_type</code>) if and only if
+they are of the form
+<code>multi_index_container&lt;Value,IndexSpecifierList1,Allocator&gt;</code> and
+<code>multi_index_container&lt;Value,IndexSpecifierList2,Allocator&gt;</code>,
+have the same number <code>I</code> of index specifiers, and, for <code>i</code> =
+<code>0</code>, ... , <code>I-1</code>, the respective <code>i</code>-th index specifiers
+refer to the same <a href="indices.html#index_catalog">type of index</a>, regardless
+of unique/non-unique variants and particular configuration type arguments.
+</blockquote>
+
 <h4><a name="nested_templates">Nested class templates</a></h4>
 
 <code>template&lt;int N> struct nth_index</code>
@@ -632,7 +654,7 @@ as they were specified.
 <code>nth_index&lt;N>::type</code> yields the type of the
 <code>N</code>-th (0-based) index held by the <code>multi_index_container</code>, in
 the same order as they were specified.<br>
-<b>Requires:</b> <code>0 &lt;= N &lt; I</code>.
+<b>Requires:</b> <code>0 &lt;= N &lt; I-1</code>.
 </blockquote>
 
 <code>template&lt;typename Tag> struct index</code>
@@ -885,7 +907,7 @@ the <code>multi_index_container</code>.<br>
 <code>template&lt;int N> typename nth_index&lt;N>::type&amp; get()noexcept;</code>
 
 <blockquote>
-<b>Requires:</b> <code>0 &lt;= N &lt; I</code>.<br>
+<b>Requires:</b> <code>0 &lt;= N &lt; I-1</code>.<br>
 <b>Effects:</b> Returns a reference to the
 <code>nth_index&lt;N>::type</code> index held by <code>*this</code>.<br>
 <b>Complexity:</b> Constant.<br>
@@ -894,7 +916,7 @@ the <code>multi_index_container</code>.<br>
 <code>template&lt;int N> const typename nth_index&lt;N>::type&amp; get()const noexcept;</code>
 
 <blockquote>
-<b>Requires:</b> <code>0 &lt;= N &lt; I</code>.<br>
+<b>Requires:</b> <code>0 &lt;= N &lt; I-1</code>.<br>
 <b>Effects:</b> Returns a <code>const</code> reference to the
 <code>nth_index&lt;N>::type</code> index held by <code>*this</code>.<br>
 <b>Complexity:</b> Constant.<br>
@@ -940,7 +962,7 @@ are <i>equivalent</i> if:
 typename nth_index&lt;N>::type::iterator project(IteratorType it);</code>
 
 <blockquote>
-<b>Requires:</b> <code>0 &lt;= N &lt; I</code>. <code>IteratorType</code>
+<b>Requires:</b> <code>0 &lt;= N &lt; I-1</code>. <code>IteratorType</code>
 belongs to <code>iterator_type_list</code>. <code>it</code> is a valid
 iterator of some index of <code>*this</code> (i.e. does not refer to some
 other <code>multi_index_container</code>.)<br>
@@ -954,7 +976,7 @@ equivalent to <code>it</code>.<br>
 typename nth_index&lt;N>::type::const_iterator project(IteratorType it)const;</code>
 
 <blockquote>
-<b>Requires:</b> <code>0 &lt;= N &lt; I</code>. <code>IteratorType</code>
+<b>Requires:</b> <code>0 &lt;= N &lt; I-1</code>. <code>IteratorType</code>
 belongs to <code>const_iterator_type_list</code> or
 <code>iterator_type_list</code>. <code>it</code> is a
 valid (constant or non-constant) iterator of some index of <code>*this</code>
@@ -1060,7 +1082,7 @@ Index reference
 
 <br>
 
-<p>Revised January 25th 2020</p>
+<p>Revised May 9th 2020</p>
 
 <p>&copy; Copyright 2003-2020 Joaqu&iacute;n M L&oacute;pez Mu&ntilde;oz.
 Distributed under the Boost Software 

@@ -23,6 +23,7 @@
 #include <boost/multi_index/detail/allocator_traits.hpp>
 #include <boost/multi_index/detail/copy_map.hpp>
 #include <boost/multi_index/detail/do_not_copy_elements_tag.hpp>
+#include <boost/multi_index/detail/node_handle.hpp>
 #include <boost/multi_index/detail/node_type.hpp>
 #include <boost/multi_index/detail/vartempl_support.hpp>
 #include <boost/multi_index_container_fwd.hpp>
@@ -65,6 +66,8 @@ protected:
   typedef typename rebind_alloc_for<
     Allocator,typename Allocator::value_type
   >::type                                     final_allocator_type;
+  typedef node_handle<
+    final_node_type,final_allocator_type>     final_node_handle_type;
   typedef mpl::vector0<>                      index_type_list;
   typedef mpl::vector0<>                      iterator_type_list;
   typedef mpl::vector0<>                      const_iterator_type_list;
@@ -217,6 +220,8 @@ protected:
   template<typename T>
   std::pair<final_node_type*,bool> final_insert_ref_(T& t)
     {return final().insert_ref_(t);}
+  std::pair<final_node_type*,bool> final_insert_nh_(final_node_handle_type& nh)
+    {return final().insert_nh_(nh);}
 
   template<BOOST_MULTI_INDEX_TEMPLATE_PARAM_PACK>
   std::pair<final_node_type*,bool> final_emplace_(
@@ -239,6 +244,9 @@ protected:
   std::pair<final_node_type*,bool> final_insert_ref_(
     T& t,final_node_type* position)
     {return final().insert_ref_(t,position);}
+  std::pair<final_node_type*,bool> final_insert_nh_(
+    final_node_handle_type& nh,final_node_type* position)
+    {return final().insert_nh_(nh,position);}
 
   template<BOOST_MULTI_INDEX_TEMPLATE_PARAM_PACK>
   std::pair<final_node_type*,bool> final_emplace_hint_(
@@ -247,6 +255,11 @@ protected:
     return final().emplace_hint_(
       position,BOOST_MULTI_INDEX_FORWARD_PARAM_PACK);
   }
+
+  final_node_handle_type final_extract_(final_node_type* x)
+  {
+    return final().extract_(x);
+  } 
 
   void final_erase_(final_node_type* x){final().erase_(x);}
 

@@ -31,6 +31,7 @@
 #include <boost/multi_index/detail/bidir_node_iterator.hpp>
 #include <boost/multi_index/detail/do_not_copy_elements_tag.hpp>
 #include <boost/multi_index/detail/index_node_base.hpp>
+#include <boost/multi_index/detail/node_handle.hpp>
 #include <boost/multi_index/detail/safe_mode.hpp>
 #include <boost/multi_index/detail/scope_guard.hpp>
 #include <boost/multi_index/detail/seq_index_node.hpp>
@@ -126,6 +127,9 @@ public:
     boost::reverse_iterator<iterator>            reverse_iterator;
   typedef typename
     boost::reverse_iterator<const_iterator>      const_reverse_iterator;
+  typedef typename super::final_node_handle_type node_type;
+  typedef detail::insert_return_type<
+    iterator,node_type>                          insert_return_type;
   typedef TagList                                tag_list;
 
 protected:
@@ -347,6 +351,29 @@ public:
     insert(position,list.begin(),list.end());
   }
 #endif
+
+  insert_return_type insert(const_iterator position,BOOST_RV_REF(node_type) nh)
+  {
+    BOOST_MULTI_INDEX_CHECK_VALID_ITERATOR(position);
+    BOOST_MULTI_INDEX_CHECK_IS_OWNER(position,*this);
+    if(nh)BOOST_MULTI_INDEX_CHECK_EQUAL_ALLOCATORS(*this,nh);
+    BOOST_MULTI_INDEX_SEQ_INDEX_CHECK_INVARIANT;
+    std::pair<final_node_type*,bool> p=this->final_insert_nh_(nh);
+    if(p.second&&position.get_node()!=header()){
+      relink(position.get_node(),p.first);
+    }
+    return insert_return_type(make_iterator(p.first),p.second,boost::move(nh));
+  }
+
+  node_type extract(const_iterator position)
+  {
+    BOOST_MULTI_INDEX_CHECK_VALID_ITERATOR(position);
+    BOOST_MULTI_INDEX_CHECK_DEREFERENCEABLE_ITERATOR(position);
+    BOOST_MULTI_INDEX_CHECK_IS_OWNER(position,*this);
+    BOOST_MULTI_INDEX_SEQ_INDEX_CHECK_INVARIANT;
+    return this->final_extract_(
+      static_cast<final_node_type*>(position.get_node()));
+  }
 
   iterator erase(iterator position)
   {
