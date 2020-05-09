@@ -113,7 +113,6 @@
 #if defined(BOOST_MULTI_INDEX_ENABLE_SAFE_MODE)
 #include <boost/config.hpp> /* keep it first to prevent nasty warns in MSVC */
 #include <algorithm>
-#include <boost/detail/iterator.hpp>
 #include <boost/multi_index/detail/access_specifier.hpp>
 #include <boost/multi_index/detail/iter_adaptor.hpp>
 #include <boost/multi_index/safe_mode_errors.hpp>
