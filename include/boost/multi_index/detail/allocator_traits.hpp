@@ -16,6 +16,7 @@
 #include <boost/config.hpp> /* keep it first to prevent nasty warns in MSVC */
 
 #if !defined(BOOST_NO_CXX11_ALLOCATOR)
+#include <boost/type_traits/is_empty.hpp>
 #include <memory>
 #else
 #include <boost/detail/workaround.hpp>
