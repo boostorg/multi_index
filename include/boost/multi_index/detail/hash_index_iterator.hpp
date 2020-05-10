@@ -125,12 +125,12 @@ private:
 
   void increment(hashed_index_global_iterator_tag)
   {
-    Node::increment<IndexCategory>(node);
+    Node::template increment<IndexCategory>(node);
   }
 
   void increment(hashed_index_local_iterator_tag)
   {
-    Node::increment_local<IndexCategory>(node);
+    Node::template increment_local<IndexCategory>(node);
   }
 
   Node* node;
