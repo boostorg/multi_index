@@ -16,6 +16,7 @@
 #include <boost/config.hpp> /* keep it first to prevent nasty warns in MSVC */
 #include <algorithm>
 #include <boost/core/addressof.hpp>
+#include <boost/detail/workaround.hpp>
 #include <boost/move/core.hpp>
 #include <boost/move/utility_core.hpp>
 #include <boost/multi_index_container_fwd.hpp>
@@ -99,7 +100,12 @@ public:
 #endif
   operator bool()const BOOST_NOEXCEPT{return (node!=0);}
 
-  BOOST_ATTRIBUTE_NODISCARD bool empty()const BOOST_NOEXCEPT{return (node==0);}
+#if BOOST_WORKAROUND(BOOST_GCC_VERSION,>=70000)&&__cplusplus<201103L
+  /* https://github.com/boostorg/config/issues/336 */
+#else
+  BOOST_ATTRIBUTE_NODISCARD 
+#endif
+  bool empty()const BOOST_NOEXCEPT{return (node==0);}
 
   void swap(node_handle& x)
     BOOST_NOEXCEPT_IF(
