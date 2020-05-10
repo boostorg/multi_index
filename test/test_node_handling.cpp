@@ -251,7 +251,7 @@ template<typename Src>
 typename Src::node_type checked_extract(Src& src,typename Src::iterator pos)
 {
   typename Src::value_type x=*pos;
-  Src::node_type n=src.extract(pos);
+  typename Src::node_type  n=src.extract(pos);
   if(n)BOOST_TEST(n.value()==x);
   return boost::move(n);
 }
