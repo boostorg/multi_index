@@ -17,6 +17,7 @@
 #include <algorithm>
 #include <boost/core/addressof.hpp>
 #include <boost/move/core.hpp>
+#include <boost/move/utility_core.hpp>
 #include <boost/multi_index_container_fwd.hpp>
 #include <boost/multi_index/detail/allocator_traits.hpp>
 #include <boost/type_traits/aligned_storage.hpp>
