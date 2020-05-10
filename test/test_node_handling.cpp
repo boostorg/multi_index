@@ -207,7 +207,7 @@ void test_transfer_result(
     (!is_key_based<Dst>::value||*pos==x)){
     BOOST_TEST(boost::next(res.position)==pos);
   }
-  test_transfer_result(dst,boost::move(res),n,x);
+  test_transfer_result(dst,Ret(boost::move(res)),n,x);
 }
 
 template<typename Dst,typename NodeHandle,typename Value>
@@ -227,7 +227,7 @@ void test_transfer_result_empty(
   Dst& dst,typename Dst::iterator,Ret res,
   typename enable_if_not_iterator<Ret>::type=0)
 {
-  test_transfer_result_empty(dst,boost::move(res));
+  test_transfer_result_empty(dst,Ret(boost::move(res)));
 }
 
 template<typename Dst>
