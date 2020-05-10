@@ -11,6 +11,7 @@
 #include "test_node_handling.hpp"
 
 #include <boost/config.hpp> /* keep it first to prevent nasty warns in MSVC */
+#include <boost/core/enable_if.hpp>
 #include <boost/detail/lightweight_test.hpp>
 #include <boost/move/core.hpp>
 #include "pre_multi_index.hpp"
@@ -139,8 +140,28 @@ struct is_key_based:boost::integral_constant<
 >
 {};
 
+template<typename T>
+struct is_iterator
+{
+  typedef char yes;
+  struct no{char m[2];};
+
+  template<typename Q> static no  test(...);
+  template<typename Q> static yes test(typename Q::iterator_category*);
+
+  BOOST_STATIC_CONSTANT(bool,value=(sizeof(test<T>(0))==sizeof(yes)));
+};
+
+template<typename T>
+struct enable_if_not_iterator:boost::enable_if_c<
+  !is_iterator<T>::value,
+  void*
+>{};
+
 template<typename Dst,typename Ret,typename NodeHandle,typename Value>
-void test_transfer_result(Dst&,Ret res,const NodeHandle& n,const Value& x)
+void test_transfer_result(
+  Dst&,Ret res,const NodeHandle& n,const Value& x,
+  typename enable_if_not_iterator<Ret>::type=0)
 {
   BOOST_TEST(*(res.position)==x);
   if(res.inserted){
@@ -161,7 +182,9 @@ void test_transfer_result(
 }
 
 template<typename Dst,typename Ret>
-void test_transfer_result_empty(Dst& dst,Ret res)
+void test_transfer_result_empty(
+  Dst& dst,Ret res,
+  typename enable_if_not_iterator<Ret>::type=0)
 {
   BOOST_TEST(res.position==dst.end());
   BOOST_TEST(!res.inserted);
@@ -177,7 +200,8 @@ void test_transfer_result_empty(Dst& dst,typename Dst::iterator res)
 template<typename Dst,typename Ret,typename NodeHandle,typename Value>
 void test_transfer_result(
   Dst& dst,typename Dst::iterator pos,Ret res,
-  const NodeHandle& n,const Value& x)
+  const NodeHandle& n,const Value& x,
+  typename enable_if_not_iterator<Ret>::type=0)
 {
   if(res.inserted&&pos!=dst.end()&&
     (!is_key_based<Dst>::value||*pos==x)){
@@ -199,7 +223,9 @@ void test_transfer_result(
 }
 
 template<typename Dst,typename Ret>
-void test_transfer_result_empty(Dst& dst,typename Dst::iterator,Ret res)
+void test_transfer_result_empty(
+  Dst& dst,typename Dst::iterator,Ret res,
+  typename enable_if_not_iterator<Ret>::type=0)
 {
   test_transfer_result_empty(dst,boost::move(res));
 }
@@ -212,7 +238,9 @@ void test_transfer_result_empty(
 }
 
 template<typename Src,typename Key>
-typename Src::node_type checked_extract(Src& src,Key k)
+typename Src::node_type checked_extract(
+  Src& src,Key k,
+  typename enable_if_not_iterator<Key>::type=0)
 {
   typename Src::node_type n=src.extract(k);
   if(n)BOOST_TEST(src.key_extractor()(n.value())==k);
