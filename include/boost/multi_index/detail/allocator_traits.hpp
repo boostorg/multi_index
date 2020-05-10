@@ -59,7 +59,7 @@ struct allocator_traits:std::allocator_traits<Allocator>
 
   /* pre-C++17 compatibilty */
 
-  typedef typename allocator_is_always_equal<Allocator>::type is_always_equal;
+  typedef allocator_is_always_equal<Allocator> is_always_equal;
 
   template<typename T>
   struct rebind_alloc
