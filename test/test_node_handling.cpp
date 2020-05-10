@@ -214,7 +214,7 @@ void test_transfer_result_empty(
 template<typename Src,typename Key>
 typename Src::node_type checked_extract(Src& src,Key k)
 {
-  Src::node_type n=src.extract(k);
+  typename Src::node_type n=src.extract(k);
   if(n)BOOST_TEST(src.key_extractor()(n.value())==k);
   return boost::move(n);
 }
