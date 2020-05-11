@@ -232,7 +232,7 @@ void test_transfer_result_empty(
 
 template<typename Dst>
 void test_transfer_result_empty(
-  Dst& dst,typename Dst::iterator pos,typename Dst::iterator res)
+  Dst& dst,typename Dst::iterator,typename Dst::iterator res)
 {
   test_transfer_result_empty(dst,res);
 }
