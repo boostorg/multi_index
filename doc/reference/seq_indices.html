@@ -152,8 +152,12 @@ like <code>std::list</code>. Elements in a sequenced index are by default
 sorted according to their order of insertion: this means that new elements
 inserted through a different index of the <code>multi_index_container</code> are appended
 to the end of the sequenced index. Additionally, the index allows for free
-reordering of elements in the same vein as <code>std::list</code> does. Validity
-of iterators and references to elements is preserved in all operations.
+reordering of elements in the same vein as <code>std::list</code> does.
+Iterators (including to the end of the index) and pointers and references to an element
+remain valid during the lifetime of the associated container (which can change
+upon swapping), or until the referred-to element is erased or extracted;
+pointers and references to an extracted element, but not so for iterators,
+become valid again once the element is re-inserted.
 </p>
 
 <p>
@@ -172,7 +176,7 @@ most important differences are:
     <code>std::list</code>.
   </li>
   <li>Elements in a sequenced index are not mutable, and can only be changed
-    by means of <a href="#replace"><code>replace</code></a> and
+    in place by means of <a href="#replace"><code>replace</code></a> and
 	<a href="#modify"><code>modify</code></a> member functions.
   </li>
 </ul>
@@ -207,6 +211,8 @@ most important differences are:
     std::reverse_iterator&lt;iterator&gt;</b>                  <span class=identifier>reverse_iterator</span><span class=special>;</span>
   <span class=keyword>typedef</span> <b>equivalent to
     std::reverse_iterator&lt;const_iterator&gt;</b>            <span class=identifier>const_reverse_iterator</span><span class=special>;</span>
+  <span class=keyword>typedef</span> <b>same as owning container                   </b><span class=identifier>node_type</span><span class=special>;</span>
+  <span class=keyword>typedef</span> <b>following [container.insert.return] spec   </b><span class=identifier>insert_return_type</span><span class=special>;</span>
 
   <span class=comment>// construct/copy/destroy:</span>
 
@@ -274,6 +280,9 @@ most important differences are:
   <span class=keyword>template</span><span class=special>&lt;</span><span class=keyword>typename</span> <span class=identifier>InputIterator</span><span class=special>&gt;</span>
   <span class=keyword>void</span> <span class=identifier>insert</span><span class=special>(</span><span class=identifier>iterator</span> <span class=identifier>position</span><span class=special>,</span><span class=identifier>InputIterator</span> <span class=identifier>first</span><span class=special>,</span><span class=identifier>InputIterator</span> <span class=identifier>last</span><span class=special>);</span>
   <span class=keyword>void</span> <span class=identifier>insert</span><span class=special>(</span><span class=identifier>iterator</span> <span class=identifier>position</span><span class=special>,</span><span class=identifier>std</span><span class=special>::</span><span class=identifier>initializer_list</span><span class=special>&lt;</span><span class=identifier>value_type</span><span class=special>&gt;</span> <span class=identifier>list</span><span class=special>);</span>
+  <span class=identifier>insert_return_type</span> <span class=identifier>insert</span><span class=special>(</span><span class=identifier>const_iterator</span> <span class=identifier>position</span><span class=special>,</span><span class=identifier>node_type</span><span class=special>&amp;&amp;</span> <span class=identifier>nh</span><span class=special>);</span>
+
+  <span class=identifier>node_type</span> <span class=identifier>extract</span><span class=special>(</span><span class=identifier>const_iterator</span> <span class=identifier>position</span><span class=special>);</span>
 
   <span class=identifier>iterator</span> <span class=identifier>erase</span><span class=special>(</span><span class=identifier>iterator</span> <span class=identifier>position</span><span class=special>);</span>
   <span class=identifier>iterator</span> <span class=identifier>erase</span><span class=special>(</span><span class=identifier>iterator</span> <span class=identifier>first</span><span class=special>,</span><span class=identifier>iterator</span> <span class=identifier>last</span><span class=special>);</span>
@@ -642,6 +651,40 @@ number of elements in [<code>first</code>,<code>last</code>).<br>
 <blockquote><pre>
 <span class=identifier>insert</span><span class=special>(</span><span class=identifier>position</span><span class=special>,</span><span class=identifier>list</span><span class=special>.</span><span class=identifier>begin</span><span class=special>(),</span><span class=identifier>list</span><span class=special>.</span><span class=identifier>end</span><span class=special>());</span>
 </pre></blockquote>
+</blockquote>
+
+<code>insert_return_type insert(const_iterator position,node_type&amp;&amp; nh);</code>
+
+<blockquote>
+<b>Requires:</b> <code>nh.empty() || get_allocator()==nh.get_allocator()</code>.<br>
+<b>Effects:</b> Does nothing if <code>nh</code> is empty; otherwise,
+inserts the node owned by <code>nh</code> before <code>position</code> if insertion
+is allowed by all other indices of the <code>multi_index_container</code>.<br>
+<b>Postconditions:</b> <code>nh</code> is empty.<br>
+<b>Returns:</b> A value <code>p</code> of type <code>insert_return_type</code>.
+If <code>nh</code> is empty, <code>p.position</code> is <code>end()</code>,
+<code>p.inserted</code> is <code>false</code> and <code>p.node</code> is empty;
+on successful insertion, <code>p.position</code> points to the element inserted,
+<code>p.inserted</code> is <code>true</code> and <code>p.node</code>
+is empty;
+if the insertion failed, <code>p.position</code> points to an element that caused
+the insertion to be banned, <code>p.inserted</code> is <code>false</code> and
+<code>p.node</code> owns the original node.
+Note that more than one element can be causing insertion not to be allowed.<br>
+<b>Complexity:</b> <code>O(I(n))</code>.<br>
+<b>Exception safety:</b> Strong. If an exception
+is thrown, <code>nh</code> is not changed.<br>
+</blockquote>
+
+<code>node_type extract(const_iterator position);</code>
+
+<blockquote>
+<b>Requires:</b> <code>position</code> is a valid dereferenceable iterator
+of the index.<br>
+<b>Effects:</b> Extracts the node of the element pointed to by <code>position</code>.<br>
+<b>Returns:</b> A node handle owning the extracted node.<br>
+<b>Complexity:</b> <code>O(D(n))</code>.<br>
+<b>Exception safety:</b> <code>nothrow</code>.<br>
 </blockquote>
 
 <code>iterator erase(iterator position);</code>
@@ -1052,9 +1095,9 @@ Random access indices
 
 <br>
 
-<p>Revised December 29th 2018</p>
+<p>Revised May 9th 2020</p>
 
-<p>&copy; Copyright 2003-2018 Joaqu&iacute;n M L&oacute;pez Mu&ntilde;oz.
+<p>&copy; Copyright 2003-2020 Joaqu&iacute;n M L&oacute;pez Mu&ntilde;oz.
 Distributed under the Boost Software 
 License, Version 1.0. (See accompanying file <a href="../../../../LICENSE_1_0.txt">
 LICENSE_1_0.txt</a> or copy at <a href="http://www.boost.org/LICENSE_1_0.txt">

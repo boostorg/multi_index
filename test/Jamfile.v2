@@ -56,6 +56,7 @@ test-suite "multi_index" :
     [ run test_list_ops.cpp         test_list_ops_main.cpp         ]
     [ run test_modifiers.cpp        test_modifiers_main.cpp        ]
     [ run test_mpl_ops.cpp          test_mpl_ops_main.cpp          ]
+    [ run test_node_handling.cpp    test_node_handling_main.cpp    ]
     [ run test_observers.cpp        test_observers_main.cpp        ]    
     [ run test_projection.cpp       test_projection_main.cpp       ]
     [ run test_range.cpp            test_range_main.cpp            ]

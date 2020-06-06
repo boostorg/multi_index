@@ -23,6 +23,7 @@
 #include "test_list_ops.hpp"
 #include "test_modifiers.hpp"
 #include "test_mpl_ops.hpp"
+#include "test_node_handling.hpp"
 #include "test_observers.hpp"
 #include "test_projection.hpp"
 #include "test_range.hpp"
@@ -50,6 +51,7 @@ int main()
   test_list_ops();
   test_modifiers();
   test_mpl_ops();
+  test_node_handling();
   test_observers();
   test_projection();
   test_range();
