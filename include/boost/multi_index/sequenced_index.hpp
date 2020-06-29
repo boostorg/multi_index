@@ -547,7 +547,8 @@ public:
   {
     sequenced_index_remove(
       *this,
-      ::boost::bind(std::equal_to<value_type>(),::boost::arg<1>(),value));
+      ::boost::bind<bool>(
+        std::equal_to<value_type>(),::boost::arg<1>(),value));
   }
 
   template<typename Predicate>

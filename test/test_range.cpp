@@ -39,10 +39,10 @@ typedef int_set::iterator int_set_iterator;
 #define CHECK_VOID_RANGE(p) BOOST_TEST((p).first==(p).second)
 
 #undef BIND1ST
-#define BIND1ST(f,x) ::boost::bind(f,x,::boost::arg<1>())
+#define BIND1ST(f,x) ::boost::bind<bool>(f,x,::boost::arg<1>())
 
 #undef BIND2ND
-#define BIND2ND(f,x) ::boost::bind(f,::boost::arg<1>(),x)
+#define BIND2ND(f,x) ::boost::bind<bool>(f,::boost::arg<1>(),x)
 
 void test_range()
 {
