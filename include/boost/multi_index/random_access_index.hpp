@@ -618,7 +618,8 @@ public:
       end()-make_iterator(
         random_access_index_remove<index_node_type>(
           ptrs,
-          ::boost::bind(std::equal_to<value_type>(),::boost::arg<1>(),value)));
+          ::boost::bind<bool>(
+            std::equal_to<value_type>(),::boost::arg<1>(),value)));
     while(n--)pop_back();
   }
 
