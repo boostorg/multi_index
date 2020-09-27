@@ -11,6 +11,7 @@
 #include "test_alloc_awareness.hpp"
 
 #include <boost/config.hpp> /* keep it first to prevent nasty warns in MSVC */
+#include <utility>
 #include <boost/detail/lightweight_test.hpp>
 #include <boost/move/core.hpp>
 #include <boost/move/utility_core.hpp>
@@ -113,6 +114,10 @@ void test_allocator_awareness_for()
     c2=c;
     BOOST_TEST(c2.get_allocator().comes_from(Propagate?root1:root2));
     BOOST_TEST(c2==c);
+  }
+  {
+    container t;
+    container c2(std::move(t));
   }
   {
     const bool          element_transfer=Propagate||AlwaysEqual;

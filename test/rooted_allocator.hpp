@@ -36,9 +36,47 @@ public:
 
   rooted_allocator():root(0){}
   explicit rooted_allocator(int):root(this){}
+  rooted_allocator(const rooted_allocator& x):
+    root(x.root)
+  {
+    BOOST_TEST(!x.moved_from);
+  }
+  rooted_allocator(rooted_allocator&& x):
+    root(x.root)
+  {
+    BOOST_TEST(!x.moved_from);
+    x.moved_from=true;
+  }
+
   template<typename U>
   rooted_allocator(const rooted_allocator<U,Propagate,AlwaysEqual>& x):
-    root(x.root){}
+    root(x.root)
+  {
+    BOOST_TEST(!x.moved_from);
+  }
+  template<typename U>
+  rooted_allocator(rooted_allocator<U,Propagate,AlwaysEqual>&& x):
+    root(x.root)
+  {
+    BOOST_TEST(!x.moved_from);
+    x.moved_from=true;
+  }
+
+  rooted_allocator& operator=(const rooted_allocator& x)
+  {
+    BOOST_TEST(!x.moved_from);
+    root=x.root;
+    moved_from=false;
+    return *this;
+  }
+  rooted_allocator& operator=(rooted_allocator&& x)
+  {
+    BOOST_TEST(!x.moved_from);
+    root=x.root;
+    moved_from=false;
+    x.moved_from=true;
+    return *this;
+  }
 
   template<typename U>
   bool operator==(const rooted_allocator<U,Propagate,AlwaysEqual>& x)const
@@ -55,6 +93,9 @@ private:
   template<typename,bool,bool> friend class rooted_allocator;
 
   const void* root;
+  // true if this instance was moved from, i.e. it is in a destructible
+  // state only and should not be used for any other purpose
+  bool moved_from = false;
 };
 
 #if defined(BOOST_MSVC)
