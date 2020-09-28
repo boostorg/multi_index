@@ -289,7 +289,7 @@ public:
   }
 
   multi_index_container(BOOST_RV_REF(multi_index_container) x):
-    bfm_allocator(boost::move(x.bfm_allocator::member)),
+    bfm_allocator(x.bfm_allocator::member),
     bfm_header(),
     super(x,detail::do_not_copy_elements_tag()),
     node_count(0)
