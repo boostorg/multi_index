@@ -7,7 +7,7 @@
 # For Drone CI we use the Starlark scripting language to reduce duplication.
 # As the yaml syntax for Drone CI is rather limited.
 #
-#
+# 
 globalenv={}
 linuxglobalimage="cppalliance/droneubuntu1404:1"
 windowsglobalimage="cppalliance/dronevs2019"
