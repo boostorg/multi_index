@@ -1,4 +1,4 @@
-# Copyright 2003-2019 Joaquín M López Muñoz.
+# Copyright 2003-2021 Joaquín M López Muñoz.
 # Distributed under the Boost Software License, Version 1.0.
 # (See accompanying file LICENSE_1_0.txt or copy at
 # http://www.boost.org/LICENSE_1_0.txt)
@@ -34,4 +34,4 @@ build: off
 
 test_script:
   - if not "%CXXSTD%" == "" set CXXSTD=cxxstd=%CXXSTD%
-  - b2 libs/multi_index/test toolset=%TOOLSET% %CXXSTD%
+  - b2 address-model=32 libs/multi_index/test toolset=%TOOLSET% %CXXSTD%
