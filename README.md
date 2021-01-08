@@ -8,3 +8,4 @@ master   | [![Build Status](https://travis-ci.com/boostorg/multi_index.svg?branc
 [Boost.MultiIndex](http://boost.org/libs/multi_index) provides a class template
 named `multi_index_container` which enables the construction of containers
 maintaining one or more indices with different sorting and access semantics.
+
