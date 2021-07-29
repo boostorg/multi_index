@@ -330,6 +330,11 @@ do not exactly conform to or are not mandated by the standard requirements.
   <span class=identifier>size_type</span> <span class=identifier>count</span><span class=special>(</span><span class=keyword>const</span> <span class=identifier>CompatibleKey</span><span class=special>&amp;</span> <span class=identifier>x</span><span class=special>,</span><span class=keyword>const</span> <span class=identifier>CompatibleCompare</span><span class=special>&amp;</span> <span class=identifier>comp</span><span class=special>)</span><span class=keyword>const</span><span class=special>;</span>
 
   <span class=keyword>template</span><span class=special>&lt;</span><span class=keyword>typename</span> <span class=identifier>CompatibleKey</span><span class=special>&gt;</span>
+  <span class=keyword>bool</span> <span class=identifier>contains</span><span class=special>(</span><span class=keyword>const</span> <span class=identifier>CompatibleKey</span><span class=special>&amp;</span> <span class=identifier>x</span><span class=special>)</span><span class=keyword>const</span><span class=special>;</span>
+  <span class=keyword>template</span><span class=special>&lt;</span><span class=keyword>typename</span> <span class=identifier>CompatibleKey</span><span class=special>,</span><span class=keyword>typename</span> <span class=identifier>CompatibleCompare</span><span class=special>&gt;</span>
+  <span class=keyword>bool</span> <span class=identifier>contains</span><span class=special>(</span><span class=keyword>const</span> <span class=identifier>CompatibleKey</span><span class=special>&amp;</span> <span class=identifier>x</span><span class=special>,</span><span class=keyword>const</span> <span class=identifier>CompatibleCompare</span><span class=special>&amp;</span> <span class=identifier>comp</span><span class=special>)</span><span class=keyword>const</span><span class=special>;</span>
+
+  <span class=keyword>template</span><span class=special>&lt;</span><span class=keyword>typename</span> <span class=identifier>CompatibleKey</span><span class=special>&gt;</span>
   <span class=identifier>iterator</span> <span class=identifier>lower_bound</span><span class=special>(</span><span class=keyword>const</span> <span class=identifier>CompatibleKey</span><span class=special>&amp;</span> <span class=identifier>x</span><span class=special>)</span><span class=keyword>const</span><span class=special>;</span>
   <span class=keyword>template</span><span class=special>&lt;</span><span class=keyword>typename</span> <span class=identifier>CompatibleKey</span><span class=special>,</span><span class=keyword>typename</span> <span class=identifier>CompatibleCompare</span><span class=special>&gt;</span>
   <span class=identifier>iterator</span> <span class=identifier>lower_bound</span><span class=special>(</span>
@@ -715,7 +720,7 @@ of the index.<br>
 <b>Exception safety:</b> <code>nothrow</code>.<br>
 </blockquote>
 
-<code>node_type extract(const key_type& x);</code>
+<code>node_type extract(const key_type&amp; x);</code>
 
 <blockquote>
 <b>Effects:</b> Extracts the node of the first element
@@ -995,8 +1000,8 @@ is a compatible extension of <code>key_compare</code>.<br>
 <b>Complexity:</b> <code>O(log(n))</code>.<br>
 </blockquote>
 
-<code>template&lt;typename CompatibleKey> size_type<br>
-count(const CompatibleKey&amp; x)const;
+<code>template&lt;typename CompatibleKey><br>
+size_type count(const CompatibleKey&amp; x)const;
 </code>
 
 <blockquote>
@@ -1015,6 +1020,28 @@ size_type count(const CompatibleKey&amp; x,const CompatibleCompare&amp; comp)con
 is a compatible extension of <code>key_compare</code>.<br>
 <b>Effects:</b> Returns the number of elements with key equivalent to <code>x</code>.<br>
 <b>Complexity:</b> <code>O(log(n) + count(x,comp))</code>.<br>
+</blockquote>
+
+<code>template&lt;typename CompatibleKey><br>
+bool contains(const CompatibleKey&amp; x)const;
+</code>
+
+<blockquote>
+<b>Requires:</b> <code>CompatibleKey</code> is a compatible key of
+<code>key_compare</code>.<br>
+<b>Effects:</b> Returns <code>true</code> iff there is some element with key equivalent to <code>x</code>.<br>
+<b>Complexity:</b> <code>O(log(n))</code>.<br>
+</blockquote>
+
+<code>template&lt;typename CompatibleKey,typename CompatibleCompare><br>
+bool contains(const CompatibleKey&amp; x,const CompatibleCompare&amp; comp)const;
+</code>
+
+<blockquote>
+<b>Requires:</b> (<code>CompatibleKey</code>, <code>CompatibleCompare</code>)
+is a compatible extension of <code>key_compare</code>.<br>
+<b>Effects:</b> Returns <code>true</code> iff there is some element with key equivalent to <code>x</code>.<br>
+<b>Complexity:</b> <code>O(log(n))</code>.<br>
 </blockquote>
 
 <code>template&lt;typename CompatibleKey><br>
@@ -1210,9 +1237,9 @@ Ranked indices
 
 <br>
 
-<p>Revised May 9th 2020</p>
+<p>Revised July 29th 2021</p>
 
-<p>&copy; Copyright 2003-2020 Joaqu&iacute;n M L&oacute;pez Mu&ntilde;oz.
+<p>&copy; Copyright 2003-2021 Joaqu&iacute;n M L&oacute;pez Mu&ntilde;oz.
 Distributed under the Boost Software 
 License, Version 1.0. (See accompanying file <a href="../../../../LICENSE_1_0.txt">
 LICENSE_1_0.txt</a> or copy at <a href="http://www.boost.org/LICENSE_1_0.txt">

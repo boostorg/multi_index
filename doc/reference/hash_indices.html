@@ -335,6 +335,15 @@ requirements.
     <span class=keyword>const</span> <span class=identifier>CompatibleHash</span><span class=special>&amp;</span> <span class=identifier>hash</span><span class=special>,</span><span class=keyword>const</span> <span class=identifier>CompatiblePred</span><span class=special>&amp;</span> <span class=identifier>eq</span><span class=special>)</span><span class=keyword>const</span><span class=special>;</span>
 
   <span class=keyword>template</span><span class=special>&lt;</span><span class=keyword>typename</span> <span class=identifier>CompatibleKey</span><span class=special>&gt;</span>
+  <span class=keyword>bool</span> <span class=identifier>contains</span><span class=special>(</span><span class=keyword>const</span> <span class=identifier>CompatibleKey</span><span class=special>&amp;</span> <span class=identifier>x</span><span class=special>)</span><span class=keyword>const</span><span class=special>;</span>
+  <span class=keyword>template</span><span class=special>&lt;</span>
+    <span class=keyword>typename</span> <span class=identifier>CompatibleKey</span><span class=special>,</span><span class=keyword>typename</span> <span class=identifier>CompatibleHash</span><span class=special>,</span> <span class=keyword>typename</span> <span class=identifier>CompatiblePred</span>
+  <span class=special>&gt;</span>
+  <span class=keyword>bool</span> <span class=identifier>contains</span><span class=special>(</span>
+    <span class=keyword>const</span> <span class=identifier>CompatibleKey</span><span class=special>&amp;</span> <span class=identifier>x</span><span class=special>,</span>
+    <span class=keyword>const</span> <span class=identifier>CompatibleHash</span><span class=special>&amp;</span> <span class=identifier>hash</span><span class=special>,</span><span class=keyword>const</span> <span class=identifier>CompatiblePred</span><span class=special>&amp;</span> <span class=identifier>eq</span><span class=special>)</span><span class=keyword>const</span><span class=special>;</span>
+
+  <span class=keyword>template</span><span class=special>&lt;</span><span class=keyword>typename</span> <span class=identifier>CompatibleKey</span><span class=special>&gt;</span>
   <span class=identifier>std</span><span class=special>::</span><span class=identifier>pair</span><span class=special>&lt;</span><span class=identifier>iterator</span><span class=special>,</span><span class=identifier>iterator</span><span class=special>&gt;</span> <span class=identifier>equal_range</span><span class=special>(</span><span class=keyword>const</span> <span class=identifier>CompatibleKey</span><span class=special>&amp;</span> <span class=identifier>x</span><span class=special>)</span><span class=keyword>const</span><span class=special>;</span>
   <span class=keyword>template</span><span class=special>&lt;</span>
     <span class=keyword>typename</span> <span class=identifier>CompatibleKey</span><span class=special>,</span><span class=keyword>typename</span> <span class=identifier>CompatibleHash</span><span class=special>,</span> <span class=keyword>typename</span> <span class=identifier>CompatiblePred</span>
@@ -723,7 +732,7 @@ of the index.<br>
 <b>Exception safety:</b> <code>nothrow</code>.<br>
 </blockquote>
 
-<code>node_type extract(const key_type& x);</code>
+<code>node_type extract(const key_type&amp; x);</code>
 
 <blockquote>
 <b>Effects:</b> Extracts the node of the first element
@@ -1050,6 +1059,35 @@ size_type count(<br>
 </blockquote>
 
 <code>template&lt;typename CompatibleKey><br>
+bool contains(const CompatibleKey&amp; x)const;
+</code>
+
+<blockquote>
+<b>Requires:</b> <code>CompatibleKey</code> is a compatible key of
+(<code>hasher</code>, <code>key_equal</code>).<br>
+<b>Effects:</b> Returns <code>true</code> iff there is some element with key equivalent to <code>x</code>.<br>
+<b>Complexity:</b> Average case <code>O(1)</code> (constant), worst case
+<code>O(n<sub>dist</sub>)</code>.<br>
+</blockquote>
+
+<code>template&lt;<br>
+&nbsp;&nbsp;typename CompatibleKey,typename CompatibleHash, typename CompatiblePred<br>
+&gt;<br>
+bool contains(<br>
+&nbsp;&nbsp;const CompatibleKey&amp; x,<br>
+&nbsp;&nbsp;const CompatibleHash&amp; hash,const CompatiblePred&amp; eq)const;
+</code>
+
+<blockquote>
+<b>Requires:</b> (<code>CompatibleKey</code>, <code>CompatibleHash</code>,
+<code>CompatiblePred</code>) is a compatible extension of
+(<code>hasher</code>, <code>key_equal</code>).<br>
+<b>Effects:</b> Returns <code>true</code> iff there is some element with key equivalent to <code>x</code>.<br>
+<b>Complexity:</b> Average case <code>O(1)</code> (constant), worst case
+<code>O(n<sub>dist</sub>)</code>.<br>
+</blockquote>
+
+<code>template&lt;typename CompatibleKey><br>
 std::pair&lt;iterator,iterator> equal_range(const CompatibleKey&amp; x)const;
 </code>
 
@@ -1237,9 +1275,9 @@ Sequenced indices
 
 <br>
 
-<p>Revised May 9th 2020</p>
+<p>Revised July 29th 2021</p>
 
-<p>&copy; Copyright 2003-2020 Joaqu&iacute;n M L&oacute;pez Mu&ntilde;oz.
+<p>&copy; Copyright 2003-2021 Joaqu&iacute;n M L&oacute;pez Mu&ntilde;oz.
 Distributed under the Boost Software 
 License, Version 1.0. (See accompanying file <a href="../../../../LICENSE_1_0.txt">
 LICENSE_1_0.txt</a> or copy at <a href="http://www.boost.org/LICENSE_1_0.txt">
