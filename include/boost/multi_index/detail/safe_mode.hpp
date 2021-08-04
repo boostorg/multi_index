@@ -1,4 +1,4 @@
-/* Copyright 2003-2020 Joaquin M Lopez Munoz.
+/* Copyright 2003-2021 Joaquin M Lopez Munoz.
  * Distributed under the Boost Software License, Version 1.0.
  * (See accompanying file LICENSE_1_0.txt or copy at
  * http://www.boost.org/LICENSE_1_0.txt)
@@ -12,6 +12,8 @@
 #if defined(_MSC_VER)
 #pragma once
 #endif
+
+#include <boost/type_traits/integral_constant.hpp>
 
 /* Safe mode machinery, in the spirit of Cay Hortmann's "Safe STL"
  * (http://www.horstmann.com/safestl.html).
@@ -269,6 +271,48 @@ inline void detach_equivalent_iterators(Iterator& it)
   }
 }
 
+
+/* Uncheck iterators equivalent to it. Used for merge operations that may
+ * leave valid iterators originally into the source container.
+ */
+
+template<typename Iterator>
+inline void uncheck_equivalent_iterators(Iterator& it)
+{
+  if(it.valid()){
+    {
+#if defined(BOOST_HAS_THREADS)
+      boost::detail::lightweight_mutex::scoped_lock lock(it.cont->mutex);
+#endif
+
+      Iterator *prev_,*next_;
+      for(
+        prev_=static_cast<Iterator*>(&it.cont->header);
+        (next_=static_cast<Iterator*>(prev_->next))!=0;){
+        if(next_!=&it&&*next_==it){
+          prev_->next=next_->next;
+          next_->cont=0;
+          next_->unchecked_=true;
+        }
+        else prev_=next_;
+      }
+    }
+    it.detach();
+  }
+}
+
+template<typename Iterator>
+inline void detach_else_uncheck_equivalent_iterators(Iterator& it,boost::true_type)
+{
+  detach_equivalent_iterators(it);
+}
+
+template<typename Iterator>
+inline void detach_else_uncheck_equivalent_iterators(Iterator& it,boost::false_type)
+{
+  uncheck_equivalent_iterators(it);
+}
+
 template<typename Container> class safe_container; /* fwd decl. */
 
 } /* namespace multi_index::safe_mode */
@@ -331,6 +375,8 @@ BOOST_MULTI_INDEX_PRIVATE_IF_MEMBER_TEMPLATE_FRIENDS:
   template<typename>          friend class safe_mode::safe_container;
   template<typename Iterator> friend
     void safe_mode::detach_equivalent_iterators(Iterator&);
+  template<typename Iterator> friend
+    void safe_mode::uncheck_equivalent_iterators(Iterator&);
 #endif
 
   inline void attach(safe_container_base* cont_);
@@ -351,6 +397,8 @@ BOOST_MULTI_INDEX_PROTECTED_IF_MEMBER_TEMPLATE_FRIENDS:
 #if !defined(BOOST_NO_MEMBER_TEMPLATE_FRIENDS)
   template<typename Iterator> friend
     void safe_mode::detach_equivalent_iterators(Iterator&);
+  template<typename Iterator> friend
+    void safe_mode::uncheck_equivalent_iterators(Iterator&);
 #endif
 
   ~safe_container_base()

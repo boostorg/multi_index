@@ -1,4 +1,4 @@
-/* Copyright 2003-2020 Joaquin M Lopez Munoz.
+/* Copyright 2003-2021 Joaquin M Lopez Munoz.
  * Distributed under the Boost Software License, Version 1.0.
  * (See accompanying file LICENSE_1_0.txt or copy at
  * http://www.boost.org/LICENSE_1_0.txt)
@@ -720,13 +720,14 @@ BOOST_MULTI_INDEX_PROTECTED_IF_MEMBER_TEMPLATE_FRIENDS:
     return res;
   }
 
-  void extract_(index_node_type* x)
+  template<typename BoolConstant>
+  void extract_(index_node_type* x,BoolConstant invalidate_iterators)
   {
     unlink(x);
-    super::extract_(x);
+    super::extract_(x,invalidate_iterators);
 
 #if defined(BOOST_MULTI_INDEX_ENABLE_SAFE_MODE)
-    detach_iterators(x);
+    detach_else_uncheck_iterators(x,invalidate_iterators);
 #endif
   }
 
@@ -908,6 +909,15 @@ private:
   {
     iterator it=make_iterator(x);
     safe_mode::detach_equivalent_iterators(it);
+  }
+
+  template<typename BoolConstant>
+  void detach_else_uncheck_iterators(
+    index_node_type* x,BoolConstant invalidate_iterators)
+  {
+    iterator it=make_iterator(x);
+    safe_mode::detach_else_uncheck_equivalent_iterators(
+      it,invalidate_iterators);
   }
 #endif
 

@@ -1,6 +1,6 @@
 /* Multiply indexed container.
  *
- * Copyright 2003-2020 Joaquin M Lopez Munoz.
+ * Copyright 2003-2021 Joaquin M Lopez Munoz.
  * Distributed under the Boost Software License, Version 1.0.
  * (See accompanying file LICENSE_1_0.txt or copy at
  * http://www.boost.org/LICENSE_1_0.txt)
@@ -767,6 +767,13 @@ BOOST_MULTI_INDEX_PROTECTED_IF_MEMBER_TEMPLATE_FRIENDS:
     }
   }
 
+  template<typename Index>
+  void merge_(final_node_type* x,Index& i)
+  {
+    final_node_type* res=super::insert_(x->value(),x,&i);
+    if(res==x)++node_count;
+  }
+
   template<BOOST_MULTI_INDEX_TEMPLATE_PARAM_PACK>
   std::pair<final_node_type*,bool> emplace_(
     BOOST_MULTI_INDEX_FUNCTION_PARAM_PACK)
@@ -923,14 +930,20 @@ BOOST_MULTI_INDEX_PROTECTED_IF_MEMBER_TEMPLATE_FRIENDS:
   final_node_handle_type extract_(final_node_type* x)
   {
     --node_count;
-    super::extract_(x);
+    super::extract_(x,boost::true_type() /* invalidate_iterators */);
     return final_node_handle_type(x,get_allocator());
+  }
+
+  void extract_for_merge_(final_node_type* x)
+  {
+    --node_count;
+    super::extract_(x,boost::false_type() /* invalidate_iterators */);
   }
 
   void erase_(final_node_type* x)
   {
     --node_count;
-    super::extract_(x);
+    super::extract_(x,boost::true_type() /* invalidate_iterators */);
     delete_node_(x);
   }
 

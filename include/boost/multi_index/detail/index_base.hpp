@@ -1,4 +1,4 @@
-/* Copyright 2003-2020 Joaquin M Lopez Munoz.
+/* Copyright 2003-2021 Joaquin M Lopez Munoz.
  * Distributed under the Boost Software License, Version 1.0.
  * (See accompanying file LICENSE_1_0.txt or copy at
  * http://www.boost.org/LICENSE_1_0.txt)
@@ -19,6 +19,7 @@
 #include <boost/detail/workaround.hpp>
 #include <boost/move/utility_core.hpp>
 #include <boost/mpl/vector.hpp>
+#include <boost/multi_index/detail/access_specifier.hpp>
 #include <boost/multi_index/detail/allocator_traits.hpp>
 #include <boost/multi_index/detail/copy_map.hpp>
 #include <boost/multi_index/detail/do_not_copy_elements_tag.hpp>
@@ -51,6 +52,49 @@ namespace detail{
 struct lvalue_tag{};
 struct rvalue_tag{};
 struct emplaced_tag{};
+
+#if 0 /* we'll use this later for iterator reassignment in merge */
+template<typename MultiIndexContainer,int N=0>
+struct iterator_sequence;
+
+struct iterator_sequence_terminal
+{
+  iterator_sequence_terminal(void*){}
+};
+
+template<typename MultiIndexContainer,int N>
+struct iterator_sequence_normal
+{
+  MultiIndexContainer* p;
+
+  iterator_sequence_normal(MultiIndexContainer* p_):p(p_){}
+
+  typename nth_index<MultiIndexContainer,N>::type::iterator
+  get(){return p->template get<N>().end();}
+
+  iterator_sequence<MultiIndexContainer,N+1>
+  next(){return iterator_sequence<MultiIndexContainer,N+1>(p);}
+};
+
+template<typename MultiIndexContainer,int N>
+struct iterator_sequence_base:
+  mpl::if_c<
+    N<mpl::size<typename MultiIndexContainer::index_type_list>::type::value,
+    iterator_sequence_normal<MultiIndexContainer,N>,
+    iterator_sequence_terminal
+  >
+{};
+
+template<typename MultiIndexContainer,int N>
+struct iterator_sequence:
+  iterator_sequence_base<MultiIndexContainer,N>::type
+{
+  typedef typename iterator_sequence_base<
+    MultiIndexContainer,N>::type               super;
+ 
+  iterator_sequence(MultiIndexContainer* p):super(p){}
+};
+#endif
 
 template<typename Value,typename IndexSpecifierList,typename Allocator>
 class index_base
@@ -134,6 +178,14 @@ protected:
     return x;
   }
 
+  template<typename Index>
+  final_node_type* insert_(
+    const value_type& v,final_node_type*& x,Index* p)
+  {
+    p->final_extract_for_merge_(x);
+    return x;
+  }
+
   final_node_type* insert_(
     const value_type& v,index_node_type*,final_node_type*& x,lvalue_tag)
   {
@@ -152,7 +204,8 @@ protected:
     return x;
   }
 
-  void extract_(index_node_type*){}
+  template<typename BoolConstant>
+  void extract_(index_node_type*,BoolConstant /* invalidate_iterators */){}
 
   void clear_(){}
 
@@ -222,6 +275,9 @@ protected:
   std::pair<final_node_type*,bool> final_insert_nh_(final_node_handle_type& nh)
     {return final().insert_nh_(nh);}
 
+  template<typename Index>
+  void final_merge_(final_node_type* x,Index& i){return final().merge_(x,i);}
+
   template<BOOST_MULTI_INDEX_TEMPLATE_PARAM_PACK>
   std::pair<final_node_type*,bool> final_emplace_(
     BOOST_MULTI_INDEX_FUNCTION_PARAM_PACK)
@@ -286,6 +342,18 @@ protected:
 #if defined(BOOST_MULTI_INDEX_ENABLE_INVARIANT_CHECKING)
   void final_check_invariant_()const{final().check_invariant_();}
 #endif
+
+BOOST_MULTI_INDEX_PRIVATE_IF_MEMBER_TEMPLATE_FRIENDS:
+#if !defined(BOOST_NO_MEMBER_TEMPLATE_FRIENDS)
+  /* final_extract_for_merge_ accessed from index_base of dst container */
+
+  template <typename,typename,typename> friend class index_base;
+#endif
+
+  void final_extract_for_merge_(final_node_type* x)
+  {
+    final().extract_for_merge_(x);
+  } 
 };
 
 } /* namespace multi_index::detail */
