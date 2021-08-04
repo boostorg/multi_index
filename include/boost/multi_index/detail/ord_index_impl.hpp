@@ -548,7 +548,7 @@ public:
   void
 #endif
 
-  merge(BOOST_FWD_REF(Index) x)
+  merge(Index& x)
   {
     BOOST_MULTI_INDEX_CHECK_EQUAL_ALLOCATORS(*this,x);
     BOOST_MULTI_INDEX_ORD_INDEX_CHECK_INVARIANT;
