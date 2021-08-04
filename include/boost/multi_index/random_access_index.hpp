@@ -97,6 +97,12 @@ class random_access_index:
 #pragma parse_mfunc_templ off
 #endif
 
+#if !defined(BOOST_NO_MEMBER_TEMPLATE_FRIENDS)
+  /* access to final_extract_for_merge_ from external containers */
+
+  template <typename,typename,typename> friend class index_base;
+#endif
+
   typedef typename SuperMeta::type               super;
 
 protected:

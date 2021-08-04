@@ -19,7 +19,6 @@
 #include <boost/detail/workaround.hpp>
 #include <boost/move/utility_core.hpp>
 #include <boost/mpl/vector.hpp>
-#include <boost/multi_index/detail/access_specifier.hpp>
 #include <boost/multi_index/detail/allocator_traits.hpp>
 #include <boost/multi_index/detail/copy_map.hpp>
 #include <boost/multi_index/detail/do_not_copy_elements_tag.hpp>
@@ -316,6 +315,11 @@ protected:
     return final().extract_(x);
   } 
 
+  void final_extract_for_merge_(final_node_type* x)
+  {
+    final().extract_for_merge_(x);
+  } 
+
   void final_erase_(final_node_type* x){final().erase_(x);}
 
   void final_delete_node_(final_node_type* x){final().delete_node_(x);}
@@ -342,18 +346,6 @@ protected:
 #if defined(BOOST_MULTI_INDEX_ENABLE_INVARIANT_CHECKING)
   void final_check_invariant_()const{final().check_invariant_();}
 #endif
-
-BOOST_MULTI_INDEX_PRIVATE_IF_MEMBER_TEMPLATE_FRIENDS:
-#if !defined(BOOST_NO_MEMBER_TEMPLATE_FRIENDS)
-  /* final_extract_for_merge_ accessed from index_base of dst container */
-
-  template <typename,typename,typename> friend class index_base;
-#endif
-
-  void final_extract_for_merge_(final_node_type* x)
-  {
-    final().extract_for_merge_(x);
-  } 
 };
 
 } /* namespace multi_index::detail */
