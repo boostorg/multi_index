@@ -9,8 +9,7 @@ version: 1.0.{build}-{branch}
 
 branches:
   only:
-    - master
-    - develop
+    - feature/merge
 
 environment:
   matrix:
@@ -22,7 +21,7 @@ environment:
 
 install:
   - cd ..
-  - git clone -b %APPVEYOR_REPO_BRANCH% --depth 1 https://github.com/boostorg/boost.git boost-root
+  - git clone -b develop --depth 1 https://github.com/boostorg/boost.git boost-root
   - cd boost-root
   - git submodule update --init
   - git rm --ignore-unmatch libs/multi_index/
