@@ -98,7 +98,7 @@ class random_access_index:
 #endif
 
 #if !defined(BOOST_NO_MEMBER_TEMPLATE_FRIENDS)
-  /* access to final_extract_for_merge_ from external containers */
+  /* cross-index access */
 
   template <typename,typename,typename> friend class index_base;
 #endif

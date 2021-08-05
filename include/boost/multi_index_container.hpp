@@ -767,13 +767,6 @@ BOOST_MULTI_INDEX_PROTECTED_IF_MEMBER_TEMPLATE_FRIENDS:
     }
   }
 
-  template<typename Index>
-  void merge_(final_node_type* x,Index& i)
-  {
-    final_node_type* res=super::insert_(x->value(),x,&i);
-    if(res==x)++node_count;
-  }
-
   template<BOOST_MULTI_INDEX_TEMPLATE_PARAM_PACK>
   std::pair<final_node_type*,bool> emplace_(
     BOOST_MULTI_INDEX_FUNCTION_PARAM_PACK)
@@ -963,6 +956,23 @@ BOOST_MULTI_INDEX_PROTECTED_IF_MEMBER_TEMPLATE_FRIENDS:
     delete_all_nodes_();
     super::clear_();
     node_count=0;
+  }
+
+  template<typename Index>
+  void merge_(Index& x)
+  {
+    typedef typename Index::iterator source_iterator;
+
+    source_iterator last=x.end();
+
+    if(last.get_node()!=this->header()){ /* different containers */
+      source_iterator first=x.begin();
+
+      while(first!=last){
+        final_node_type* n=static_cast<final_node_type*>((first++).get_node());
+        if(super::insert_(n->value(),n,&super::final(x))==n)++node_count;
+      }
+    }
   }
 
   void swap_(multi_index_container<Value,IndexSpecifierList,Allocator>& x)

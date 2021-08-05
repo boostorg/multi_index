@@ -414,9 +414,21 @@ void test_merge()
       sequenced<>,
       ranked_non_unique<identity<int> >
     >
-  >                                       container;
+  >                                       container1;
 
-  container c1,c2;
+  typedef multi_index_container<
+    int,
+    indexed_by<
+      ordered_non_unique<identity<int> >,
+      hashed_non_unique<identity<int> >,
+      random_access<>,
+      sequenced<>,
+      ranked_non_unique<identity<int>, std::greater<int> >
+    >
+  >                                       container2;
+
+  container1 c1;
+  container2 c2;
   for(int i=0;i<5;++i){
     c1.insert(i);
     c2.insert(2*i);
@@ -426,7 +438,7 @@ void test_merge()
   BOOST_TEST(c1.size()==10&&c2.size()==0);
   c1.merge(c1.get<2>());
   BOOST_TEST(c1.size()==10&&c2.size()==0);
-  c2.merge(c1.get<2>());
+  c2.merge(c1.get<4>());
   BOOST_TEST(c1.size()==0&&c2.size()==10);
   c2.merge(c2);
   BOOST_TEST(c2.size()==10);
@@ -434,7 +446,7 @@ void test_merge()
   BOOST_TEST(c2.size()==10);
   c2.merge(boost::move(c2.get<3>()));
   BOOST_TEST(c2.size()==10);
-  c2.merge(static_cast<BOOST_RV_REF(container)>(container(c2)));
+  c2.merge(static_cast<BOOST_RV_REF(container2)>(container2(c2)));
   BOOST_TEST(c2.size()==20);
 }
 

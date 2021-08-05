@@ -152,7 +152,7 @@ class ordered_index_impl:
 #endif
 
 #if !defined(BOOST_NO_MEMBER_TEMPLATE_FRIENDS)
-  /* access to final_extract_for_merge_ from external containers */
+  /* cross-index access */
 
   template <typename,typename,typename> friend class index_base;
 #endif
@@ -557,16 +557,7 @@ public:
     BOOST_MULTI_INDEX_CHECK_EQUAL_ALLOCATORS(*this,x);
     BOOST_MULTI_INDEX_ORD_INDEX_CHECK_INVARIANT;
 
-    typedef typename Index::iterator source_iterator;
-
-    source_iterator first=x.begin(),last=x.end();
-    if(static_cast<final_node_type*>(last.get_node())!=
-       static_cast<final_node_type*>(this->header())){ /* different cntners */
-      while(first!=last){
-        this->final_merge_(
-          static_cast<final_node_type*>((first++).get_node()),x);
-      }
-    }
+    this->final_merge_(x);
   }
 
   template<typename Index>

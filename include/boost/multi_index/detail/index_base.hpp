@@ -177,9 +177,9 @@ protected:
     return x;
   }
 
-  template<typename Index>
+  template<typename MultiIndexContainer>
   final_node_type* insert_(
-    const value_type& v,final_node_type*& x,Index* p)
+    const value_type& v,final_node_type*& x,MultiIndexContainer* p)
   {
     p->final_extract_for_merge_(x);
     return x;
@@ -255,6 +255,10 @@ protected:
   final_type&       final(){return *static_cast<final_type*>(this);}
   const final_type& final()const{return *static_cast<const final_type*>(this);}
 
+  template<typename Index>
+  static typename Index::final_type& final(Index& x) /* cross-index access */
+    {return static_cast<typename Index::final_type&>(x);}
+
   final_node_type* final_header()const{return final().header();}
 
   bool      final_empty_()const{return final().empty_();}
@@ -273,9 +277,6 @@ protected:
     {return final().insert_ref_(t);}
   std::pair<final_node_type*,bool> final_insert_nh_(final_node_handle_type& nh)
     {return final().insert_nh_(nh);}
-
-  template<typename Index>
-  void final_merge_(final_node_type* x,Index& i){return final().merge_(x,i);}
 
   template<BOOST_MULTI_INDEX_TEMPLATE_PARAM_PACK>
   std::pair<final_node_type*,bool> final_emplace_(
@@ -325,6 +326,9 @@ protected:
   void final_delete_node_(final_node_type* x){final().delete_node_(x);}
   void final_delete_all_nodes_(){final().delete_all_nodes_();}
   void final_clear_(){final().clear_();}
+
+  template<typename Index>
+  void final_merge_(Index& x){return final().merge_(x);}
 
   void final_swap_(final_type& x){final().swap_(x);}
 
