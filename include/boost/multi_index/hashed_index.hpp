@@ -50,6 +50,11 @@
 #include <iterator>
 #include <utility>
 
+#if !defined(BOOST_NO_SFINAE)
+#include <boost/type_traits/is_const.hpp>
+#include <boost/utility/enable_if.hpp>
+#endif
+
 #if !defined(BOOST_NO_CXX11_HDR_INITIALIZER_LIST)
 #include <initializer_list>
 #endif
@@ -514,6 +519,38 @@ public:
     BOOST_MULTI_INDEX_HASHED_INDEX_CHECK_INVARIANT_OF(x);
     this->final_swap_(x.final());
   }
+
+  template<typename Index>
+
+#if !defined(BOOST_NO_SFINAE)
+  typename enable_if_c<
+    !is_const<Index>::value&&
+    is_same<typename Index::node_type,node_type>::value
+  >::type
+#else
+  void
+#endif
+
+  merge(Index& x)
+  {
+    BOOST_MULTI_INDEX_CHECK_EQUAL_ALLOCATORS(*this,x);
+    BOOST_MULTI_INDEX_HASHED_INDEX_CHECK_INVARIANT;
+
+    this->final_merge_(x);
+  }
+
+  template<typename Index>
+
+#if !defined(BOOST_NO_SFINAE)
+  typename enable_if_c<
+    !is_const<Index>::value&&
+    is_same<typename Index::node_type,node_type>::value
+  >::type
+#else
+  void
+#endif
+
+  merge(BOOST_RV_REF(Index) x){merge(static_cast<Index&>(x));}
 
   /* observers */
 
