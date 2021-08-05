@@ -434,7 +434,7 @@ void test_merge()
   BOOST_TEST(c2.size()==10);
   c2.merge(boost::move(c2.get<3>()));
   BOOST_TEST(c2.size()==10);
-  c2.merge(container(c2));
+  c2.merge(boost::move(container(c2)));
   BOOST_TEST(c2.size()==20);
 }
 
