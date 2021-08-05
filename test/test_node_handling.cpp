@@ -428,6 +428,14 @@ void test_merge()
   BOOST_TEST(c1.size()==10&&c2.size()==0);
   c2.merge(c1.get<2>());
   BOOST_TEST(c1.size()==0&&c2.size()==10);
+  c2.merge(c2);
+  BOOST_TEST(c2.size()==10);
+  c2.merge(boost::move(c2));
+  BOOST_TEST(c2.size()==10);
+  c2.merge(boost::move(c2.get<3>()));
+  BOOST_TEST(c2.size()==10);
+  c2.merge(container(c2));
+  BOOST_TEST(c2.size()==20);
 }
 
 void test_node_handling()

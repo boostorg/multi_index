@@ -77,7 +77,6 @@
 
 #if !defined(BOOST_NO_SFINAE)
 #include <boost/type_traits/is_const.hpp>
-#include <boost/type_traits/remove_reference.hpp>
 #include <boost/utility/enable_if.hpp>
 #endif
 
@@ -546,9 +545,8 @@ public:
 
 #if !defined(BOOST_NO_SFINAE)
   typename enable_if_c<
-    is_same<
-      typename remove_reference<Index>::type::node_type,node_type>::value&&
-    !is_const<typename remove_reference<Index>::type>::value
+    !is_const<Index>::value&&
+    is_same<typename Index::node_type,node_type>::value
   >::type
 #else
   void
@@ -559,7 +557,7 @@ public:
     BOOST_MULTI_INDEX_CHECK_EQUAL_ALLOCATORS(*this,x);
     BOOST_MULTI_INDEX_ORD_INDEX_CHECK_INVARIANT;
 
-    typedef typename remove_reference<Index>::type::iterator source_iterator;
+    typedef typename Index::iterator source_iterator;
 
     source_iterator first=x.begin(),last=x.end();
     if(static_cast<final_node_type*>(last.get_node())!=
@@ -570,6 +568,20 @@ public:
       }
     }
   }
+
+  template<typename Index>
+
+#if !defined(BOOST_NO_SFINAE)
+  typename enable_if_c<
+    !is_const<Index>::value&&
+    is_same<typename Index::node_type,node_type>::value
+  >::type
+#else
+  void
+#endif
+
+  merge(BOOST_RV_REF(Index) x){merge(static_cast<Index&>(x));}
+
 
   /* observers */
 
