@@ -531,29 +531,23 @@ public:
 
   /* list operations */
 
-  void splice(iterator position,random_access_index<SuperMeta,TagList>& x)
+  template<typename Index>
+  BOOST_MULTI_INDEX_ENABLE_IF_MERGEABLE(random_access_index,Index,void)
+  splice(iterator position,Index& x)
   {
     BOOST_MULTI_INDEX_CHECK_VALID_ITERATOR(position);
     BOOST_MULTI_INDEX_CHECK_IS_OWNER(position,*this);
-    BOOST_MULTI_INDEX_CHECK_DIFFERENT_CONTAINER(*this,x);
+    BOOST_MULTI_INDEX_CHECK_DIFFERENT_CONTAINER(
+      this->final(*this),this->final(x));
     BOOST_MULTI_INDEX_RND_INDEX_CHECK_INVARIANT;
-    iterator  first=x.begin(),last=x.end();
-    size_type n=0;
-    BOOST_TRY{
-      while(first!=last){
-        if(push_back(*first).second){
-          first=x.erase(first);
-          ++n;
-        }
-        else ++first;
-      }
-    }
-    BOOST_CATCH(...){
-      relocate(position,end()-n,end());
-      BOOST_RETHROW;
-    }
-    BOOST_CATCH_END
-    relocate(position,end()-n,end());
+    splice_impl(position,x,boost::is_copy_constructible<value_type>());
+  }
+
+  template<typename Index>
+  BOOST_MULTI_INDEX_ENABLE_IF_MERGEABLE(random_access_index,Index,void)
+  splice(iterator position,BOOST_RV_REF(Index) x)
+  {
+    splice(position,static_cast<Index&>(x));
   }
 
   void splice(
@@ -1099,6 +1093,53 @@ private:
       relocate(position.get_node(),p.first);
     }
     return std::pair<iterator,bool>(make_iterator(p.first),p.second);
+  }
+
+  template<typename Index>
+  void splice_impl(
+    iterator position,Index& x,boost::true_type /* copy-constructible value*/)
+  {
+    if(get_allocator()==x.get_allocator()){
+      splice_impl(position,x,boost::false_type());
+    }
+    else{
+      /* backwards compatibility with old, non-merge based splice */
+
+      iterator  first=x.begin(),last=x.end();
+      size_type n=0;
+      BOOST_TRY{
+        while(first!=last){
+          if(push_back(*first).second){
+            first=x.erase(first);
+            ++n;
+          }
+          else ++first;
+        }
+      }
+      BOOST_CATCH(...){
+        relocate(position,end()-n,end());
+        BOOST_RETHROW;
+      }
+      BOOST_CATCH_END
+      relocate(position,end()-n,end());
+    }
+  }
+
+  template<typename Index>
+  void splice_impl(
+    iterator position,Index& x,
+    boost::false_type /* copy-constructible value*/)
+  {
+    BOOST_MULTI_INDEX_CHECK_EQUAL_ALLOCATORS(*this,x);
+    size_type n=size();
+    BOOST_TRY{
+      this->final_merge_(x);
+    }
+    BOOST_CATCH(...){
+      relocate(position,begin()+n,end());
+    }
+    BOOST_CATCH_END
+    relocate(position,begin()+n,end());
   }
 
   ptr_array ptrs;
