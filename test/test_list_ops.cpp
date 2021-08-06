@@ -1,6 +1,6 @@
 /* Boost.MultiIndex test for standard list operations.
  *
- * Copyright 2003-2013 Joaquin M Lopez Munoz.
+ * Copyright 2003-2021 Joaquin M Lopez Munoz.
  * Distributed under the Boost Software License, Version 1.0.
  * (See accompanying file LICENSE_1_0.txt or copy at
  * http://www.boost.org/LICENSE_1_0.txt)
@@ -99,7 +99,11 @@ static void test_list_ops_unique_seq()
 
   CHECK_EQUAL(si,(3)(5)(1));
 
-  si.splice(si.end(),si2);
+  si.splice(si.end(),si2,project<1>(ss2,ss2.find(2)),si2.end());
+  CHECK_EQUAL(si,(3)(5)(1)(2)(6));
+  CHECK_EQUAL(si2,(3)(4)(0)(8)(5)(1));
+
+  si.splice(project<1>(ss,ss.find(2)),si2);
   CHECK_EQUAL(si,(3)(5)(1)(4)(0)(8)(2)(6));
   CHECK_EQUAL(si2,(3)(5)(1));
 

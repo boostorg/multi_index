@@ -39,9 +39,15 @@
 #include <boost/multi_index/detail/vartempl_support.hpp>
 #include <boost/multi_index/sequenced_index_fwd.hpp>
 #include <boost/tuple/tuple.hpp>
+#include <boost/type_traits/is_copy_constructible.hpp>
 #include <boost/type_traits/is_integral.hpp>
 #include <functional>
 #include <utility>
+
+#if !defined(BOOST_NO_SFINAE)
+#include <boost/type_traits/is_const.hpp>
+#include <boost/utility/enable_if.hpp>
+#endif
 
 #if !defined(BOOST_NO_CXX11_HDR_INITIALIZER_LIST)
 #include<initializer_list>
@@ -482,17 +488,40 @@ public:
 
   /* list operations */
 
-  void splice(iterator position,sequenced_index<SuperMeta,TagList>& x)
+  template<typename Index>
+
+#if !defined(BOOST_NO_SFINAE)
+  typename enable_if_c<
+    !is_const<Index>::value&&
+    is_same<typename Index::node_type,node_type>::value
+  >::type
+#else
+  void
+#endif
+
+  splice(iterator position,Index& x)
   {
     BOOST_MULTI_INDEX_CHECK_VALID_ITERATOR(position);
     BOOST_MULTI_INDEX_CHECK_IS_OWNER(position,*this);
-    BOOST_MULTI_INDEX_CHECK_DIFFERENT_CONTAINER(*this,x);
+    BOOST_MULTI_INDEX_CHECK_DIFFERENT_CONTAINER(final(*this),final(x));
     BOOST_MULTI_INDEX_SEQ_INDEX_CHECK_INVARIANT;
-    iterator first=x.begin(),last=x.end();
-    while(first!=last){
-      if(insert(position,*first).second)first=x.erase(first);
-      else ++first;
-    }
+    splice_impl(position,x,boost::is_copy_constructible<value_type>());
+  }
+
+  template<typename Index>
+
+#if !defined(BOOST_NO_SFINAE)
+  typename enable_if_c<
+    !is_const<Index>::value&&
+    is_same<typename Index::node_type,node_type>::value
+  >::type
+#else
+  void
+#endif
+
+  splice(iterator position,BOOST_RV_REF(Index) x)
+  {
+    splice(position,static_cast<Index&>(x));
   }
 
   void splice(iterator position,sequenced_index<SuperMeta,TagList>& x,iterator i)
@@ -992,6 +1021,43 @@ private:
       relink(position.get_node(),p.first);
     }
     return std::pair<iterator,bool>(make_iterator(p.first),p.second);
+  }
+
+  template<typename Index>
+  void splice_impl(
+    iterator position,Index& x,boost::true_type /* copy constructible value*/)
+  {
+    if(get_allocator()==x.get_allocator()){
+      splice_impl(position,x,boost::false_type());
+    }
+    else{
+      /* backwards compatibility with old, non-merge based splice */
+
+      iterator first=x.begin(),last=x.end();
+      while(first!=last){
+        if(insert(position,*first).second)first=x.erase(first);
+        else ++first;
+      }
+    }
+  }
+
+  template<typename Index>
+  void splice_impl(
+    iterator position,Index& x,
+    boost::false_type /* copy constructible value*/)
+  {
+    BOOST_MULTI_INDEX_CHECK_EQUAL_ALLOCATORS(*this,x);
+
+    if(position==end()){
+      this->final_merge_(x);
+    }
+    else{
+      iterator first=end();
+      --first;
+      this->final_merge_(x);
+      ++first;
+      relink(position.get_node(),first.get_node(),header());
+    }
   }
 
 #if defined(BOOST_MULTI_INDEX_ENABLE_INVARIANT_CHECKING)&&\
