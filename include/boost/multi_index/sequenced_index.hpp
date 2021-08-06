@@ -503,7 +503,8 @@ public:
   {
     BOOST_MULTI_INDEX_CHECK_VALID_ITERATOR(position);
     BOOST_MULTI_INDEX_CHECK_IS_OWNER(position,*this);
-    BOOST_MULTI_INDEX_CHECK_DIFFERENT_CONTAINER(final(*this),final(x));
+    BOOST_MULTI_INDEX_CHECK_DIFFERENT_CONTAINER(
+      this->final(*this),this->final(x));
     BOOST_MULTI_INDEX_SEQ_INDEX_CHECK_INVARIANT;
     splice_impl(position,x,boost::is_copy_constructible<value_type>());
   }
@@ -1025,7 +1026,7 @@ private:
 
   template<typename Index>
   void splice_impl(
-    iterator position,Index& x,boost::true_type /* copy constructible value*/)
+    iterator position,Index& x,boost::true_type /* copy-constructible value*/)
   {
     if(get_allocator()==x.get_allocator()){
       splice_impl(position,x,boost::false_type());
@@ -1044,7 +1045,7 @@ private:
   template<typename Index>
   void splice_impl(
     iterator position,Index& x,
-    boost::false_type /* copy constructible value*/)
+    boost::false_type /* copy-constructible value*/)
   {
     BOOST_MULTI_INDEX_CHECK_EQUAL_ALLOCATORS(*this,x);
 
