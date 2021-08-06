@@ -767,6 +767,19 @@ BOOST_MULTI_INDEX_PROTECTED_IF_MEMBER_TEMPLATE_FRIENDS:
     }
   }
 
+  template<typename Index>
+  std::pair<final_node_type*,bool> transfer_(Index& x,final_node_type* n)
+  {
+    final_node_type* res=super::insert_(n->value(),n,&super::final(x));
+    if(res==n){
+      ++node_count;
+      return std::pair<final_node_type*,bool>(res,true);
+    }
+    else{
+      return std::pair<final_node_type*,bool>(res,false);
+    }
+  }
+
   template<BOOST_MULTI_INDEX_TEMPLATE_PARAM_PACK>
   std::pair<final_node_type*,bool> emplace_(
     BOOST_MULTI_INDEX_FUNCTION_PARAM_PACK)
@@ -927,7 +940,7 @@ BOOST_MULTI_INDEX_PROTECTED_IF_MEMBER_TEMPLATE_FRIENDS:
     return final_node_handle_type(x,get_allocator());
   }
 
-  void extract_for_merge_(final_node_type* x)
+  void extract_for_transfer_(final_node_type* x)
   {
     --node_count;
     super::extract_(x,boost::false_type() /* invalidate_iterators */);
@@ -969,8 +982,7 @@ BOOST_MULTI_INDEX_PROTECTED_IF_MEMBER_TEMPLATE_FRIENDS:
       source_iterator first=x.begin();
 
       while(first!=last){
-        final_node_type* n=static_cast<final_node_type*>((first++).get_node());
-        if(super::insert_(n->value(),n,&super::final(x))==n)++node_count;
+        transfer_(x,static_cast<final_node_type*>((first++).get_node()));
       }
     }
   }

@@ -181,7 +181,7 @@ protected:
   final_node_type* insert_(
     const value_type& v,final_node_type*& x,MultiIndexContainer* p)
   {
-    p->final_extract_for_merge_(x);
+    p->final_extract_for_transfer_(x);
     return x;
   }
 
@@ -278,6 +278,10 @@ protected:
   std::pair<final_node_type*,bool> final_insert_nh_(final_node_handle_type& nh)
     {return final().insert_nh_(nh);}
 
+  template<typename Index>
+  std::pair<final_node_type*,bool> final_transfer_(Index& x,final_node_type* n)
+    {return final().transfer_(x,n);}
+
   template<BOOST_MULTI_INDEX_TEMPLATE_PARAM_PACK>
   std::pair<final_node_type*,bool> final_emplace_(
     BOOST_MULTI_INDEX_FUNCTION_PARAM_PACK)
@@ -316,9 +320,9 @@ protected:
     return final().extract_(x);
   } 
 
-  void final_extract_for_merge_(final_node_type* x)
+  void final_extract_for_transfer_(final_node_type* x)
   {
-    final().extract_for_merge_(x);
+    final().extract_for_transfer_(x);
   } 
 
   void final_erase_(final_node_type* x){final().erase_(x);}

@@ -1098,13 +1098,13 @@ private:
 
   template<typename Index>
   void splice_impl(
-    iterator position,Index& x,boost::true_type /* copy-constructible value*/)
+    iterator position,Index& x,boost::true_type /* copy-constructible value */)
   {
     if(get_allocator()==x.get_allocator()){
       splice_impl(position,x,boost::false_type());
     }
     else{
-      /* backwards compatibility with old, non-merge based splice */
+      /* backwards compatibility with old, non-transfer-based splice */
 
       iterator  first=x.begin(),last=x.end();
       size_type n=size();
@@ -1126,7 +1126,7 @@ private:
   template<typename Index>
   void splice_impl(
     iterator position,Index& x,
-    boost::false_type /* copy-constructible value*/)
+    boost::false_type /* copy-constructible value */)
   {
     BOOST_MULTI_INDEX_CHECK_EQUAL_ALLOCATORS(*this,x);
     size_type n=size();
