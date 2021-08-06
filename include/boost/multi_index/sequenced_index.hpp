@@ -1032,7 +1032,14 @@ private:
     else{
       iterator first=end();
       --first;
-      this->final_merge_(x);
+      BOOST_TRY{
+        this->final_merge_(x);
+      }
+      BOOST_CATCH(...){
+        ++first;
+        relink(position.get_node(),first.get_node(),header());
+      }
+      BOOST_CATCH_END
       ++first;
       relink(position.get_node(),first.get_node(),header());
     }
