@@ -1106,22 +1106,19 @@ private:
       /* backwards compatibility with old, non-merge based splice */
 
       iterator  first=x.begin(),last=x.end();
-      size_type n=0;
+      size_type n=size();
       BOOST_TRY{
         while(first!=last){
-          if(push_back(*first).second){
-            first=x.erase(first);
-            ++n;
-          }
+          if(push_back(*first).second)first=x.erase(first);
           else ++first;
         }
       }
       BOOST_CATCH(...){
-        relocate(position,end()-n,end());
+        relocate(position,begin()+n,end());
         BOOST_RETHROW;
       }
       BOOST_CATCH_END
-      relocate(position,end()-n,end());
+      relocate(position,begin()+n,end());
     }
   }
 
