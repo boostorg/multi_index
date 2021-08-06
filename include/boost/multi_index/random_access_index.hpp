@@ -551,6 +551,20 @@ public:
     splice(position,static_cast<Index&>(x));
   }
 
+  template<typename Index>
+  BOOST_MULTI_INDEX_ENABLE_IF_MERGEABLE(random_access_index,Index,void)
+  splice(
+    iterator position,Index& x,BOOST_DEDUCED_TYPENAME Index::iterator i)
+  {
+    BOOST_MULTI_INDEX_CHECK_VALID_ITERATOR(position);
+    BOOST_MULTI_INDEX_CHECK_IS_OWNER(position,*this);
+    BOOST_MULTI_INDEX_CHECK_VALID_ITERATOR(i);
+    BOOST_MULTI_INDEX_CHECK_DEREFERENCEABLE_ITERATOR(i);
+    BOOST_MULTI_INDEX_CHECK_IS_OWNER(i,x);
+    BOOST_MULTI_INDEX_RND_INDEX_CHECK_INVARIANT;
+    splice_impl(position,x,i,boost::is_copy_constructible<value_type>());
+  }
+
   void splice(
     iterator position,random_access_index<SuperMeta,TagList>& x,iterator i)
   {
@@ -562,20 +576,7 @@ public:
     BOOST_MULTI_INDEX_RND_INDEX_CHECK_INVARIANT;
     if(&x==this)relocate(position,i);
     else{
-      if(insert(position,*i).second){
-
-#if defined(BOOST_MULTI_INDEX_ENABLE_SAFE_MODE)
-    /* MSVC++ 6.0 optimizer has a hard time with safe mode, and the following
-     * workaround is needed. Left it for all compilers as it does no
-     * harm.
-     */
-        i.detach();
-        x.erase(x.make_iterator(i.get_node()));
-#else
-        x.erase(i);
-#endif
-
-      }
+      splice_impl(position,x,i,boost::is_copy_constructible<value_type>());
     }
   }
 
@@ -1138,6 +1139,47 @@ private:
     }
     BOOST_CATCH_END
     relocate(position,begin()+n,end());
+  }
+
+  template<typename Index>
+  void splice_impl(
+    iterator position,Index& x,BOOST_DEDUCED_TYPENAME Index::iterator i,
+    boost::true_type /* copy-constructible value */)
+  {
+    if(get_allocator()==x.get_allocator()){
+      splice_impl(position,x,i,boost::false_type());
+    }
+    else{
+      /* backwards compatibility with old, non-transfer-based splice */
+
+      if(insert(position,*i).second){
+
+#if defined(BOOST_MULTI_INDEX_ENABLE_SAFE_MODE)
+        /* MSVC++ 6.0 optimizer has a hard time with safe mode, and the
+         * following workaround is needed. Left it for all compilers as it
+         * does no harm.
+         */
+
+        i.detach();
+        x.erase(x.make_iterator(i.get_node()));
+#else
+        x.erase(i);
+#endif
+      }
+    }
+  }
+
+  template<typename Index>
+  void splice_impl(
+    iterator position,Index& x,BOOST_DEDUCED_TYPENAME Index::iterator i,
+    boost::false_type /* copy-constructible value */)
+  {
+    BOOST_MULTI_INDEX_CHECK_EQUAL_ALLOCATORS(*this,x);
+    std::pair<final_node_type*,bool> p=this->final_transfer_(
+      x,static_cast<final_node_type*>(i.get_node()));
+    if(p.second&&position.get_node()!=header()){
+      relocate(position.get_node(),p.first);
+    }
   }
 
   ptr_array ptrs;
