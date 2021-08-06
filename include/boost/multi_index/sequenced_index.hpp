@@ -44,11 +44,6 @@
 #include <functional>
 #include <utility>
 
-#if !defined(BOOST_NO_SFINAE)
-#include <boost/type_traits/is_const.hpp>
-#include <boost/utility/enable_if.hpp>
-#endif
-
 #if !defined(BOOST_NO_CXX11_HDR_INITIALIZER_LIST)
 #include<initializer_list>
 #endif
@@ -489,16 +484,7 @@ public:
   /* list operations */
 
   template<typename Index>
-
-#if !defined(BOOST_NO_SFINAE)
-  typename enable_if_c<
-    !is_const<Index>::value&&
-    is_same<typename Index::node_type,node_type>::value
-  >::type
-#else
-  void
-#endif
-
+  BOOST_MULTI_INDEX_ENABLE_IF_MERGEABLE(sequenced_index,Index,void)
   splice(iterator position,Index& x)
   {
     BOOST_MULTI_INDEX_CHECK_VALID_ITERATOR(position);
@@ -510,16 +496,7 @@ public:
   }
 
   template<typename Index>
-
-#if !defined(BOOST_NO_SFINAE)
-  typename enable_if_c<
-    !is_const<Index>::value&&
-    is_same<typename Index::node_type,node_type>::value
-  >::type
-#else
-  void
-#endif
-
+  BOOST_MULTI_INDEX_ENABLE_IF_MERGEABLE(sequenced_index,Index,void)
   splice(iterator position,BOOST_RV_REF(Index) x)
   {
     splice(position,static_cast<Index&>(x));
