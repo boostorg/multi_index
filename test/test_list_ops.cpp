@@ -116,7 +116,11 @@ static void test_list_ops_unique_seq()
   CHECK_EQUAL(si,(5)(1)(8)(4)(0)(2)(6)(3));
   BOOST_TEST(si2.empty());
 
-  si2.splice(si2.end(),si,project<1>(ss,ss.find(0)),project<1>(ss,ss.find(6)));
+  si2.splice(si2.end(),si,project<1>(ss,ss.find(2)),project<1>(ss,ss.find(6)));
+  CHECK_EQUAL(si,(5)(1)(8)(4)(0)(6)(3));
+  CHECK_EQUAL(si2,(2));
+
+  si2.splice(si2.begin(),si,project<1>(ss,ss.find(0)),project<1>(ss,ss.find(6)));
   CHECK_EQUAL(si,(5)(1)(8)(4)(6)(3));
   CHECK_EQUAL(si2,(0)(2));
 

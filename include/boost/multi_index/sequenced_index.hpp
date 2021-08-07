@@ -532,6 +532,25 @@ public:
     }
   }
 
+  template<typename Index>
+  BOOST_MULTI_INDEX_ENABLE_IF_MERGEABLE(sequenced_index,Index,void)
+  splice(
+    iterator position,Index& x,
+    BOOST_DEDUCED_TYPENAME Index::iterator first,
+    BOOST_DEDUCED_TYPENAME Index::iterator last)
+  {
+    BOOST_MULTI_INDEX_CHECK_VALID_ITERATOR(position);
+    BOOST_MULTI_INDEX_CHECK_IS_OWNER(position,*this);
+    BOOST_MULTI_INDEX_CHECK_VALID_ITERATOR(first);
+    BOOST_MULTI_INDEX_CHECK_VALID_ITERATOR(last);
+    BOOST_MULTI_INDEX_CHECK_IS_OWNER(first,x);
+    BOOST_MULTI_INDEX_CHECK_IS_OWNER(last,x);
+    BOOST_MULTI_INDEX_CHECK_VALID_RANGE(first,last);
+    BOOST_MULTI_INDEX_SEQ_INDEX_CHECK_INVARIANT;
+    splice_impl(
+      position,x,first,last,boost::is_copy_constructible<value_type>());
+  }
+
   void splice(
     iterator position,sequenced_index<SuperMeta,TagList>& x,
     iterator first,iterator last)
@@ -550,10 +569,8 @@ public:
         position.get_node(),first.get_node(),last.get_node());
     }
     else{
-      while(first!=last){
-        if(insert(position,*first).second)first=x.erase(first);
-        else ++first;
-      }
+      splice_impl(
+        position,x,first,last,boost::is_copy_constructible<value_type>());
     }
   }
 
@@ -1083,6 +1100,59 @@ private:
       x,static_cast<final_node_type*>(i.get_node()));
     if(p.second&&position.get_node()!=header()){
       relink(position.get_node(),p.first);
+    }
+  }
+
+  template<typename Index>
+  void splice_impl(
+    iterator position,Index& x,
+    BOOST_DEDUCED_TYPENAME Index::iterator first,
+    BOOST_DEDUCED_TYPENAME Index::iterator last,
+    boost::true_type /* copy-constructible value */)
+  {
+    if(get_allocator()==x.get_allocator()){
+      splice_impl(position,x,first,last,boost::false_type());
+    }
+    else{
+      /* backwards compatibility with old, non-transfer-based splice */
+
+      while(first!=last){
+        if(insert(position,*first).second)first=x.erase(first);
+        else ++first;
+      }
+    }
+  }
+
+  template<typename Index>
+  void splice_impl(
+    iterator position,Index& x,
+    BOOST_DEDUCED_TYPENAME Index::iterator first,
+    BOOST_DEDUCED_TYPENAME Index::iterator last,
+    boost::false_type /* copy-constructible value */)
+  {
+    BOOST_MULTI_INDEX_CHECK_EQUAL_ALLOCATORS(*this,x);
+    if(position==end()){
+      while(first!=last){
+        this->final_transfer_(
+          x,static_cast<final_node_type*>((first++).get_node()));
+      }
+    }
+    else{
+      iterator first_to_relink=end();
+      --first_to_relink;
+      BOOST_TRY{
+        while(first!=last){
+          this->final_transfer_(
+            x,static_cast<final_node_type*>((first++).get_node()));
+        }
+      }
+      BOOST_CATCH(...){
+        ++first_to_relink;
+        relink(position.get_node(),first_to_relink.get_node(),header());
+      }
+      BOOST_CATCH_END
+      ++first_to_relink;
+      relink(position.get_node(),first_to_relink.get_node(),header());
     }
   }
 
