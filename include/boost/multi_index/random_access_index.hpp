@@ -562,22 +562,23 @@ public:
     BOOST_MULTI_INDEX_CHECK_DEREFERENCEABLE_ITERATOR(i);
     BOOST_MULTI_INDEX_CHECK_IS_OWNER(i,x);
     BOOST_MULTI_INDEX_RND_INDEX_CHECK_INVARIANT;
-    splice_impl(position,x,i,boost::is_copy_constructible<value_type>());
-  }
-
-  void splice(
-    iterator position,random_access_index<SuperMeta,TagList>& x,iterator i)
-  {
-    BOOST_MULTI_INDEX_CHECK_VALID_ITERATOR(position);
-    BOOST_MULTI_INDEX_CHECK_IS_OWNER(position,*this);
-    BOOST_MULTI_INDEX_CHECK_VALID_ITERATOR(i);
-    BOOST_MULTI_INDEX_CHECK_DEREFERENCEABLE_ITERATOR(i);
-    BOOST_MULTI_INDEX_CHECK_IS_OWNER(i,x);
-    BOOST_MULTI_INDEX_RND_INDEX_CHECK_INVARIANT;
-    if(&x==this)relocate(position,i);
+    if(x.end().get_node()==this->header()){ /* same container */
+      index_node_type* pn=position.get_node();
+      index_node_type* pi=static_cast<index_node_type*>(i.get_node());
+      if(pn!=pi)relocate(pn,pi);
+    }
     else{
       splice_impl(position,x,i,boost::is_copy_constructible<value_type>());
     }
+  }
+
+  template<typename Index>
+  BOOST_MULTI_INDEX_ENABLE_IF_MERGEABLE(random_access_index,Index,void)
+  splice(
+    iterator position,BOOST_RV_REF(Index) x,
+    BOOST_DEDUCED_TYPENAME Index::iterator i)
+  {
+    splice(position,static_cast<Index&>(x),i);
   }
 
   template<typename Index>
