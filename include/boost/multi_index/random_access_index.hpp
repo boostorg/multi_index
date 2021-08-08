@@ -564,8 +564,8 @@ public:
     BOOST_MULTI_INDEX_RND_INDEX_CHECK_INVARIANT;
     if(x.end().get_node()==this->header()){ /* same container */
       index_node_type* pn=position.get_node();
-      index_node_type* pi=static_cast<index_node_type*>(i.get_node());
-      if(pn!=pi)relocate(pn,pi);
+      index_node_type* in=static_cast<index_node_type*>(i.get_node());
+      if(pn!=in)relocate(pn,in);
     }
     else{
       splice_impl(position,x,i,boost::is_copy_constructible<value_type>());
