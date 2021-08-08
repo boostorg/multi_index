@@ -513,23 +513,23 @@ public:
     BOOST_MULTI_INDEX_CHECK_DEREFERENCEABLE_ITERATOR(i);
     BOOST_MULTI_INDEX_CHECK_IS_OWNER(i,x);
     BOOST_MULTI_INDEX_SEQ_INDEX_CHECK_INVARIANT;
-    splice_impl(position,x,i,boost::is_copy_constructible<value_type>());
-  }
-
-  void splice(iterator position,sequenced_index<SuperMeta,TagList>& x,iterator i)
-  {
-    BOOST_MULTI_INDEX_CHECK_VALID_ITERATOR(position);
-    BOOST_MULTI_INDEX_CHECK_IS_OWNER(position,*this);
-    BOOST_MULTI_INDEX_CHECK_VALID_ITERATOR(i);
-    BOOST_MULTI_INDEX_CHECK_DEREFERENCEABLE_ITERATOR(i);
-    BOOST_MULTI_INDEX_CHECK_IS_OWNER(i,x);
-    BOOST_MULTI_INDEX_SEQ_INDEX_CHECK_INVARIANT;
-    if(&x==this){
-      if(position!=i)relink(position.get_node(),i.get_node());
+    if(x.end().get_node()==this->header()){ /* same container */
+      index_node_type* pn=position.get_node();
+      index_node_type* pi=static_cast<index_node_type*>(i.get_node());
+      if(pn!=pi)relink(pn,pi);
     }
     else{
       splice_impl(position,x,i,boost::is_copy_constructible<value_type>());
     }
+  }
+
+  template<typename Index>
+  BOOST_MULTI_INDEX_ENABLE_IF_MERGEABLE(sequenced_index,Index,void)
+  splice(
+    iterator position,BOOST_RV_REF(Index) x,
+    BOOST_DEDUCED_TYPENAME Index::iterator i)
+  {
+    splice(position,static_cast<Index&>(x),i);
   }
 
   template<typename Index>
@@ -1077,9 +1077,9 @@ private:
 
 #if defined(BOOST_MULTI_INDEX_ENABLE_SAFE_MODE)
         /* MSVC++ 6.0 optimizer has a hard time with safe mode, and the
-         * following workaround is needed. Left it for all compilers as it
-         * does no harm.
-         */
+          * following workaround is needed. Left it for all compilers as it
+          * does no harm.
+          */
 
         i.detach();
         x.erase(x.make_iterator(i.get_node()));
