@@ -567,7 +567,7 @@ public:
     BOOST_DEDUCED_TYPENAME Index::iterator first,
     BOOST_DEDUCED_TYPENAME Index::iterator last)
   {
-    splice(position,static_cast<Index&>(x),i);
+    splice(position,static_cast<Index&>(x),first,last);
   }
 
   void remove(value_param_type value)
