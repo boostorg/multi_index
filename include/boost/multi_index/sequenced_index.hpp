@@ -547,31 +547,27 @@ public:
     BOOST_MULTI_INDEX_CHECK_IS_OWNER(last,x);
     BOOST_MULTI_INDEX_CHECK_VALID_RANGE(first,last);
     BOOST_MULTI_INDEX_SEQ_INDEX_CHECK_INVARIANT;
-    splice_impl(
-      position,x,first,last,boost::is_copy_constructible<value_type>());
-  }
-
-  void splice(
-    iterator position,sequenced_index<SuperMeta,TagList>& x,
-    iterator first,iterator last)
-  {
-    BOOST_MULTI_INDEX_CHECK_VALID_ITERATOR(position);
-    BOOST_MULTI_INDEX_CHECK_IS_OWNER(position,*this);
-    BOOST_MULTI_INDEX_CHECK_VALID_ITERATOR(first);
-    BOOST_MULTI_INDEX_CHECK_VALID_ITERATOR(last);
-    BOOST_MULTI_INDEX_CHECK_IS_OWNER(first,x);
-    BOOST_MULTI_INDEX_CHECK_IS_OWNER(last,x);
-    BOOST_MULTI_INDEX_CHECK_VALID_RANGE(first,last);
-    BOOST_MULTI_INDEX_SEQ_INDEX_CHECK_INVARIANT;
-    if(&x==this){
+    if(x.end().get_node()==this->header()){ /* same container */
       BOOST_MULTI_INDEX_CHECK_OUTSIDE_RANGE(position,first,last);
-      if(position!=last)relink(
-        position.get_node(),first.get_node(),last.get_node());
+      index_node_type* pn=position.get_node();
+      index_node_type* fn=static_cast<index_node_type*>(first.get_node());
+      index_node_type* ln=static_cast<index_node_type*>(last.get_node());
+      if(pn!=ln)relink(pn,fn,ln);
     }
     else{
       splice_impl(
         position,x,first,last,boost::is_copy_constructible<value_type>());
     }
+  }
+
+  template<typename Index>
+  BOOST_MULTI_INDEX_ENABLE_IF_MERGEABLE(sequenced_index,Index,void)
+  splice(
+    iterator position,BOOST_RV_REF(Index) x,
+    BOOST_DEDUCED_TYPENAME Index::iterator first,
+    BOOST_DEDUCED_TYPENAME Index::iterator last)
+  {
+    splice(position,static_cast<Index&>(x),i);
   }
 
   void remove(value_param_type value)

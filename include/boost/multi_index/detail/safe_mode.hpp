@@ -13,6 +13,7 @@
 #pragma once
 #endif
 
+#include <boost/core/addressof.hpp>
 #include <boost/type_traits/integral_constant.hpp>
 
 /* Safe mode machinery, in the spirit of Cay Hortmann's "Safe STL"
@@ -212,6 +213,28 @@ inline bool check_outside_range(
       /* crucial that this check goes after previous break */
     
       if(first==it)found=true;
+    }
+    if(first!=it1)return false;
+    return !found;
+  }
+  return true;
+}
+
+template<typename Iterator1,typename Iterator2>
+inline bool check_outside_range(
+  const Iterator1& it,const Iterator2& it0,const Iterator2& it1)
+{
+  if(it.valid()&&it!=it.owner()->end()&&it0.valid()){
+    Iterator2 last=it0.owner()->end();
+    bool found=false;
+
+    Iterator2 first=it0;
+    for(;first!=last;++first){
+      if(first==it1)break;
+    
+      /* crucial that this check goes after previous break */
+    
+      if(boost::addressof(*first)==boost::addressof(*it))found=true;
     }
     if(first!=it1)return false;
     return !found;
