@@ -1077,9 +1077,9 @@ private:
 
 #if defined(BOOST_MULTI_INDEX_ENABLE_SAFE_MODE)
         /* MSVC++ 6.0 optimizer has a hard time with safe mode, and the
-          * following workaround is needed. Left it for all compilers as it
-          * does no harm.
-          */
+         * following workaround is needed. Left it for all compilers as it
+         * does no harm.
+         */
 
         i.detach();
         x.erase(x.make_iterator(i.get_node()));
