@@ -258,6 +258,12 @@ inline bool check_different_container(
   return &cont0!=&cont1;
 }
 
+template<typename Container1,typename Container2>
+inline bool check_different_container(const Container1&,const Container2&)
+{
+  return true;
+}
+
 template<typename Container0,typename Container1>
 inline bool check_equal_allocators(
   const Container0& cont0,const Container1& cont1)
