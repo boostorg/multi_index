@@ -499,7 +499,7 @@ void test_merge_different(Dst& dst,Src& src)
 template<int N,int M,typename Dst,typename Src>
 void test_merge(Dst& dst,Src& src)
 {
-  test_merge_different(dst,src);
+  test_merge_different<N,M>(dst,src);
 }
 
 template<int N,int M,typename Dst>
