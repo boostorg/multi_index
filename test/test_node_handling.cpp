@@ -421,7 +421,7 @@ struct enable_if_not_key_based:boost::enable_if_c<
 
 template<typename Dst,typename Src>
 void merge(
-  Dst& dst,BOOST_RV_REF(Src) src,
+  Dst& dst,BOOST_FWD_REF(Src) src,
   typename enable_if_key_based<Dst>::type=0)
 {
   dst.merge(boost::forward<Src>(src));
@@ -429,7 +429,7 @@ void merge(
 
 template<typename Dst,typename Src>
 void merge(
-  Dst& dst,BOOST_RV_REF(Src) src,
+  Dst& dst,BOOST_FWD_REF(Src) src,
   typename enable_if_not_key_based<Dst>::type=0)
 {
   dst.splice(dst.end(),boost::forward<Src>(src));
