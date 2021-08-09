@@ -972,18 +972,13 @@ BOOST_MULTI_INDEX_PROTECTED_IF_MEMBER_TEMPLATE_FRIENDS:
   }
 
   template<typename Index>
-  void merge_(Index& x)
+  void transfer_range_(
+    Index& x,
+    BOOST_DEDUCED_TYPENAME Index::iterator first,
+    BOOST_DEDUCED_TYPENAME Index::iterator last)
   {
-    typedef typename Index::iterator source_iterator;
-
-    source_iterator last=x.end();
-
-    if(last.get_node()!=this->header()){ /* different containers */
-      source_iterator first=x.begin();
-
-      while(first!=last){
-        transfer_(x,static_cast<final_node_type*>((first++).get_node()));
-      }
+    while(first!=last){
+      transfer_(x,static_cast<final_node_type*>((first++).get_node()));
     }
   }
 

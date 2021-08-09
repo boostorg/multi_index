@@ -541,7 +541,9 @@ public:
     BOOST_MULTI_INDEX_CHECK_DIFFERENT_CONTAINER(
       this->final(*this),this->final(x));
     BOOST_MULTI_INDEX_RND_INDEX_CHECK_INVARIANT;
-    external_splice(position,x,boost::is_copy_constructible<value_type>());
+    external_splice(
+      position,x,x.begin(),x.end(),
+      boost::is_copy_constructible<value_type>());
   }
 
   template<typename Index>
@@ -1102,50 +1104,6 @@ private:
 
   template<typename Index>
   void external_splice(
-    iterator position,Index& x,boost::true_type /* copy-constructible value */)
-  {
-    if(get_allocator()==x.get_allocator()){
-      external_splice(position,x,boost::false_type());
-    }
-    else{
-      /* backwards compatibility with old, non-transfer-based splice */
-
-      iterator  first=x.begin(),last=x.end();
-      size_type n=size();
-      BOOST_TRY{
-        while(first!=last){
-          if(push_back(*first).second)first=x.erase(first);
-          else ++first;
-        }
-      }
-      BOOST_CATCH(...){
-        relocate(position,begin()+n,end());
-        BOOST_RETHROW;
-      }
-      BOOST_CATCH_END
-      relocate(position,begin()+n,end());
-    }
-  }
-
-  template<typename Index>
-  void external_splice(
-    iterator position,Index& x,
-    boost::false_type /* copy-constructible value */)
-  {
-    BOOST_MULTI_INDEX_CHECK_EQUAL_ALLOCATORS(*this,x);
-    size_type n=size();
-    BOOST_TRY{
-      this->final_merge_(x);
-    }
-    BOOST_CATCH(...){
-      relocate(position,begin()+n,end());
-    }
-    BOOST_CATCH_END
-    relocate(position,begin()+n,end());
-  }
-
-  template<typename Index>
-  void external_splice(
     iterator position,Index& x,BOOST_DEDUCED_TYPENAME Index::iterator i,
     boost::true_type /* copy-constructible value */)
   {
@@ -1241,10 +1199,7 @@ private:
     BOOST_MULTI_INDEX_CHECK_EQUAL_ALLOCATORS(*this,x);
     size_type n=size();
     BOOST_TRY{
-      while(first!=last){
-        this->final_transfer_(
-          x,static_cast<final_node_type*>((first++).get_node()));
-      }
+      this->final_transfer_range_(x,first,last);
     }
     BOOST_CATCH(...){
       relocate(position,begin()+n,end());

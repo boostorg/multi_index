@@ -542,8 +542,9 @@ public:
   {
     BOOST_MULTI_INDEX_CHECK_EQUAL_ALLOCATORS(*this,x);
     BOOST_MULTI_INDEX_ORD_INDEX_CHECK_INVARIANT;
-
-    this->final_merge_(x);
+    if(x.end().get_node()!=this->header()){ /* different containers */
+      this->final_transfer_range_(x);
+    }
   }
 
   template<typename Index>

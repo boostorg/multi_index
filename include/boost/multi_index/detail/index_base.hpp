@@ -332,7 +332,14 @@ protected:
   void final_clear_(){final().clear_();}
 
   template<typename Index>
-  void final_merge_(Index& x){return final().merge_(x);}
+  void final_transfer_range_(Index& x)
+    {final_transfer_range_(x,x.begin(),x.end());}
+  template<typename Index>
+  void final_transfer_range_(
+    Index& x,
+    BOOST_DEDUCED_TYPENAME Index::iterator first,
+    BOOST_DEDUCED_TYPENAME Index::iterator last)
+    {final().transfer_range_(x,first,last);}
 
   void final_swap_(final_type& x){final().swap_(x);}
 

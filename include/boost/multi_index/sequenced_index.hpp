@@ -492,7 +492,9 @@ public:
     BOOST_MULTI_INDEX_CHECK_DIFFERENT_CONTAINER(
       this->final(*this),this->final(x));
     BOOST_MULTI_INDEX_SEQ_INDEX_CHECK_INVARIANT;
-    external_splice(position,x,boost::is_copy_constructible<value_type>());
+    external_splice(
+      position,x,x.begin(),x.end(),
+      boost::is_copy_constructible<value_type>());
   }
 
   template<typename Index>
@@ -1015,49 +1017,6 @@ private:
 
   template<typename Index>
   void external_splice(
-    iterator position,Index& x,boost::true_type /* copy-constructible value */)
-  {
-    if(get_allocator()==x.get_allocator()){
-      external_splice(position,x,boost::false_type());
-    }
-    else{
-      /* backwards compatibility with old, non-transfer-based splice */
-
-      iterator first=x.begin(),last=x.end();
-      while(first!=last){
-        if(insert(position,*first).second)first=x.erase(first);
-        else ++first;
-      }
-    }
-  }
-
-  template<typename Index>
-  void external_splice(
-    iterator position,Index& x,
-    boost::false_type /* copy-constructible value */)
-  {
-    BOOST_MULTI_INDEX_CHECK_EQUAL_ALLOCATORS(*this,x);
-    if(position==end()){
-      this->final_merge_(x);
-    }
-    else{
-      iterator first=end();
-      --first;
-      BOOST_TRY{
-        this->final_merge_(x);
-      }
-      BOOST_CATCH(...){
-        ++first;
-        relink(position.get_node(),first.get_node(),header());
-      }
-      BOOST_CATCH_END
-      ++first;
-      relink(position.get_node(),first.get_node(),header());
-    }
-  }
-
-  template<typename Index>
-  void external_splice(
     iterator position,Index& x,BOOST_DEDUCED_TYPENAME Index::iterator i,
     boost::true_type /* copy-constructible value */)
   {
@@ -1143,19 +1102,13 @@ private:
   {
     BOOST_MULTI_INDEX_CHECK_EQUAL_ALLOCATORS(*this,x);
     if(position==end()){
-      while(first!=last){
-        this->final_transfer_(
-          x,static_cast<final_node_type*>((first++).get_node()));
-      }
+      this->final_transfer_range_(x,first,last);
     }
     else{
       iterator first_to_relink=end();
       --first_to_relink;
       BOOST_TRY{
-        while(first!=last){
-          this->final_transfer_(
-            x,static_cast<final_node_type*>((first++).get_node()));
-        }
+        this->final_transfer_range_(x,first,last);
       }
       BOOST_CATCH(...){
         ++first_to_relink;
