@@ -419,12 +419,31 @@ struct enable_if_not_key_based:boost::enable_if_c<
   void*
 >{};
 
+/* Boost.Move C++03 perfect forwarding emulation converts non-const lvalue
+ * refs to const lvalue refs. final_forward undoes that.
+ */
+
+#if !defined(BOOST_NO_CXX11_RVALUE_REFERENCES)
+
+template<typename T>
+T&& final_forward(typename boost::remove_reference<T>::type& x)
+{
+  return static_cast<T&&>(x);
+}
+
+#else
+
+template<typename T>
+T& final_forward(const T& x){return const_cast<T&>(x);}
+
+#endif
+
 template<typename Dst,typename Src>
 void merge(
   Dst& dst,BOOST_FWD_REF(Src) src,
   typename enable_if_key_based<Dst>::type=0)
 {
-  dst.merge(boost::forward<Src>(src));
+  dst.merge(final_forward<Src>(src));
 }
 
 template<typename Dst,typename Src>
@@ -432,7 +451,7 @@ void merge(
   Dst& dst,BOOST_FWD_REF(Src) src,
   typename enable_if_not_key_based<Dst>::type=0)
 {
-  dst.splice(dst.end(),boost::forward<Src>(src));
+  dst.splice(dst.end(),final_forward<Src>(src));
 }
 
 template<typename Dst,typename Src>
