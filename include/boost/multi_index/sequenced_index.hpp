@@ -492,7 +492,7 @@ public:
     BOOST_MULTI_INDEX_CHECK_DIFFERENT_CONTAINER(
       this->final(*this),this->final(x));
     BOOST_MULTI_INDEX_SEQ_INDEX_CHECK_INVARIANT;
-    splice_impl(position,x,boost::is_copy_constructible<value_type>());
+    external_splice(position,x,boost::is_copy_constructible<value_type>());
   }
 
   template<typename Index>
@@ -519,7 +519,8 @@ public:
       if(pn!=in)relink(pn,in);
     }
     else{
-      splice_impl(position,x,i,boost::is_copy_constructible<value_type>());
+      external_splice(
+        position,x,i,boost::is_copy_constructible<value_type>());
     }
   }
 
@@ -549,13 +550,10 @@ public:
     BOOST_MULTI_INDEX_SEQ_INDEX_CHECK_INVARIANT;
     if(x.end().get_node()==this->header()){ /* same container */
       BOOST_MULTI_INDEX_CHECK_OUTSIDE_RANGE(position,first,last);
-      index_node_type* pn=position.get_node();
-      index_node_type* fn=static_cast<index_node_type*>(first.get_node());
-      index_node_type* ln=static_cast<index_node_type*>(last.get_node());
-      if(pn!=ln)relink(pn,fn,ln);
+      internal_splice(position,first,last);
     }
     else{
-      splice_impl(
+      external_splice(
         position,x,first,last,boost::is_copy_constructible<value_type>());
     }
   }
@@ -1016,11 +1014,11 @@ private:
   }
 
   template<typename Index>
-  void splice_impl(
+  void external_splice(
     iterator position,Index& x,boost::true_type /* copy-constructible value */)
   {
     if(get_allocator()==x.get_allocator()){
-      splice_impl(position,x,boost::false_type());
+      external_splice(position,x,boost::false_type());
     }
     else{
       /* backwards compatibility with old, non-transfer-based splice */
@@ -1034,7 +1032,7 @@ private:
   }
 
   template<typename Index>
-  void splice_impl(
+  void external_splice(
     iterator position,Index& x,
     boost::false_type /* copy-constructible value */)
   {
@@ -1059,12 +1057,12 @@ private:
   }
 
   template<typename Index>
-  void splice_impl(
+  void external_splice(
     iterator position,Index& x,BOOST_DEDUCED_TYPENAME Index::iterator i,
     boost::true_type /* copy-constructible value */)
   {
     if(get_allocator()==x.get_allocator()){
-      splice_impl(position,x,i,boost::false_type());
+      external_splice(position,x,i,boost::false_type());
     }
     else{
       /* backwards compatibility with old, non-transfer-based splice */
@@ -1087,7 +1085,7 @@ private:
   }
 
   template<typename Index>
-  void splice_impl(
+  void external_splice(
     iterator position,Index& x,BOOST_DEDUCED_TYPENAME Index::iterator i,
     boost::false_type /* copy-constructible value */)
   {
@@ -1099,15 +1097,32 @@ private:
     }
   }
 
+  template<typename Iterator>
+  void internal_splice(iterator position,Iterator first,Iterator last)
+  {
+    index_node_type* pn=position.get_node();
+    while(first!=last){
+      relink(pn,static_cast<index_node_type*>((first++).get_node()));
+    }
+  }
+
+  void internal_splice(iterator position,iterator first,iterator last)
+  {
+    index_node_type* pn=position.get_node();
+    index_node_type* fn=static_cast<index_node_type*>(first.get_node());
+    index_node_type* ln=static_cast<index_node_type*>(last.get_node());
+    if(pn!=ln)relink(pn,fn,ln);
+  }
+
   template<typename Index>
-  void splice_impl(
+  void external_splice(
     iterator position,Index& x,
     BOOST_DEDUCED_TYPENAME Index::iterator first,
     BOOST_DEDUCED_TYPENAME Index::iterator last,
     boost::true_type /* copy-constructible value */)
   {
     if(get_allocator()==x.get_allocator()){
-      splice_impl(position,x,first,last,boost::false_type());
+      external_splice(position,x,first,last,boost::false_type());
     }
     else{
       /* backwards compatibility with old, non-transfer-based splice */
@@ -1120,7 +1135,7 @@ private:
   }
 
   template<typename Index>
-  void splice_impl(
+  void external_splice(
     iterator position,Index& x,
     BOOST_DEDUCED_TYPENAME Index::iterator first,
     BOOST_DEDUCED_TYPENAME Index::iterator last,
