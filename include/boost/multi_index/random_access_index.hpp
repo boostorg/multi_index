@@ -539,7 +539,11 @@ public:
     BOOST_MULTI_INDEX_CHECK_VALID_ITERATOR(position);
     BOOST_MULTI_INDEX_CHECK_IS_OWNER(position,*this);
     BOOST_MULTI_INDEX_RND_INDEX_CHECK_INVARIANT;
-    if(x.end().get_node()!=this->header()){ /* different containers */
+    if(x.end().get_node()==this->header()){ /* same container */
+      BOOST_MULTI_INDEX_SAFE_MODE_ASSERT(
+        position==end(),safe_mode::inside_range);
+    }
+    else{
       external_splice(
         position,x,x.begin(),x.end(),
         boost::is_copy_constructible<value_type>());
