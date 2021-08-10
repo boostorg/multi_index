@@ -182,11 +182,9 @@ private:
   typedef typename call_traits<
     value_type>::param_type                   value_param_type;
 
-  /* Needed to avoid commas in BOOST_MULTI_INDEX_OVERLOADS_TO_VARTEMPL
-   * expansion.
-   */
+  /* needed to avoid commas in some macros */
 
-  typedef std::pair<iterator,bool>            emplace_return_type;
+  typedef std::pair<iterator,bool>            insertion_return_type;
 
 public:
 
@@ -332,7 +330,7 @@ public:
   /* modifiers */
 
   BOOST_MULTI_INDEX_OVERLOADS_TO_VARTEMPL(
-    emplace_return_type,emplace_front,emplace_front_impl)
+    insertion_return_type,emplace_front,emplace_front_impl)
     
   std::pair<iterator,bool> push_front(const value_type& x)
                              {return insert(begin(),x);}
@@ -341,7 +339,7 @@ public:
   void                     pop_front(){erase(begin());}
 
   BOOST_MULTI_INDEX_OVERLOADS_TO_VARTEMPL(
-    emplace_return_type,emplace_back,emplace_back_impl)
+    insertion_return_type,emplace_back,emplace_back_impl)
 
   std::pair<iterator,bool> push_back(const value_type& x)
                              {return insert(end(),x);}
@@ -350,7 +348,7 @@ public:
   void                     pop_back(){erase(--end());}
 
   BOOST_MULTI_INDEX_OVERLOADS_TO_VARTEMPL_EXTRA_ARG(
-    emplace_return_type,emplace,emplace_impl,iterator,position)
+    insertion_return_type,emplace,emplace_impl,iterator,position)
     
   std::pair<iterator,bool> insert(iterator position,const value_type& x)
   {
@@ -558,7 +556,8 @@ public:
   }
 
   template<typename Index>
-  BOOST_MULTI_INDEX_ENABLE_IF_MERGEABLE(random_access_index,Index,void)
+  BOOST_MULTI_INDEX_ENABLE_IF_MERGEABLE(
+    random_access_index,Index,insertion_return_type)
   splice(
     iterator position,Index& x,BOOST_DEDUCED_TYPENAME Index::iterator i)
   {
@@ -572,20 +571,24 @@ public:
       index_node_type* pn=position.get_node();
       index_node_type* in=static_cast<index_node_type*>(i.get_node());
       if(pn!=in)relocate(pn,in);
+      return std::pair<iterator,bool>(make_iterator(in),true);
     }
     else{
-      external_splice(
-        position,x,i,boost::is_copy_constructible<value_type>());
+      std::pair<final_node_type*,bool> p=
+        external_splice(
+          position,x,i,boost::is_copy_constructible<value_type>());
+      return std::pair<iterator,bool>(make_iterator(p.first),p.second);
     }
   }
 
   template<typename Index>
-  BOOST_MULTI_INDEX_ENABLE_IF_MERGEABLE(random_access_index,Index,void)
+  BOOST_MULTI_INDEX_ENABLE_IF_MERGEABLE(
+    random_access_index,Index,insertion_return_type)
   splice(
     iterator position,BOOST_RV_REF(Index) x,
     BOOST_DEDUCED_TYPENAME Index::iterator i)
   {
-    splice(position,static_cast<Index&>(x),i);
+    return splice(position,static_cast<Index&>(x),i);
   }
 
   template<typename Index>
@@ -1107,17 +1110,18 @@ private:
   }
 
   template<typename Index>
-  void external_splice(
+  std::pair<final_node_type*,bool> external_splice(
     iterator position,Index& x,BOOST_DEDUCED_TYPENAME Index::iterator i,
     boost::true_type /* copy-constructible value */)
   {
     if(get_allocator()==x.get_allocator()){
-      external_splice(position,x,i,boost::false_type());
+      return external_splice(position,x,i,boost::false_type());
     }
     else{
       /* backwards compatibility with old, non-transfer-based splice */
 
-      if(insert(position,*i).second){
+      std::pair<iterator,bool> p=insert(position,*i);
+      if(p.second){
 
 #if defined(BOOST_MULTI_INDEX_ENABLE_SAFE_MODE)
         /* MSVC++ 6.0 optimizer has a hard time with safe mode, and the
@@ -1131,11 +1135,13 @@ private:
         x.erase(i);
 #endif
       }
+      return std::pair<final_node_type*,bool>(
+        static_cast<final_node_type*>(p.first.get_node()),p.second);
     }
   }
 
   template<typename Index>
-  void external_splice(
+  std::pair<final_node_type*,bool> external_splice(
     iterator position,Index& x,BOOST_DEDUCED_TYPENAME Index::iterator i,
     boost::false_type /* copy-constructible value */)
   {
@@ -1145,6 +1151,7 @@ private:
     if(p.second&&position.get_node()!=header()){
       relocate(position.get_node(),p.first);
     }
+    return p;
   }
 
   template<typename Iterator>

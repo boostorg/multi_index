@@ -76,6 +76,7 @@ template<typename Sequence>
 static void test_list_ops_unique_seq()
 {
   typedef typename nth_index<Sequence,1>::type sequenced_index;
+  typedef typename sequenced_index::iterator   sequenced_index_iterator;
 
   Sequence         ss,ss2;
   sequenced_index &si=get<1>(ss),&si2=get<1>(ss2);
@@ -109,10 +110,14 @@ static void test_list_ops_unique_seq()
 
   si.splice(project<1>(ss,ss.find(4)),si,project<1>(ss,ss.find(8)));
   CHECK_EQUAL(si,(3)(5)(1)(8)(4)(0)(2)(6));
-  si2.clear();
-  si2.splice(si2.begin(),si,si.begin());
 
-  si.splice(si.end(),si2,si2.begin());
+  si2.clear();
+  std::pair<sequenced_index_iterator,bool> p=
+    si2.splice(si2.begin(),si,si.begin());
+  BOOST_TEST(*(p.first)==3&&p.second);
+
+  p=si.splice(si.end(),si2,si2.begin());
+  BOOST_TEST(*(p.first)==3&&p.second);
   CHECK_EQUAL(si,(5)(1)(8)(4)(0)(2)(6)(3));
   BOOST_TEST(si2.empty());
 
