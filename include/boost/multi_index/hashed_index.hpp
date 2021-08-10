@@ -206,11 +206,9 @@ private:
   typedef typename call_traits<
     key_type>::param_type                              key_param_type;
 
-  /* Needed to avoid commas in BOOST_MULTI_INDEX_OVERLOADS_TO_VARTEMPL
-   * expansion.
-   */
+  /* needed to avoid commas in some macros */
 
-  typedef std::pair<iterator,bool>                     emplace_return_type;
+  typedef std::pair<iterator,bool>                     pair_return_type;
 
 public:
 
@@ -280,7 +278,7 @@ public:
   /* modifiers */
 
   BOOST_MULTI_INDEX_OVERLOADS_TO_VARTEMPL(
-    emplace_return_type,emplace,emplace_impl)
+    pair_return_type,emplace,emplace_impl)
 
   BOOST_MULTI_INDEX_OVERLOADS_TO_VARTEMPL_EXTRA_ARG(
     iterator,emplace_hint,emplace_hint_impl,iterator,position)
@@ -519,16 +517,66 @@ public:
   BOOST_MULTI_INDEX_ENABLE_IF_MERGEABLE(hashed_index,Index,void)
   merge(Index& x)
   {
-    BOOST_MULTI_INDEX_CHECK_EQUAL_ALLOCATORS(*this,x);
-    BOOST_MULTI_INDEX_HASHED_INDEX_CHECK_INVARIANT;
-    if(x.end().get_node()!=this->header()){ /* different containers */
-      this->final_transfer_range_(x);
-    }
+    merge(x,x.begin(),x.end());
   }
 
   template<typename Index>
   BOOST_MULTI_INDEX_ENABLE_IF_MERGEABLE(hashed_index,Index,void)
   merge(BOOST_RV_REF(Index) x){merge(static_cast<Index&>(x));}
+
+  template<typename Index>
+  BOOST_MULTI_INDEX_ENABLE_IF_MERGEABLE(hashed_index,Index,pair_return_type)
+  merge(Index& x,BOOST_DEDUCED_TYPENAME Index::iterator i)
+  {
+    BOOST_MULTI_INDEX_CHECK_VALID_ITERATOR(i);
+    BOOST_MULTI_INDEX_CHECK_DEREFERENCEABLE_ITERATOR(i);
+    BOOST_MULTI_INDEX_CHECK_IS_OWNER(i,x);
+    BOOST_MULTI_INDEX_HASHED_INDEX_CHECK_INVARIANT;
+    if(x.end().get_node()==this->header()){ /* same container */
+      return std::pair<iterator,bool>(
+        make_iterator(static_cast<final_node_type*>(i.get_node())),true);
+    }
+    else{
+      std::pair<final_node_type*,bool> p=this->final_transfer_(
+        x,static_cast<final_node_type*>(i.get_node()));
+      return std::pair<iterator,bool>(make_iterator(p.first),p.second);
+    }
+  }
+
+  template<typename Index>
+  BOOST_MULTI_INDEX_ENABLE_IF_MERGEABLE(hashed_index,Index,pair_return_type)
+  merge(BOOST_RV_REF(Index) x,BOOST_DEDUCED_TYPENAME Index::iterator i)
+  {
+    return merge(static_cast<Index&>(x),i);
+  }
+
+  template<typename Index>
+  BOOST_MULTI_INDEX_ENABLE_IF_MERGEABLE(hashed_index,Index,void)
+  merge(
+    Index& x,
+    BOOST_DEDUCED_TYPENAME Index::iterator first,
+    BOOST_DEDUCED_TYPENAME Index::iterator last)
+  {
+    BOOST_MULTI_INDEX_CHECK_VALID_ITERATOR(first);
+    BOOST_MULTI_INDEX_CHECK_VALID_ITERATOR(last);
+    BOOST_MULTI_INDEX_CHECK_IS_OWNER(first,x);
+    BOOST_MULTI_INDEX_CHECK_IS_OWNER(last,x);
+    BOOST_MULTI_INDEX_CHECK_VALID_RANGE(first,last);
+    BOOST_MULTI_INDEX_HASHED_INDEX_CHECK_INVARIANT;
+    if(x.end().get_node()!=this->header()){ /* different containers */
+      this->final_transfer_range_(x,first,last);
+    }
+  }
+
+  template<typename Index>
+  BOOST_MULTI_INDEX_ENABLE_IF_MERGEABLE(hashed_index,Index,void)
+  merge(
+    BOOST_RV_REF(Index) x,
+    BOOST_DEDUCED_TYPENAME Index::iterator first,
+    BOOST_DEDUCED_TYPENAME Index::iterator last)
+  {
+    merge(static_cast<Index&>(x),first,last);
+  }
 
   /* observers */
 

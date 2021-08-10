@@ -184,7 +184,7 @@ private:
 
   /* needed to avoid commas in some macros */
 
-  typedef std::pair<iterator,bool>            insertion_return_type;
+  typedef std::pair<iterator,bool>            pair_return_type;
 
 public:
 
@@ -330,7 +330,7 @@ public:
   /* modifiers */
 
   BOOST_MULTI_INDEX_OVERLOADS_TO_VARTEMPL(
-    insertion_return_type,emplace_front,emplace_front_impl)
+    pair_return_type,emplace_front,emplace_front_impl)
     
   std::pair<iterator,bool> push_front(const value_type& x)
                              {return insert(begin(),x);}
@@ -339,7 +339,7 @@ public:
   void                     pop_front(){erase(begin());}
 
   BOOST_MULTI_INDEX_OVERLOADS_TO_VARTEMPL(
-    insertion_return_type,emplace_back,emplace_back_impl)
+    pair_return_type,emplace_back,emplace_back_impl)
 
   std::pair<iterator,bool> push_back(const value_type& x)
                              {return insert(end(),x);}
@@ -348,7 +348,7 @@ public:
   void                     pop_back(){erase(--end());}
 
   BOOST_MULTI_INDEX_OVERLOADS_TO_VARTEMPL_EXTRA_ARG(
-    insertion_return_type,emplace,emplace_impl,iterator,position)
+    pair_return_type,emplace,emplace_impl,iterator,position)
     
   std::pair<iterator,bool> insert(iterator position,const value_type& x)
   {
@@ -557,7 +557,7 @@ public:
 
   template<typename Index>
   BOOST_MULTI_INDEX_ENABLE_IF_MERGEABLE(
-    random_access_index,Index,insertion_return_type)
+    random_access_index,Index,pair_return_type)
   splice(
     iterator position,Index& x,BOOST_DEDUCED_TYPENAME Index::iterator i)
   {
@@ -583,7 +583,7 @@ public:
 
   template<typename Index>
   BOOST_MULTI_INDEX_ENABLE_IF_MERGEABLE(
-    random_access_index,Index,insertion_return_type)
+    random_access_index,Index,pair_return_type)
   splice(
     iterator position,BOOST_RV_REF(Index) x,
     BOOST_DEDUCED_TYPENAME Index::iterator i)
@@ -1121,20 +1121,7 @@ private:
       /* backwards compatibility with old, non-transfer-based splice */
 
       std::pair<iterator,bool> p=insert(position,*i);
-      if(p.second){
-
-#if defined(BOOST_MULTI_INDEX_ENABLE_SAFE_MODE)
-        /* MSVC++ 6.0 optimizer has a hard time with safe mode, and the
-         * following workaround is needed. Left it for all compilers as it
-         * does no harm.
-         */
-
-        i.detach();
-        x.erase(x.make_iterator(i.get_node()));
-#else
-        x.erase(i);
-#endif
-      }
+      if(p.second)x.erase(i);
       return std::pair<final_node_type*,bool>(
         static_cast<final_node_type*>(p.first.get_node()),p.second);
     }

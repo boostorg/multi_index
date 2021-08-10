@@ -332,9 +332,6 @@ protected:
   void final_clear_(){final().clear_();}
 
   template<typename Index>
-  void final_transfer_range_(Index& x)
-    {final_transfer_range_(x,x.begin(),x.end());}
-  template<typename Index>
   void final_transfer_range_(
     Index& x,
     BOOST_DEDUCED_TYPENAME Index::iterator first,
