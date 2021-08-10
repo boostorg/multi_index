@@ -489,12 +489,12 @@ public:
   {
     BOOST_MULTI_INDEX_CHECK_VALID_ITERATOR(position);
     BOOST_MULTI_INDEX_CHECK_IS_OWNER(position,*this);
-    BOOST_MULTI_INDEX_CHECK_DIFFERENT_CONTAINER(
-      this->final(*this),this->final(x));
     BOOST_MULTI_INDEX_SEQ_INDEX_CHECK_INVARIANT;
-    external_splice(
-      position,x,x.begin(),x.end(),
-      boost::is_copy_constructible<value_type>());
+    if(x.end().get_node()!=this->header()){ /* different containers */
+      external_splice(
+        position,x,x.begin(),x.end(),
+        boost::is_copy_constructible<value_type>());
+    }
   }
 
   template<typename Index>

@@ -564,8 +564,8 @@ void test_merge()
 
   test_merge<0,1>(c1,c1);
   test_merge<1,2>(c1,c1);
-  //test_merge<2,3>(c1,c1);
-  //test_merge<3,4>(c1,c1);
+  test_merge<2,3>(c1,c1);
+  test_merge<3,4>(c1,c1);
   test_merge<4,0>(c1,c1);
   test_merge<0,3>(c2,c2);
   test_merge<1,4>(c2,c2);
