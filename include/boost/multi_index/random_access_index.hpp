@@ -620,7 +620,8 @@ public:
   BOOST_MULTI_INDEX_ENABLE_IF_MERGEABLE(random_access_index,Index,void)
   splice(
     iterator position,BOOST_RV_REF(Index) x,
-    iterator first,iterator last)
+    BOOST_DEDUCED_TYPENAME Index::iterator first,
+    BOOST_DEDUCED_TYPENAME Index::iterator last)
   {
     splice(position,static_cast<Index&>(x),first,last);
   }
