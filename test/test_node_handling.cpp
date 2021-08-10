@@ -616,8 +616,7 @@ void test_merge_different(
     type::value_type                              src_value_type;
 
   std::size_t                        n=dst.size(),
-                                     m=src.size(),
-                                     d=std::distance(first,last);
+                                     m=src.size();
   std::vector<const src_value_type*> v;
   for(src_iterator it=first;it!=last;++it)v.push_back(&*it);
 
