@@ -18,9 +18,9 @@
 
 /* Safe mode machinery, in the spirit of Cay Hortmann's "Safe STL"
  * (http://www.horstmann.com/safestl.html).
- * In this mode, containers of type Container are derived from
- * safe_container<Container>, and their corresponding iterators
- * are wrapped with safe_iterator. These classes provide
+ * In this mode, containers have to redefine their iterators as
+ * safe_iterator<base_iterator> and keep a tracking object member of
+ * type safe_container<safe_iterator<base_iterator> >. These classes provide
  * an internal record of which iterators are at a given moment associated
  * to a given container, and properly mark the iterators as invalid
  * when the container gets destroyed.
@@ -83,6 +83,11 @@
     safe_mode::check_is_owner(it,cont),                                      \
     safe_mode::not_owner);
 
+#define BOOST_MULTI_INDEX_CHECK_BELONGS_IN_SOME_INDEX(it,cont)               \
+  BOOST_MULTI_INDEX_SAFE_MODE_ASSERT(                                        \
+    safe_mode::check_belongs_in_some_index(it,cont),                         \
+    safe_mode::not_owner);
+
 #define BOOST_MULTI_INDEX_CHECK_SAME_OWNER(it0,it1)                          \
   BOOST_MULTI_INDEX_SAFE_MODE_ASSERT(                                        \
     safe_mode::check_same_owner(it0,it1),                                    \
@@ -117,6 +122,7 @@
 #include <boost/config.hpp> /* keep it first to prevent nasty warns in MSVC */
 #include <algorithm>
 #include <boost/multi_index/detail/access_specifier.hpp>
+#include <boost/multi_index/detail/any_container_view.hpp>
 #include <boost/multi_index/detail/iter_adaptor.hpp>
 #include <boost/multi_index/safe_mode_errors.hpp>
 #include <boost/noncopyable.hpp>
@@ -165,18 +171,29 @@ inline bool check_decrementable_iterator(const Iterator& it)
   return (it.valid()&&it!=it.owner()->begin())||it.unchecked();
 }
 
-template<typename Iterator>
+template<typename Iterator,typename Container>
 inline bool check_is_owner(
-  const Iterator& it,const typename Iterator::container_type& cont)
+  const Iterator& it,const Container& cont)
 {
-  return (it.valid()&&it.owner()==&cont)||it.unchecked();
+  return (it.valid()&&
+            it.owner()->container()==cont.end().owner()->container())
+         ||it.unchecked();
 }
+
+template<typename Iterator,typename MultiIndexContainer>
+inline bool check_belongs_in_some_index(
+  const Iterator& it,const MultiIndexContainer& cont)
+{
+  return (it.valid()&&it.owner()->end().get_node()==cont.end().get_node())
+         ||it.unchecked();
+} 
 
 template<typename Iterator>
 inline bool check_same_owner(const Iterator& it0,const Iterator& it1)
 {
-  return (it0.valid()&&it1.valid()&&it0.owner()==it1.owner())||
-         it0.unchecked()||it1.unchecked();
+  return (it0.valid()&&it1.valid()&&
+            it0.owner()->container()==it1.owner()->container())
+         ||it0.unchecked()||it1.unchecked();
 }
 
 template<typename Iterator>
@@ -487,36 +504,36 @@ void safe_iterator_base::detach()
 namespace safe_mode{
 
 /* In order to enable safe mode on a container:
- *   - The container must derive from safe_container<container_type>,
+ *   - The container must keep a member of type safe_container<iterator>,
  *   - iterators must be generated via safe_iterator, which adapts a
- *     preexistent unsafe iterator class.
+ *     preexistent unsafe iterator class. safe_iterators are passed the
+ *     address of the previous safe_container member at construction time.
  */
  
-template<typename Container>
+template<typename Iterator>
 class safe_container;
 
-template<typename Iterator,typename Container>
+template<typename Iterator>
 class safe_iterator:
-  public detail::iter_adaptor<safe_iterator<Iterator,Container>,Iterator>,
+  public detail::iter_adaptor<safe_iterator<Iterator>,Iterator>,
   public detail::safe_iterator_base
 {
   typedef detail::iter_adaptor<safe_iterator,Iterator> super;
   typedef detail::safe_iterator_base                   safe_super;
 
 public:
-  typedef Container                                    container_type;
   typedef typename Iterator::reference                 reference;
   typedef typename Iterator::difference_type           difference_type;
 
   safe_iterator(){}
-  explicit safe_iterator(safe_container<container_type>* cont_):
+  explicit safe_iterator(safe_container<safe_iterator>* cont_):
     safe_super(cont_){}
   template<typename T0>
-  safe_iterator(const T0& t0,safe_container<container_type>* cont_):
+  safe_iterator(const T0& t0,safe_container<safe_iterator>* cont_):
     super(Iterator(t0)),safe_super(cont_){}
   template<typename T0,typename T1>
   safe_iterator(
-    const T0& t0,const T1& t1,safe_container<container_type>* cont_):
+    const T0& t0,const T1& t1,safe_container<safe_iterator>* cont_):
     super(Iterator(t0,t1)),safe_super(cont_){}
   safe_iterator(const safe_iterator& x):super(x),safe_super(x){}
 
@@ -528,12 +545,11 @@ public:
     return *this;
   }
 
-  const container_type* owner()const
+  const safe_container<safe_iterator>* owner()const
   {
     return
-      static_cast<const container_type*>(
-        static_cast<const safe_container<container_type>*>(
-          this->safe_super::owner()));
+      static_cast<const safe_container<safe_iterator>*>(
+        this->safe_super::owner());
   }
 
   /* get_node is not to be used by the user */
@@ -624,21 +640,28 @@ private:
 #endif
 };
 
-template<typename Container>
+template<typename Iterator>
 class safe_container:public detail::safe_container_base
 {
   typedef detail::safe_container_base super;
 
+  detail::any_container_view<Iterator> view;
+
 public:
+  template<typename Container>
+  safe_container(const Container& c):view(c){}
+
+  const void* container()const{return view.container();}
+  Iterator    begin()const{return view.begin();}
+  Iterator    end()const{return view.end();}
+
   void detach_dereferenceable_iterators()
   {
-    typedef typename Container::iterator iterator;
-
-    iterator end_=static_cast<Container*>(this)->end();
-    iterator *prev_,*next_;
+    Iterator end_=view.end();
+    Iterator *prev_,*next_;
     for(
-      prev_=static_cast<iterator*>(&this->header);
-      (next_=static_cast<iterator*>(prev_->next))!=0;){
+      prev_=static_cast<Iterator*>(&this->header);
+      (next_=static_cast<Iterator*>(prev_->next))!=0;){
       if(*next_!=end_){
         prev_->next=next_->next;
         next_->cont=0;
@@ -647,7 +670,7 @@ public:
     }
   }
 
-  void swap(safe_container<Container>& x)
+  void swap(safe_container<Iterator>& x)
   {
     super::swap(x);
   }
@@ -659,9 +682,9 @@ public:
 
 #if !defined(BOOST_MULTI_INDEX_DISABLE_SERIALIZATION)
 namespace serialization{
-template<typename Iterator,typename Container>
+template<typename Iterator>
 struct version<
-  boost::multi_index::safe_mode::safe_iterator<Iterator,Container>
+  boost::multi_index::safe_mode::safe_iterator<Iterator>
 >
 {
   BOOST_STATIC_CONSTANT(

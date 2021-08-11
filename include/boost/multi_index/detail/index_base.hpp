@@ -179,7 +179,7 @@ protected:
 
   template<typename MultiIndexContainer>
   final_node_type* insert_(
-    const value_type& v,final_node_type*& x,MultiIndexContainer* p)
+    const value_type&,final_node_type*& x,MultiIndexContainer* p)
   {
     p->final_extract_for_transfer_(x);
     return x;

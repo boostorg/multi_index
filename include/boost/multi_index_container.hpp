@@ -489,9 +489,7 @@ public:
 #endif
 
     BOOST_MULTI_INDEX_CHECK_VALID_ITERATOR(it);
-    BOOST_MULTI_INDEX_CHECK_IS_OWNER(
-      it,static_cast<typename IteratorType::container_type&>(*this));
-
+    BOOST_MULTI_INDEX_CHECK_BELONGS_IN_SOME_INDEX(it,*this);
     return index_type::make_iterator(
       static_cast<final_node_type*>(it.get_node()));
   }
@@ -508,8 +506,7 @@ public:
 #endif
 
     BOOST_MULTI_INDEX_CHECK_VALID_ITERATOR(it);
-    BOOST_MULTI_INDEX_CHECK_IS_OWNER(
-      it,static_cast<const typename IteratorType::container_type&>(*this));
+    BOOST_MULTI_INDEX_CHECK_BELONGS_IN_SOME_INDEX(it,*this);
     return index_type::make_iterator(
       static_cast<final_node_type*>(it.get_node()));
   }
@@ -541,8 +538,7 @@ public:
 #endif
 
     BOOST_MULTI_INDEX_CHECK_VALID_ITERATOR(it);
-    BOOST_MULTI_INDEX_CHECK_IS_OWNER(
-      it,static_cast<typename IteratorType::container_type&>(*this));
+    BOOST_MULTI_INDEX_CHECK_BELONGS_IN_SOME_INDEX(it,*this);
     return index_type::make_iterator(
       static_cast<final_node_type*>(it.get_node()));
   }
@@ -559,8 +555,7 @@ public:
 #endif
 
     BOOST_MULTI_INDEX_CHECK_VALID_ITERATOR(it);
-    BOOST_MULTI_INDEX_CHECK_IS_OWNER(
-      it,static_cast<const typename IteratorType::container_type&>(*this));
+    BOOST_MULTI_INDEX_CHECK_BELONGS_IN_SOME_INDEX(it,*this);
     return index_type::make_iterator(
       static_cast<final_node_type*>(it.get_node()));
   }
@@ -1362,14 +1357,7 @@ project(
 #endif
 
   BOOST_MULTI_INDEX_CHECK_VALID_ITERATOR(it);
-
-#if defined(BOOST_MULTI_INDEX_ENABLE_SAFE_MODE)
-  typedef detail::converter<
-    multi_index_type,
-    BOOST_DEDUCED_TYPENAME IteratorType::container_type> converter;
-  BOOST_MULTI_INDEX_CHECK_IS_OWNER(it,converter::index(m));
-#endif
-
+  BOOST_MULTI_INDEX_CHECK_BELONGS_IN_SOME_INDEX(it,m);
   return detail::converter<multi_index_type,index_type>::iterator(
     m,static_cast<typename multi_index_type::final_node_type*>(it.get_node()));
 }
@@ -1398,14 +1386,7 @@ project(
 #endif
 
   BOOST_MULTI_INDEX_CHECK_VALID_ITERATOR(it);
-
-#if defined(BOOST_MULTI_INDEX_ENABLE_SAFE_MODE)
-  typedef detail::converter<
-    multi_index_type,
-    BOOST_DEDUCED_TYPENAME IteratorType::container_type> converter;
-  BOOST_MULTI_INDEX_CHECK_IS_OWNER(it,converter::index(m));
-#endif
-
+  BOOST_MULTI_INDEX_CHECK_BELONGS_IN_SOME_INDEX(it,m);
   return detail::converter<multi_index_type,index_type>::const_iterator(
     m,static_cast<typename multi_index_type::final_node_type*>(it.get_node()));
 }
@@ -1448,14 +1429,7 @@ project(
 #endif
 
   BOOST_MULTI_INDEX_CHECK_VALID_ITERATOR(it);
-
-#if defined(BOOST_MULTI_INDEX_ENABLE_SAFE_MODE)
-  typedef detail::converter<
-    multi_index_type,
-    BOOST_DEDUCED_TYPENAME IteratorType::container_type> converter;
-  BOOST_MULTI_INDEX_CHECK_IS_OWNER(it,converter::index(m));
-#endif
-
+  BOOST_MULTI_INDEX_CHECK_BELONGS_IN_SOME_INDEX(it,m);
   return detail::converter<multi_index_type,index_type>::iterator(
     m,static_cast<typename multi_index_type::final_node_type*>(it.get_node()));
 }
@@ -1485,14 +1459,7 @@ project(
 #endif
 
   BOOST_MULTI_INDEX_CHECK_VALID_ITERATOR(it);
-
-#if defined(BOOST_MULTI_INDEX_ENABLE_SAFE_MODE)
-  typedef detail::converter<
-    multi_index_type,
-    BOOST_DEDUCED_TYPENAME IteratorType::container_type> converter;
-  BOOST_MULTI_INDEX_CHECK_IS_OWNER(it,converter::index(m));
-#endif
-
+  BOOST_MULTI_INDEX_CHECK_BELONGS_IN_SOME_INDEX(it,m);
   return detail::converter<multi_index_type,index_type>::const_iterator(
     m,static_cast<typename multi_index_type::final_node_type*>(it.get_node()));
 }

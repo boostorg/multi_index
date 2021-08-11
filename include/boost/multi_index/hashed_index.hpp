@@ -89,12 +89,6 @@ template<
 >
 class hashed_index:
   BOOST_MULTI_INDEX_PROTECTED_IF_MEMBER_TEMPLATE_FRIENDS SuperMeta::type
-
-#if defined(BOOST_MULTI_INDEX_ENABLE_SAFE_MODE)
-  ,public safe_mode::safe_container<
-    hashed_index<KeyFromValue,Hash,Pred,SuperMeta,TagList,Category> >
-#endif
-
 { 
 #if defined(BOOST_MULTI_INDEX_ENABLE_INVARIANT_CHECKING)&&\
     BOOST_WORKAROUND(__MWERKS__,<=0x3003)
@@ -155,8 +149,7 @@ public:
     hashed_index_iterator<
       index_node_type,bucket_array_type,
       Category,
-      hashed_index_global_iterator_tag>,
-    hashed_index>                                iterator;
+      hashed_index_global_iterator_tag> >        iterator;
 #else
   typedef hashed_index_iterator<
     index_node_type,bucket_array_type,
@@ -198,8 +191,7 @@ protected:
 
 private:
 #if defined(BOOST_MULTI_INDEX_ENABLE_SAFE_MODE)
-  typedef safe_mode::safe_container<
-    hashed_index>                             safe_super;
+  typedef safe_mode::safe_container<iterator> safe_container;
 #endif
 
   typedef typename call_traits<value_type>::param_type value_param_type;
@@ -757,6 +749,11 @@ BOOST_MULTI_INDEX_PROTECTED_IF_MEMBER_TEMPLATE_FRIENDS:
     eq_(tuples::get<3>(args_list.get_head())),
     buckets(al,header()->impl(),tuples::get<0>(args_list.get_head())),
     mlf(1.0f)
+
+#if defined(BOOST_MULTI_INDEX_ENABLE_SAFE_MODE)
+    ,safe(*this)
+#endif
+
   {
     calculate_max_load();
   }
@@ -764,17 +761,17 @@ BOOST_MULTI_INDEX_PROTECTED_IF_MEMBER_TEMPLATE_FRIENDS:
   hashed_index(
     const hashed_index<KeyFromValue,Hash,Pred,SuperMeta,TagList,Category>& x):
     super(x),
-
-#if defined(BOOST_MULTI_INDEX_ENABLE_SAFE_MODE)
-    safe_super(),
-#endif
-
     key(x.key),
     hash_(x.hash_),
     eq_(x.eq_),
     buckets(x.get_allocator(),header()->impl(),x.buckets.size()),
     mlf(x.mlf),
     max_load(x.max_load)
+
+#if defined(BOOST_MULTI_INDEX_ENABLE_SAFE_MODE)
+    ,safe(*this)
+#endif
+
   {
     /* Copy ctor just takes the internal configuration objects from x. The rest
      * is done in subsequent call to copy_().
@@ -785,16 +782,16 @@ BOOST_MULTI_INDEX_PROTECTED_IF_MEMBER_TEMPLATE_FRIENDS:
     const hashed_index<KeyFromValue,Hash,Pred,SuperMeta,TagList,Category>& x,
     do_not_copy_elements_tag):
     super(x,do_not_copy_elements_tag()),
-
-#if defined(BOOST_MULTI_INDEX_ENABLE_SAFE_MODE)
-    safe_super(),
-#endif
-
     key(x.key),
     hash_(x.hash_),
     eq_(x.eq_),
     buckets(x.get_allocator(),header()->impl(),0),
     mlf(1.0f)
+
+#if defined(BOOST_MULTI_INDEX_ENABLE_SAFE_MODE)
+    ,safe(*this)
+#endif
+
   {
      calculate_max_load();
   }
@@ -807,12 +804,12 @@ BOOST_MULTI_INDEX_PROTECTED_IF_MEMBER_TEMPLATE_FRIENDS:
 #if defined(BOOST_MULTI_INDEX_ENABLE_SAFE_MODE)
   iterator make_iterator(index_node_type* node)
   {
-    return iterator(node,this);
+    return iterator(node,&safe);
   }
 
   const_iterator make_iterator(index_node_type* node)const
   {
-    return const_iterator(node,const_cast<hashed_index*>(this));
+    return const_iterator(node,const_cast<safe_container*>(&safe));
   }
 #else
   iterator make_iterator(index_node_type* node)
@@ -1015,7 +1012,7 @@ BOOST_MULTI_INDEX_PROTECTED_IF_MEMBER_TEMPLATE_FRIENDS:
     buckets.clear(header()->impl());
 
 #if defined(BOOST_MULTI_INDEX_ENABLE_SAFE_MODE)
-    safe_super::detach_dereferenceable_iterators();
+    safe.detach_dereferenceable_iterators();
 #endif
   }
 
@@ -1032,7 +1029,7 @@ BOOST_MULTI_INDEX_PROTECTED_IF_MEMBER_TEMPLATE_FRIENDS:
     std::swap(max_load,x.max_load);
 
 #if defined(BOOST_MULTI_INDEX_ENABLE_SAFE_MODE)
-    safe_super::swap(x);
+    safe.swap(x.safe);
 #endif
 
     super::swap_(x,swap_allocators);
@@ -1046,7 +1043,7 @@ BOOST_MULTI_INDEX_PROTECTED_IF_MEMBER_TEMPLATE_FRIENDS:
     std::swap(max_load,x.max_load);
 
 #if defined(BOOST_MULTI_INDEX_ENABLE_SAFE_MODE)
-    safe_super::swap(x);
+    safe.swap(x.safe);
 #endif
 
     super::swap_elements_(x);
@@ -1776,7 +1773,11 @@ private:
   bucket_array_type            buckets;
   float                        mlf;
   size_type                    max_load;
-      
+
+#if defined(BOOST_MULTI_INDEX_ENABLE_SAFE_MODE)
+  safe_container               safe;
+#endif
+
 #if defined(BOOST_MULTI_INDEX_ENABLE_INVARIANT_CHECKING)&&\
     BOOST_WORKAROUND(__MWERKS__,<=0x3003)
 #pragma parse_mfunc_templ reset

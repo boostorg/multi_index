@@ -71,12 +71,6 @@ namespace detail{
 template<typename SuperMeta,typename TagList>
 class sequenced_index:
   BOOST_MULTI_INDEX_PROTECTED_IF_MEMBER_TEMPLATE_FRIENDS SuperMeta::type
-
-#if defined(BOOST_MULTI_INDEX_ENABLE_SAFE_MODE)
-  ,public safe_mode::safe_container<
-    sequenced_index<SuperMeta,TagList> >
-#endif
-
 { 
 #if defined(BOOST_MULTI_INDEX_ENABLE_INVARIANT_CHECKING)&&\
     BOOST_WORKAROUND(__MWERKS__,<=0x3003)
@@ -114,8 +108,7 @@ public:
 
 #if defined(BOOST_MULTI_INDEX_ENABLE_SAFE_MODE)
   typedef safe_mode::safe_iterator<
-    bidir_node_iterator<index_node_type>,
-    sequenced_index>                             iterator;
+    bidir_node_iterator<index_node_type> >       iterator;
 #else
   typedef bidir_node_iterator<index_node_type>   iterator;
 #endif
@@ -162,8 +155,7 @@ protected:
 
 private:
 #if defined(BOOST_MULTI_INDEX_ENABLE_SAFE_MODE)
-  typedef safe_mode::safe_container<
-    sequenced_index>                          safe_super;
+  typedef safe_mode::safe_container<iterator> safe_container;
 #endif
 
   typedef typename call_traits<value_type>::param_type value_param_type;
@@ -674,6 +666,11 @@ public:
 BOOST_MULTI_INDEX_PROTECTED_IF_MEMBER_TEMPLATE_FRIENDS:
   sequenced_index(const ctor_args_list& args_list,const allocator_type& al):
     super(args_list.get_tail(),al)
+
+#if defined(BOOST_MULTI_INDEX_ENABLE_SAFE_MODE)
+    ,safe(*this)
+#endif
+
   {
     empty_initialize();
   }
@@ -682,7 +679,7 @@ BOOST_MULTI_INDEX_PROTECTED_IF_MEMBER_TEMPLATE_FRIENDS:
     super(x)
 
 #if defined(BOOST_MULTI_INDEX_ENABLE_SAFE_MODE)
-    ,safe_super()
+    ,safe(*this)
 #endif
 
   {
@@ -694,7 +691,7 @@ BOOST_MULTI_INDEX_PROTECTED_IF_MEMBER_TEMPLATE_FRIENDS:
     super(x,do_not_copy_elements_tag())
 
 #if defined(BOOST_MULTI_INDEX_ENABLE_SAFE_MODE)
-    ,safe_super()
+    ,safe(*this)
 #endif
 
   {
@@ -708,9 +705,9 @@ BOOST_MULTI_INDEX_PROTECTED_IF_MEMBER_TEMPLATE_FRIENDS:
 
 #if defined(BOOST_MULTI_INDEX_ENABLE_SAFE_MODE)
   iterator       make_iterator(index_node_type* node)
-    {return iterator(node,this);}
+    {return iterator(node,&safe);}
   const_iterator make_iterator(index_node_type* node)const
-    {return const_iterator(node,const_cast<sequenced_index*>(this));}
+    {return const_iterator(node,const_cast<safe_container*>(&safe));}
 #else
   iterator       make_iterator(index_node_type* node){return iterator(node);}
   const_iterator make_iterator(index_node_type* node)const
@@ -781,7 +778,7 @@ BOOST_MULTI_INDEX_PROTECTED_IF_MEMBER_TEMPLATE_FRIENDS:
     empty_initialize();
 
 #if defined(BOOST_MULTI_INDEX_ENABLE_SAFE_MODE)
-    safe_super::detach_dereferenceable_iterators();
+    safe.detach_dereferenceable_iterators();
 #endif
   }
 
@@ -790,7 +787,7 @@ BOOST_MULTI_INDEX_PROTECTED_IF_MEMBER_TEMPLATE_FRIENDS:
     sequenced_index<SuperMeta,TagList>& x,BoolConstant swap_allocators)
   {
 #if defined(BOOST_MULTI_INDEX_ENABLE_SAFE_MODE)
-    safe_super::swap(x);
+    safe.swap(x.safe);
 #endif
 
     super::swap_(x,swap_allocators);
@@ -799,7 +796,7 @@ BOOST_MULTI_INDEX_PROTECTED_IF_MEMBER_TEMPLATE_FRIENDS:
   void swap_elements_(sequenced_index<SuperMeta,TagList>& x)
   {
 #if defined(BOOST_MULTI_INDEX_ENABLE_SAFE_MODE)
-    safe_super::swap(x);
+    safe.swap(x.safe);
 #endif
 
     super::swap_elements_(x);
@@ -1117,6 +1114,10 @@ private:
       relink(position.get_node(),first_to_relink.get_node(),header());
     }
   }
+
+#if defined(BOOST_MULTI_INDEX_ENABLE_SAFE_MODE)
+  safe_container safe;
+#endif
 
 #if defined(BOOST_MULTI_INDEX_ENABLE_INVARIANT_CHECKING)&&\
     BOOST_WORKAROUND(__MWERKS__,<=0x3003)

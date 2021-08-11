@@ -128,13 +128,6 @@ template<
 >
 class ordered_index_impl:
   BOOST_MULTI_INDEX_PROTECTED_IF_MEMBER_TEMPLATE_FRIENDS SuperMeta::type
-
-#if defined(BOOST_MULTI_INDEX_ENABLE_SAFE_MODE)
-  ,public safe_mode::safe_container<
-    ordered_index_impl<
-      KeyFromValue,Compare,SuperMeta,TagList,Category,AugmentPolicy> >
-#endif
-
 { 
 #if defined(BOOST_MULTI_INDEX_ENABLE_INVARIANT_CHECKING)&&\
     BOOST_WORKAROUND(__MWERKS__,<=0x3003)
@@ -178,8 +171,7 @@ public:
 
 #if defined(BOOST_MULTI_INDEX_ENABLE_SAFE_MODE)
   typedef safe_mode::safe_iterator<
-    bidir_node_iterator<index_node_type>,
-    ordered_index_impl>                              iterator;
+    bidir_node_iterator<index_node_type> >           iterator;
 #else
   typedef bidir_node_iterator<index_node_type>       iterator;
 #endif
@@ -229,8 +221,7 @@ protected:
 
 protected:
 #if defined(BOOST_MULTI_INDEX_ENABLE_SAFE_MODE)
-  typedef safe_mode::safe_container<
-    ordered_index_impl>                              safe_super;
+  typedef safe_mode::safe_container<iterator>        safe_container;
 #endif
 
   typedef typename call_traits<
@@ -731,6 +722,11 @@ BOOST_MULTI_INDEX_PROTECTED_IF_MEMBER_TEMPLATE_FRIENDS:
     super(args_list.get_tail(),al),
     key(tuples::get<0>(args_list.get_head())),
     comp_(tuples::get<1>(args_list.get_head()))
+
+#if defined(BOOST_MULTI_INDEX_ENABLE_SAFE_MODE)
+    ,safe(*this)
+#endif
+
   {
     empty_initialize();
   }
@@ -739,13 +735,13 @@ BOOST_MULTI_INDEX_PROTECTED_IF_MEMBER_TEMPLATE_FRIENDS:
     const ordered_index_impl<
       KeyFromValue,Compare,SuperMeta,TagList,Category,AugmentPolicy>& x):
     super(x),
-
-#if defined(BOOST_MULTI_INDEX_ENABLE_SAFE_MODE)
-    safe_super(),
-#endif
-
     key(x.key),
     comp_(x.comp_)
+
+#if defined(BOOST_MULTI_INDEX_ENABLE_SAFE_MODE)
+    ,safe(*this)
+#endif
+
   {
     /* Copy ctor just takes the key and compare objects from x. The rest is
      * done in a subsequent call to copy_().
@@ -757,13 +753,13 @@ BOOST_MULTI_INDEX_PROTECTED_IF_MEMBER_TEMPLATE_FRIENDS:
        KeyFromValue,Compare,SuperMeta,TagList,Category,AugmentPolicy>& x,
      do_not_copy_elements_tag):
     super(x,do_not_copy_elements_tag()),
-
-#if defined(BOOST_MULTI_INDEX_ENABLE_SAFE_MODE)
-    safe_super(),
-#endif
-
     key(x.key),
     comp_(x.comp_)
+
+#if defined(BOOST_MULTI_INDEX_ENABLE_SAFE_MODE)
+    ,safe(*this)
+#endif
+
   {
     empty_initialize();
   }
@@ -775,9 +771,9 @@ BOOST_MULTI_INDEX_PROTECTED_IF_MEMBER_TEMPLATE_FRIENDS:
 
 #if defined(BOOST_MULTI_INDEX_ENABLE_SAFE_MODE)
   iterator       make_iterator(index_node_type* node)
-    {return iterator(node,this);}
+    {return iterator(node,&safe);}
   const_iterator make_iterator(index_node_type* node)const
-    {return const_iterator(node,const_cast<ordered_index_impl*>(this));}
+    {return const_iterator(node,const_cast<safe_container*>(&safe));}
 #else
   iterator       make_iterator(index_node_type* node){return iterator(node);}
   const_iterator make_iterator(index_node_type* node)const
@@ -904,7 +900,7 @@ BOOST_MULTI_INDEX_PROTECTED_IF_MEMBER_TEMPLATE_FRIENDS:
     empty_initialize();
 
 #if defined(BOOST_MULTI_INDEX_ENABLE_SAFE_MODE)
-    safe_super::detach_dereferenceable_iterators();
+    safe.detach_dereferenceable_iterators();
 #endif
   }
 
@@ -918,7 +914,7 @@ BOOST_MULTI_INDEX_PROTECTED_IF_MEMBER_TEMPLATE_FRIENDS:
     adl_swap(comp_,x.comp_);
 
 #if defined(BOOST_MULTI_INDEX_ENABLE_SAFE_MODE)
-    safe_super::swap(x);
+    safe.swap(x.safe);
 #endif
 
     super::swap_(x,swap_allocators);
@@ -929,7 +925,7 @@ BOOST_MULTI_INDEX_PROTECTED_IF_MEMBER_TEMPLATE_FRIENDS:
       KeyFromValue,Compare,SuperMeta,TagList,Category,AugmentPolicy>& x)
   {
 #if defined(BOOST_MULTI_INDEX_ENABLE_SAFE_MODE)
-    safe_super::swap(x);
+    safe.swap(x.safe);
 #endif
 
     super::swap_elements_(x);
@@ -1530,6 +1526,10 @@ private:
 protected: /* for the benefit of AugmentPolicy::augmented_interface */
   key_from_value key;
   key_compare    comp_;
+
+#if defined(BOOST_MULTI_INDEX_ENABLE_SAFE_MODE)
+  safe_container safe;
+#endif
 
 #if defined(BOOST_MULTI_INDEX_ENABLE_INVARIANT_CHECKING)&&\
     BOOST_WORKAROUND(__MWERKS__,<=0x3003)

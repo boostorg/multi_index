@@ -81,12 +81,6 @@ namespace detail{
 template<typename SuperMeta,typename TagList>
 class random_access_index:
   BOOST_MULTI_INDEX_PROTECTED_IF_MEMBER_TEMPLATE_FRIENDS SuperMeta::type
-
-#if defined(BOOST_MULTI_INDEX_ENABLE_SAFE_MODE)
-  ,public safe_mode::safe_container<
-    random_access_index<SuperMeta,TagList> >
-#endif
-
 { 
 #if defined(BOOST_MULTI_INDEX_ENABLE_INVARIANT_CHECKING)&&\
     BOOST_WORKAROUND(__MWERKS__,<=0x3003)
@@ -127,8 +121,7 @@ public:
 
 #if defined(BOOST_MULTI_INDEX_ENABLE_SAFE_MODE)
   typedef safe_mode::safe_iterator<
-    rnd_node_iterator<index_node_type>,
-    random_access_index>                         iterator;
+    rnd_node_iterator<index_node_type> >        iterator;
 #else
   typedef rnd_node_iterator<index_node_type>    iterator;
 #endif
@@ -175,8 +168,7 @@ protected:
 
 private:
 #if defined(BOOST_MULTI_INDEX_ENABLE_SAFE_MODE)
-  typedef safe_mode::safe_container<
-    random_access_index>                      safe_super;
+  typedef safe_mode::safe_container<iterator> safe_container;
 #endif
 
   typedef typename call_traits<
@@ -760,17 +752,22 @@ BOOST_MULTI_INDEX_PROTECTED_IF_MEMBER_TEMPLATE_FRIENDS:
     const ctor_args_list& args_list,const allocator_type& al):
     super(args_list.get_tail(),al),
     ptrs(al,header()->impl(),0)
+
+#if defined(BOOST_MULTI_INDEX_ENABLE_SAFE_MODE)
+    ,safe(*this)
+#endif
+    
   {
   }
 
   random_access_index(const random_access_index<SuperMeta,TagList>& x):
     super(x),
+    ptrs(x.get_allocator(),header()->impl(),x.size())
 
 #if defined(BOOST_MULTI_INDEX_ENABLE_SAFE_MODE)
-    safe_super(),
+    ,safe(*this)
 #endif
 
-    ptrs(x.get_allocator(),header()->impl(),x.size())
   {
     /* The actual copying takes place in subsequent call to copy_().
      */
@@ -779,12 +776,12 @@ BOOST_MULTI_INDEX_PROTECTED_IF_MEMBER_TEMPLATE_FRIENDS:
   random_access_index(
     const random_access_index<SuperMeta,TagList>& x,do_not_copy_elements_tag):
     super(x,do_not_copy_elements_tag()),
+    ptrs(x.get_allocator(),header()->impl(),0)
 
 #if defined(BOOST_MULTI_INDEX_ENABLE_SAFE_MODE)
-    safe_super(),
+    ,safe(*this)
 #endif
 
-    ptrs(x.get_allocator(),header()->impl(),0)
   {
   }
 
@@ -795,9 +792,9 @@ BOOST_MULTI_INDEX_PROTECTED_IF_MEMBER_TEMPLATE_FRIENDS:
 
 #if defined(BOOST_MULTI_INDEX_ENABLE_SAFE_MODE)
   iterator       make_iterator(index_node_type* node)
-    {return iterator(node,this);}
+    {return iterator(node,&safe);}
   const_iterator make_iterator(index_node_type* node)const
-    {return const_iterator(node,const_cast<random_access_index*>(this));}
+    {return const_iterator(node,const_cast<safe_container*>(&safe));}
 #else
   iterator       make_iterator(index_node_type* node){return iterator(node);}
   const_iterator make_iterator(index_node_type* node)const
@@ -868,7 +865,7 @@ BOOST_MULTI_INDEX_PROTECTED_IF_MEMBER_TEMPLATE_FRIENDS:
     ptrs.clear();
 
 #if defined(BOOST_MULTI_INDEX_ENABLE_SAFE_MODE)
-    safe_super::detach_dereferenceable_iterators();
+    safe.detach_dereferenceable_iterators();
 #endif
   }
 
@@ -879,7 +876,7 @@ BOOST_MULTI_INDEX_PROTECTED_IF_MEMBER_TEMPLATE_FRIENDS:
     ptrs.swap(x.ptrs,swap_allocators);
 
 #if defined(BOOST_MULTI_INDEX_ENABLE_SAFE_MODE)
-    safe_super::swap(x);
+    safe.swap(x.safe);
 #endif
 
     super::swap_(x,swap_allocators);
@@ -890,7 +887,7 @@ BOOST_MULTI_INDEX_PROTECTED_IF_MEMBER_TEMPLATE_FRIENDS:
     ptrs.swap(x.ptrs);
 
 #if defined(BOOST_MULTI_INDEX_ENABLE_SAFE_MODE)
-    safe_super::swap(x);
+    safe.swap(x.safe);
 #endif
 
     super::swap_elements_(x);
@@ -1208,7 +1205,11 @@ private:
     relocate(position,begin()+n,end());
   }
 
-  ptr_array ptrs;
+  ptr_array      ptrs;
+
+#if defined(BOOST_MULTI_INDEX_ENABLE_SAFE_MODE)
+  safe_container safe;
+#endif
 
 #if defined(BOOST_MULTI_INDEX_ENABLE_INVARIANT_CHECKING)&&\
     BOOST_WORKAROUND(__MWERKS__,<=0x3003)
