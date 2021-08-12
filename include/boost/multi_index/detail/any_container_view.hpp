@@ -13,65 +13,58 @@
 #pragma once
 #endif
 
-#include <boost/config.hpp> /* keep it first to prevent nasty warns in MSVC */
-
 namespace boost{
 
 namespace multi_index{
 
 namespace detail{
 
-/* TODO: WRITE */
-
-template<typename ConstIterator>
-struct any_container_view_vtable
-{
-  ConstIterator (*begin)(const void*);
-  ConstIterator (*end)(const void*);
-};
-
-template<typename Container>
-typename Container::const_iterator any_container_view_begin(const void* pc)
-{
-  return static_cast<const Container*>(pc)->begin();
-}
-
-template<typename Container>
-typename Container::const_iterator any_container_view_end(const void* pc)
-{
-  return static_cast<const Container*>(pc)->end();
-}
-
-template<typename Container>
-any_container_view_vtable<typename Container::const_iterator>*
-any_container_view_vtable_for()
-{
-  static any_container_view_vtable<typename Container::const_iterator> vt=
-  {
-    &any_container_view_begin<Container>,
-    &any_container_view_end<Container>
-  };
-
-  return &vt;
-};
+/* type-erased, non-owning view over a ConstIterator-container's range */
 
 template<typename ConstIterator>
 class any_container_view
 {
 public:
   template<typename Container>
-  any_container_view(const Container& c):
-    pc(&c),
-    pvt(any_container_view_vtable_for<Container>())
-    {}
+  any_container_view(const Container& x):px(&x),pt(vtable_for<Container>()){}
 
-  const void*   container()const{return pc;}
-  ConstIterator begin()const{return pvt->begin(pc);}
-  ConstIterator end()const{return pvt->end(pc);}
+  const void*   container()const{return px;}
+  ConstIterator begin()const{return pt->begin(px);}
+  ConstIterator end()const{return pt->end(px);}
 
 private:
-  const void*                               pc;
-  any_container_view_vtable<ConstIterator>* pvt;
+  struct vtable
+  {
+    ConstIterator (*begin)(const void*);
+    ConstIterator (*end)(const void*);
+  };
+
+  template<typename Container>
+  static ConstIterator begin_for(const void* px)
+  {
+    return static_cast<const Container*>(px)->begin();
+  }
+
+  template<typename Container>
+  static ConstIterator end_for(const void* px)
+  {
+    return static_cast<const Container*>(px)->end();
+  }
+
+  template<typename Container>
+  vtable* vtable_for()
+  {
+    static vtable v=
+    {
+      &begin_for<Container>,
+      &end_for<Container>
+    };
+
+    return &v;
+  }
+
+  const void* px;
+  vtable*     pt;
 };
 
 } /* namespace multi_index::detail */
