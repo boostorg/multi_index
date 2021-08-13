@@ -326,11 +326,7 @@ static void local_test_safe_mode_with_rearrange()
 
   TRY_SAFE_MODE
     i.splice(i.begin(),i);
-#if 0 /* old behavior */
-  CATCH_SAFE_MODE(safe_mode::same_container)
-#else
   CATCH_SAFE_MODE(safe_mode::inside_range)
-#endif
 
   TRY_SAFE_MODE
     iterator it;
