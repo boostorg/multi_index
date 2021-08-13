@@ -351,6 +351,7 @@ protected:
   const safe_container_base* owner()const{return cont;}
 
 BOOST_MULTI_INDEX_PRIVATE_IF_MEMBER_TEMPLATE_FRIENDS:
+
 #if !defined(BOOST_NO_MEMBER_TEMPLATE_FRIENDS)
   friend class safe_container_base;
   template<typename>
