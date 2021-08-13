@@ -38,6 +38,7 @@
 #include <boost/multi_index/detail/converter.hpp>
 #include <boost/multi_index/detail/header_holder.hpp>
 #include <boost/multi_index/detail/has_tag.hpp>
+#include <boost/multi_index/detail/invalidate_iterators.hpp>
 #include <boost/multi_index/detail/no_duplicate_tags.hpp>
 #include <boost/multi_index/detail/safe_mode.hpp>
 #include <boost/multi_index/detail/scope_guard.hpp>
@@ -931,20 +932,21 @@ BOOST_MULTI_INDEX_PROTECTED_IF_MEMBER_TEMPLATE_FRIENDS:
   final_node_handle_type extract_(final_node_type* x)
   {
     --node_count;
-    super::extract_(x,boost::true_type() /* invalidate_iterators */);
+    super::extract_(x,detail::invalidate_iterators());
     return final_node_handle_type(x,get_allocator());
   }
 
-  void extract_for_transfer_(final_node_type* x)
+  template<typename Dst>
+  void extract_for_transfer_(final_node_type* x,Dst dst)
   {
     --node_count;
-    super::extract_(x,boost::false_type() /* invalidate_iterators */);
+    super::extract_(x,dst);
   }
 
   void erase_(final_node_type* x)
   {
     --node_count;
-    super::extract_(x,boost::true_type() /* invalidate_iterators */);
+    super::extract_(x,detail::invalidate_iterators());
     delete_node_(x);
   }
 

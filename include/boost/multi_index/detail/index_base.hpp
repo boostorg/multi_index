@@ -22,6 +22,7 @@
 #include <boost/multi_index/detail/allocator_traits.hpp>
 #include <boost/multi_index/detail/copy_map.hpp>
 #include <boost/multi_index/detail/do_not_copy_elements_tag.hpp>
+#include <boost/multi_index/detail/index_access_sequence.hpp>
 #include <boost/multi_index/detail/node_handle.hpp>
 #include <boost/multi_index/detail/node_type.hpp>
 #include <boost/multi_index/detail/vartempl_support.hpp>
@@ -51,49 +52,6 @@ namespace detail{
 struct lvalue_tag{};
 struct rvalue_tag{};
 struct emplaced_tag{};
-
-#if 0 /* we'll use this later for iterator reassignment in merge */
-template<typename MultiIndexContainer,int N=0>
-struct iterator_sequence;
-
-struct iterator_sequence_terminal
-{
-  iterator_sequence_terminal(void*){}
-};
-
-template<typename MultiIndexContainer,int N>
-struct iterator_sequence_normal
-{
-  MultiIndexContainer* p;
-
-  iterator_sequence_normal(MultiIndexContainer* p_):p(p_){}
-
-  typename nth_index<MultiIndexContainer,N>::type::iterator
-  get(){return p->template get<N>().end();}
-
-  iterator_sequence<MultiIndexContainer,N+1>
-  next(){return iterator_sequence<MultiIndexContainer,N+1>(p);}
-};
-
-template<typename MultiIndexContainer,int N>
-struct iterator_sequence_base:
-  mpl::if_c<
-    N<mpl::size<typename MultiIndexContainer::index_type_list>::type::value,
-    iterator_sequence_normal<MultiIndexContainer,N>,
-    iterator_sequence_terminal
-  >
-{};
-
-template<typename MultiIndexContainer,int N>
-struct iterator_sequence:
-  iterator_sequence_base<MultiIndexContainer,N>::type
-{
-  typedef typename iterator_sequence_base<
-    MultiIndexContainer,N>::type               super;
- 
-  iterator_sequence(MultiIndexContainer* p):super(p){}
-};
-#endif
 
 template<typename Value,typename IndexSpecifierList,typename Allocator>
 class index_base
@@ -181,7 +139,8 @@ protected:
   final_node_type* insert_(
     const value_type&,final_node_type*& x,MultiIndexContainer* p)
   {
-    p->final_extract_for_transfer_(x);
+    p->final_extract_for_transfer_(
+      x,index_access_sequence<final_type>(&final()));
     return x;
   }
 
@@ -203,8 +162,8 @@ protected:
     return x;
   }
 
-  template<typename BoolConstant>
-  void extract_(index_node_type*,BoolConstant /* invalidate_iterators */){}
+  template<typename Dst>
+  void extract_(index_node_type*,Dst){}
 
   void clear_(){}
 
@@ -320,9 +279,10 @@ protected:
     return final().extract_(x);
   } 
 
-  void final_extract_for_transfer_(final_node_type* x)
+  template<typename Dst>
+  void final_extract_for_transfer_(final_node_type* x,Dst dst)
   {
-    final().extract_for_transfer_(x);
+    final().extract_for_transfer_(x,dst);
   } 
 
   void final_erase_(final_node_type* x){final().erase_(x);}

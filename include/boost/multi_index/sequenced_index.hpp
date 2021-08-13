@@ -751,14 +751,14 @@ BOOST_MULTI_INDEX_PROTECTED_IF_MEMBER_TEMPLATE_FRIENDS:
     return res;
   }
 
-  template<typename BoolConstant>
-  void extract_(index_node_type* x,BoolConstant invalidate_iterators)
+  template<typename Dst>
+  void extract_(index_node_type* x,Dst dst)
   {
     unlink(x);
-    super::extract_(x,invalidate_iterators);
+    super::extract_(x,dst.next());
 
 #if defined(BOOST_MULTI_INDEX_ENABLE_SAFE_MODE)
-    detach_else_uncheck_iterators(x,invalidate_iterators);
+    transfer_iterators(dst.get(),x);
 #endif
   }
 
@@ -942,13 +942,11 @@ private:
     safe_mode::detach_equivalent_iterators(it);
   }
 
-  template<typename BoolConstant>
-  void detach_else_uncheck_iterators(
-    index_node_type* x,BoolConstant invalidate_iterators)
+  template<typename Dst>
+  void transfer_iterators(Dst& dst,index_node_type* x)
   {
     iterator it=make_iterator(x);
-    safe_mode::detach_else_uncheck_equivalent_iterators(
-      it,invalidate_iterators);
+    safe_mode::transfer_equivalent_iterators(dst,it);
   }
 #endif
 

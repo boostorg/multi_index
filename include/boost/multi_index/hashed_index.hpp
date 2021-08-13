@@ -34,6 +34,7 @@
 #include <boost/multi_index/detail/do_not_copy_elements_tag.hpp>
 #include <boost/multi_index/detail/hash_index_iterator.hpp>
 #include <boost/multi_index/detail/index_node_base.hpp>
+#include <boost/multi_index/detail/invalidate_iterators.hpp>
 #include <boost/multi_index/detail/modify_key_adaptor.hpp>
 #include <boost/multi_index/detail/node_handle.hpp>
 #include <boost/multi_index/detail/promotes_arg.hpp>
@@ -42,7 +43,6 @@
 #include <boost/multi_index/detail/vartempl_support.hpp>
 #include <boost/multi_index/hashed_index_fwd.hpp>
 #include <boost/tuple/tuple.hpp>
-#include <boost/type_traits/integral_constant.hpp>
 #include <boost/type_traits/is_same.hpp>
 #include <cmath>
 #include <cstddef>
@@ -961,14 +961,14 @@ BOOST_MULTI_INDEX_PROTECTED_IF_MEMBER_TEMPLATE_FRIENDS:
     return res;
   }
 
-  template<typename BoolConstant>
-  void extract_(index_node_type* x,BoolConstant invalidate_iterators)
+  template<typename Dst>
+  void extract_(index_node_type* x,Dst dst)
   {
     unlink(x);
-    super::extract_(x,invalidate_iterators);
+    super::extract_(x,dst.next());
 
 #if defined(BOOST_MULTI_INDEX_ENABLE_SAFE_MODE)
-    detach_else_uncheck_iterators(x,invalidate_iterators);
+    transfer_iterators(dst.get(),x);
 #endif
   }
 
@@ -1085,7 +1085,7 @@ BOOST_MULTI_INDEX_PROTECTED_IF_MEMBER_TEMPLATE_FRIENDS:
       b=in_place(x->impl(),key(x->value()),buc);
     }
     BOOST_CATCH(...){
-      extract_(x,boost::true_type() /* invalidate_iterators */);
+      extract_(x,invalidate_iterators());
       BOOST_RETHROW;
     }
     BOOST_CATCH_END
@@ -1094,7 +1094,7 @@ BOOST_MULTI_INDEX_PROTECTED_IF_MEMBER_TEMPLATE_FRIENDS:
       BOOST_TRY{
         link_info pos(buckets.at(buc));
         if(!link_point(x->value(),pos)){
-          super::extract_(x,boost::true_type() /* invalidate_iterators */);
+          super::extract_(x,invalidate_iterators());
 
 #if defined(BOOST_MULTI_INDEX_ENABLE_SAFE_MODE)
           detach_iterators(x);
@@ -1104,7 +1104,7 @@ BOOST_MULTI_INDEX_PROTECTED_IF_MEMBER_TEMPLATE_FRIENDS:
         link(x,pos);
       }
       BOOST_CATCH(...){
-        super::extract_(x,boost::true_type() /* invalidate_iterators */);
+        super::extract_(x,invalidate_iterators());
 
 #if defined(BOOST_MULTI_INDEX_ENABLE_SAFE_MODE)
       detach_iterators(x);
@@ -1645,13 +1645,11 @@ private:
     safe_mode::detach_equivalent_iterators(it);
   }
 
-  template<typename BoolConstant>
-  void detach_else_uncheck_iterators(
-    index_node_type* x,BoolConstant invalidate_iterators)
+  template<typename Dst>
+  void transfer_iterators(Dst& dst,index_node_type* x)
   {
     iterator it=make_iterator(x);
-    safe_mode::detach_else_uncheck_equivalent_iterators(
-      it,invalidate_iterators);
+    safe_mode::transfer_equivalent_iterators(dst,it);
   }
 #endif
 
