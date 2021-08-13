@@ -23,7 +23,7 @@
 #include <boost/multi_index/ranked_index.hpp>
 #include <boost/multi_index/sequenced_index.hpp>
 #include <boost/next_prior.hpp>
-#include <boost/type_traits/integral_constant.hpp>
+#include <boost/type_traits/is_same.hpp>
 #include <boost/type_traits/remove_reference.hpp>
 #include <functional>
 #include <iterator>
@@ -502,8 +502,16 @@ void test_merge_same(Dst& dst,BOOST_FWD_REF(Src) src)
   BOOST_TEST(src.size()==n);
 }
 
+template<typename Iterator,typename Value>
+bool find_address(Iterator first,Iterator last,const Value* x)
+{
+  while(first!=last)if(&*first++==x)return true;
+  return false;
+}
+
 template<typename Dst,typename Src>
-void test_merge_different(Dst& dst,BOOST_FWD_REF(Src) src)
+void test_merge_different(
+  Dst& dst,BOOST_FWD_REF(Src) src,bool transferred_iters)
 {
   typedef typename boost::remove_reference<Src>::
     type::iterator                                src_iterator;
@@ -521,7 +529,14 @@ void test_merge_different(Dst& dst,BOOST_FWD_REF(Src) src)
   merge(dst,boost::forward<Src>(src));
   BOOST_TEST(dst.size()>=n && m>=src.size() && dst.size()-n==m-src.size());
   for(std::size_t i=0;i<v.size();++i){
-    BOOST_TEST(&*(v[i].first)==v[i].second);
+    BOOST_TEST(
+      find_address(src.begin(),src.end(),v[i].second)||
+      find_address(dst.begin(),dst.end(),v[i].second));
+  }
+  if(transferred_iters){
+    for(std::size_t i=0;i<v.size();++i){
+      BOOST_TEST(&*(v[i].first)==v[i].second);
+    }
   }
 }
 
@@ -595,13 +610,6 @@ void test_merge_same(
   }
 }
 
-template<typename Iterator,typename Value>
-bool find_address(Iterator first,Iterator last,const Value* x)
-{
-  while(first!=last)if(&*first++==x)return true;
-  return false;
-}
-
 template<typename Dst,typename Src>
 void test_merge_different(
   Dst& dst,BOOST_FWD_REF(Src) src,
@@ -672,17 +680,22 @@ void test_merge_different(Dst& dst,Src& src)
 {
   const Dst dst1=dst;
   const Src src1=src;
+  const bool transferred_iters=
+    boost::is_same<
+     typename boost::multi_index::nth_index<Dst,M>::type::iterator,
+     typename boost::multi_index::nth_index<Src,M>::type::iterator>::value;
   {
     Dst dst2=dst1;
     Src src2=src1;
     test_merge_different(
-      dst2.template get<N>(),src2.template get<M>());
+      dst2.template get<N>(),src2.template get<M>(),transferred_iters);
   }
   {
     Dst dst2=dst1;
     Src src2=src1;
     test_merge_different(
-      dst2.template get<N>(),boost::move(src2.template get<M>()));
+      dst2.template get<N>(),boost::move(src2.template get<M>()),
+      transferred_iters);
   }
   {
     Dst dst2=dst1;
@@ -786,7 +799,7 @@ void test_merge()
   test_merge<1,4>(c2,c2);
   test_merge<4,2>(c2,c2);
 
-  //test_merge<0,1>(c1,c2);
+  test_merge<0,1>(c1,c2);
   test_merge<1,2>(c1,c2);
   test_merge<2,3>(c1,c2);
   test_merge<3,4>(c1,c2);
