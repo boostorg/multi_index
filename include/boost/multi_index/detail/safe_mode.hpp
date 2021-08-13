@@ -140,10 +140,6 @@ namespace boost{
 
 namespace multi_index{
 
-namespace detail{
-class safe_container_base; // TODO: REORGANIZE
-}
-
 namespace safe_mode{
 
 /* Checking routines. Assume the best for unchecked iterators
@@ -292,90 +288,20 @@ inline bool check_equal_allocators(
   return cont0.get_allocator()==cont1.get_allocator();
 }
 
-/* Invalidates all iterators equivalent to that given. Safe containers
- * must call this when deleting elements: the safe mode framework cannot
- * perform this operation automatically without outside help.
- */
+/* fwd decls */
 
-template<typename Iterator>
-inline void detach_equivalent_iterators(Iterator& it)
-{
-  if(it.valid()){
-    {
-#if defined(BOOST_HAS_THREADS)
-      boost::detail::lightweight_mutex::scoped_lock lock(it.cont->mutex);
-#endif
+template<typename Container> class safe_container;
+template<typename Iterator> void detach_equivalent_iterators(Iterator&);
 
-      Iterator *prev_,*next_;
-      for(
-        prev_=static_cast<Iterator*>(&it.cont->header);
-        (next_=static_cast<Iterator*>(prev_->next))!=0;){
-        if(next_!=&it&&*next_==it){
-          prev_->next=next_->next;
-          next_->cont=0;
-        }
-        else prev_=next_;
-      }
-    }
-    it.detach();
-  }
-}
+namespace safe_mode_detail{
 
-/* Transfers iterators equivalent to that given to Dst, if that container has
- * the same iterator type; otherwise, detaches them.
- */
+/* fwd decls */
 
+class safe_container_base;
 template<typename Dst,typename Iterator>
-inline void transfer_equivalent_iterators(Dst& dst,Iterator& i)
-{
-  transfer_equivalent_iterators(
-    dst,i,boost::is_same<Iterator,typename Dst::iterator>());
-}
-
+void transfer_equivalent_iterators(Dst&,Iterator,boost::true_type);
 template<typename Dst,typename Iterator>
-inline void transfer_equivalent_iterators(
-  Dst& dst,Iterator it,boost::true_type /* same iterator type */)
-{
-  if(it.valid()){
-    {
-      detail::safe_container_base* cont_=dst.end().cont;
-
-#if defined(BOOST_HAS_THREADS)
-      detail::scoped_bilock<boost::detail::lightweight_mutex>
-      scoped_bilock(it.cont->mutex,cont_->mutex);
-#endif
-
-      Iterator *prev_,*next_;
-      for(
-        prev_=static_cast<Iterator*>(&it.cont->header);
-        (next_=static_cast<Iterator*>(prev_->next))!=0;){
-        if(next_!=&it&&*next_==it){
-          prev_->next=next_->next;
-          next_->cont=cont_;
-          next_->next=cont_->header.next;
-          cont_->header.next=next_;
-        }
-        else prev_=next_;
-      }
-    }
-    /* nothing to do with it, was passed by value and will die now */
-  }
-}
-
-template<typename Dst,typename Iterator>
-inline void transfer_equivalent_iterators(
-  Dst&,Iterator& it,boost::false_type /* same iterator type */)
-{
-  detach_equivalent_iterators(it);
-}
-
-template<typename Container> class safe_container; /* fwd decl. */
-
-} /* namespace multi_index::safe_mode */
-
-namespace detail{
-
-class safe_container_base;                 /* fwd decl. */
+inline void transfer_equivalent_iterators(Dst&,Iterator&,boost::false_type);
 
 class safe_iterator_base
 {
@@ -425,15 +351,15 @@ protected:
   const safe_container_base* owner()const{return cont;}
 
 BOOST_MULTI_INDEX_PRIVATE_IF_MEMBER_TEMPLATE_FRIENDS:
-  friend class safe_container_base;
-
 #if !defined(BOOST_NO_MEMBER_TEMPLATE_FRIENDS)
-  template<typename>          friend class safe_mode::safe_container;
-  template<typename Iterator> friend
-    void safe_mode::detach_equivalent_iterators(Iterator&);
-  template<typename Dst,typename Iterator> friend
-    void safe_mode::transfer_equivalent_iterators(
-      Dst&,Iterator,boost::true_type);
+  friend class safe_container_base;
+  template<typename>
+  friend class safe_mode::safe_container;
+  template<typename Iterator>
+  friend void safe_mode::detach_equivalent_iterators(Iterator&);
+  template<typename Dst,typename Iterator>
+  friend void safe_mode_detail::transfer_equivalent_iterators(
+    Dst&,Iterator,boost::true_type);
 #endif
 
   inline void attach(safe_container_base* cont_);
@@ -449,14 +375,14 @@ public:
   safe_container_base(){}
 
 BOOST_MULTI_INDEX_PROTECTED_IF_MEMBER_TEMPLATE_FRIENDS:
-  friend class safe_iterator_base;
 
 #if !defined(BOOST_NO_MEMBER_TEMPLATE_FRIENDS)
-  template<typename Iterator> friend
-    void safe_mode::detach_equivalent_iterators(Iterator&);
-  template<typename Dst,typename Iterator> friend
-    void safe_mode::transfer_equivalent_iterators(
-      Dst&,Iterator,boost::true_type);
+  friend class safe_iterator_base;
+  template<typename Iterator>
+  friend void safe_mode::detach_equivalent_iterators(Iterator&);
+  template<typename Dst,typename Iterator>
+  friend void safe_mode_detail::transfer_equivalent_iterators(
+    Dst&,Iterator,boost::true_type);
 #endif
 
   ~safe_container_base()
@@ -511,9 +437,7 @@ void safe_iterator_base::detach()
   }
 }
 
-} /* namespace multi_index::detail */
-
-namespace safe_mode{
+} /* namespace multi_index::safe_mode::safe_mode_detail */
 
 /* In order to enable safe mode on a container:
  *   - The container must keep a member of type safe_container<iterator>,
@@ -523,15 +447,12 @@ namespace safe_mode{
  */
  
 template<typename Iterator>
-class safe_container;
-
-template<typename Iterator>
 class safe_iterator:
   public detail::iter_adaptor<safe_iterator<Iterator>,Iterator>,
-  public detail::safe_iterator_base
+  public safe_mode_detail::safe_iterator_base
 {
   typedef detail::iter_adaptor<safe_iterator,Iterator> super;
-  typedef detail::safe_iterator_base                   safe_super;
+  typedef safe_mode_detail::safe_iterator_base         safe_super;
 
 public:
   typedef typename Iterator::reference                 reference;
@@ -653,9 +574,9 @@ private:
 };
 
 template<typename Iterator>
-class safe_container:public detail::safe_container_base
+class safe_container:public safe_mode_detail::safe_container_base
 {
-  typedef detail::safe_container_base super;
+  typedef safe_mode_detail::safe_container_base super;
 
   detail::any_container_view<Iterator> view;
 
@@ -687,6 +608,87 @@ public:
     super::swap(x);
   }
 };
+
+/* Invalidates all iterators equivalent to that given. Safe containers
+ * must call this when deleting elements: the safe mode framework cannot
+ * perform this operation automatically without outside help.
+ */
+
+template<typename Iterator>
+inline void detach_equivalent_iterators(Iterator& it)
+{
+  if(it.valid()){
+    {
+#if defined(BOOST_HAS_THREADS)
+      boost::detail::lightweight_mutex::scoped_lock lock(it.cont->mutex);
+#endif
+
+      Iterator *prev_,*next_;
+      for(
+        prev_=static_cast<Iterator*>(&it.cont->header);
+        (next_=static_cast<Iterator*>(prev_->next))!=0;){
+        if(next_!=&it&&*next_==it){
+          prev_->next=next_->next;
+          next_->cont=0;
+        }
+        else prev_=next_;
+      }
+    }
+    it.detach();
+  }
+}
+
+/* Transfers iterators equivalent to that given to Dst, if that container has
+ * the same iterator type; otherwise, detaches them.
+ */
+
+template<typename Dst,typename Iterator>
+inline void transfer_equivalent_iterators(Dst& dst,Iterator& i)
+{
+  safe_mode_detail::transfer_equivalent_iterators(
+    dst,i,boost::is_same<Iterator,typename Dst::iterator>());
+}
+
+namespace safe_mode_detail{
+
+template<typename Dst,typename Iterator>
+inline void transfer_equivalent_iterators(
+  Dst& dst,Iterator it,boost::true_type /* same iterator type */)
+{
+  if(it.valid()){
+    {
+      safe_container_base* cont_=dst.end().cont;
+
+#if defined(BOOST_HAS_THREADS)
+      detail::scoped_bilock<boost::detail::lightweight_mutex>
+      scoped_bilock(it.cont->mutex,cont_->mutex);
+#endif
+
+      Iterator *prev_,*next_;
+      for(
+        prev_=static_cast<Iterator*>(&it.cont->header);
+        (next_=static_cast<Iterator*>(prev_->next))!=0;){
+        if(next_!=&it&&*next_==it){
+          prev_->next=next_->next;
+          next_->cont=cont_;
+          next_->next=cont_->header.next;
+          cont_->header.next=next_;
+        }
+        else prev_=next_;
+      }
+    }
+    /* nothing to do with it, was passed by value and will die now */
+  }
+}
+
+template<typename Dst,typename Iterator>
+inline void transfer_equivalent_iterators(
+  Dst&,Iterator& it,boost::false_type /* same iterator type */)
+{
+  detach_equivalent_iterators(it);
+}
+
+} /* namespace multi_index::safe_mode::safe_mode_detail */
 
 } /* namespace multi_index::safe_mode */
 
