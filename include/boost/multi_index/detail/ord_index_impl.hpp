@@ -544,6 +544,7 @@ public:
     BOOST_MULTI_INDEX_CHECK_VALID_ITERATOR(i);
     BOOST_MULTI_INDEX_CHECK_DEREFERENCEABLE_ITERATOR(i);
     BOOST_MULTI_INDEX_CHECK_IS_OWNER(i,x);
+    BOOST_MULTI_INDEX_CHECK_EQUAL_ALLOCATORS(*this,x);
     BOOST_MULTI_INDEX_ORD_INDEX_CHECK_INVARIANT;
     if(x.end().get_node()==this->header()){ /* same container */
       return std::pair<iterator,bool>(
@@ -576,6 +577,7 @@ public:
     BOOST_MULTI_INDEX_CHECK_IS_OWNER(first,x);
     BOOST_MULTI_INDEX_CHECK_IS_OWNER(last,x);
     BOOST_MULTI_INDEX_CHECK_VALID_RANGE(first,last);
+    BOOST_MULTI_INDEX_CHECK_EQUAL_ALLOCATORS(*this,x);
     BOOST_MULTI_INDEX_ORD_INDEX_CHECK_INVARIANT;
     if(x.end().get_node()!=this->header()){ /* different containers */
       this->final_transfer_range_(x,first,last);
