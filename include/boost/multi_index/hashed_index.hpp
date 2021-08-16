@@ -1,4 +1,4 @@
-/* Copyright 2003-2020 Joaquin M Lopez Munoz.
+/* Copyright 2003-2021 Joaquin M Lopez Munoz.
  * Distributed under the Boost Software License, Version 1.0.
  * (See accompanying file LICENSE_1_0.txt or copy at
  * http://www.boost.org/LICENSE_1_0.txt)
@@ -557,6 +557,22 @@ public:
   {
     return count(
       k,hash,eq,promotes_1st_arg<CompatiblePred,CompatibleKey,key_type>());
+  }
+
+  template<typename CompatibleKey>
+  bool contains(const CompatibleKey& k)const
+  {
+    return contains(k,hash_,eq_);
+  }
+
+  template<
+    typename CompatibleKey,typename CompatibleHash,typename CompatiblePred
+  >
+  bool contains(
+    const CompatibleKey& k,
+    const CompatibleHash& hash,const CompatiblePred& eq)const
+  {
+    return find(k,hash,eq)!=end();
   }
 
   template<typename CompatibleKey>

@@ -354,7 +354,7 @@ in practice greatly reduces the freedom in choosing an equality predicate.
 
 <p>
 The lookup interface of hashed indices consists in member functions
-<code>find</code>, <code>count</code> and <code>equal_range</code>.
+<code>find</code>, <code>count</code>, <code>contains</code> and <code>equal_range</code>.
 Note that <code>lower_bound</code> and <code>upper_bound</code> are not
 provided, as there is no intrinsic ordering of keys in this type of indices.
 </p>
@@ -821,9 +821,9 @@ Key extraction
 
 <br>
 
-<p>Revised August 6th 2018</p>
+<p>Revised July 29th 2021</p>
 
-<p>&copy; Copyright 2003-2018 Joaqu&iacute;n M L&oacute;pez Mu&ntilde;oz.
+<p>&copy; Copyright 2003-2021 Joaqu&iacute;n M L&oacute;pez Mu&ntilde;oz.
 Distributed under the Boost Software 
 License, Version 1.0. (See accompanying file <a href="../../../../LICENSE_1_0.txt">
 LICENSE_1_0.txt</a> or copy at <a href="http://www.boost.org/LICENSE_1_0.txt">

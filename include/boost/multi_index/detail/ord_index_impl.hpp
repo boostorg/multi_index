@@ -1,4 +1,4 @@
-/* Copyright 2003-2020 Joaquin M Lopez Munoz.
+/* Copyright 2003-2021 Joaquin M Lopez Munoz.
  * Distributed under the Boost Software License, Version 1.0.
  * (See accompanying file LICENSE_1_0.txt or copy at
  * http://www.boost.org/LICENSE_1_0.txt)
@@ -566,6 +566,19 @@ public:
     std::pair<iterator,iterator> p=equal_range(x,comp);
     size_type n=static_cast<size_type>(std::distance(p.first,p.second));
     return n;
+  }
+
+  template<typename CompatibleKey>
+  bool contains(const CompatibleKey& x)const
+  {
+    return contains(x,comp_);
+  }
+
+  template<typename CompatibleKey,typename CompatibleCompare>
+  bool contains(
+    const CompatibleKey& x,const CompatibleCompare& comp)const
+  {
+    return find(x,comp)!=end();
   }
 
   template<typename CompatibleKey>
