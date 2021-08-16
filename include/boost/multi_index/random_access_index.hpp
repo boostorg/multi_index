@@ -1140,9 +1140,21 @@ private:
   template<typename Iterator>
   void internal_splice(iterator position,Iterator first,Iterator last)
   {
-    index_node_type* pn=position.get_node();
-    while(first!=last){
-      relocate(pn,static_cast<index_node_type*>((first++).get_node()));
+    /* null out [first, last) positions in ptrs array */
+
+    for(Iterator it=first;it!=last;++it){ 
+      *(static_cast<index_node_type*>(it.get_node())->up())=0;
+    }
+
+    node_impl_ptr_pointer pp=node_impl_type::gather_nulls(
+      ptrs.begin(),ptrs.end(),
+      static_cast<index_node_type*>(position.get_node())->up());
+
+    /* relink [first, last) */
+
+    for(Iterator it=first;it!=last;++it,++pp){
+      *pp=static_cast<index_node_type*>(it.get_node());
+      (*pp)->up()=pp;
     }
   }
 
