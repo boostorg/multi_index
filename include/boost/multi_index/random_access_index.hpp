@@ -748,6 +748,12 @@ public:
   }
     
 BOOST_MULTI_INDEX_PROTECTED_IF_MEMBER_TEMPLATE_FRIENDS:
+
+#if defined(BOOST_MSVC)
+#pragma warning(push)
+#pragma warning(disable:4355) /* this used in base member initializer list */
+#endif
+
   random_access_index(
     const ctor_args_list& args_list,const allocator_type& al):
     super(args_list.get_tail(),al),
@@ -784,6 +790,10 @@ BOOST_MULTI_INDEX_PROTECTED_IF_MEMBER_TEMPLATE_FRIENDS:
 
   {
   }
+
+#if defined(BOOST_MSVC)
+#pragma warning(pop) /* C4355 */
+#endif
 
   ~random_access_index()
   {
