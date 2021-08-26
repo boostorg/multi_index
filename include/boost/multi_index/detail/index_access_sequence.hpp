@@ -13,6 +13,11 @@
 #pragma once
 #endif
 
+#include <boost/config.hpp> /* keep it first to prevent nasty warns in MSVC */
+#include <boost/mpl/if.hpp>
+#include <boost/mpl/size.hpp>
+#include <boost/multi_index_container_fwd.hpp>
+
 namespace boost{
 
 namespace multi_index{
