@@ -26,7 +26,8 @@ namespace detail{
 
 /* Successive access to the indices of a multi_index_container. Used as dst in
  * backbone function extract_(x,dst) to retrieve the destination indices
- * where iterators referring to x must be transferred to (in merging operations).
+ * where iterators referring to x must be transferred to (in merging
+ * operations).
  */
 
 template<typename MultiIndexContainer,int N=0>
