@@ -597,7 +597,7 @@ void test_merge_same(
   BOOST_TEST(dst.size()==n);
   BOOST_TEST(src.size()==n);
   if(!key_based){
-    dst_iterator it=boost::next(dst.begin(),dst.size()-d);
+    dst_iterator it=boost::next(dst.begin(),(std::ptrdiff_t)(dst.size()-d));
     for(std::size_t i=0;i<d;++i){
       BOOST_TEST(&*it++==v[i]);
     }
@@ -631,7 +631,8 @@ void test_merge_different(
   merge(dst,boost::forward<Src>(src),first,last);
   BOOST_TEST(dst.size()>=n && m>=src.size() && dst.size()-n==m-src.size());
   if(!key_based){
-    for(dst_iterator it=boost::next(dst.begin(),n);it!=dst.end();++it){
+    for(dst_iterator it=boost::next(dst.begin(),(std::ptrdiff_t)n);
+        it!=dst.end();++it){
       BOOST_TEST(std::find(v.begin(),v.end(),&*it)!=v.end());
     }
   }
@@ -657,21 +658,25 @@ void test_merge_same(Dst& dst)
     Dst dst2=dst1;
     test_merge_same(
       dst2.template get<N>(),dst2.template get<M>(),
-      boost::next(dst2.template get<M>().begin(),dst2.size()/2));
+      boost::next(
+        dst2.template get<M>().begin(),(std::ptrdiff_t)(dst2.size()/2)));
     test_merge_same(
       dst2.template get<N>(),boost::move(dst2.template get<M>()),
-      boost::next(dst2.template get<M>().begin(),dst2.size()/2));
+      boost::next(
+        dst2.template get<M>().begin(),(std::ptrdiff_t)(dst2.size()/2)));
   }
   {
     Dst dst2=dst1;
     test_merge_same(
       dst2.template get<N>(),dst2.template get<M>(),
       dst2.template get<M>().begin(),
-      boost::next(dst2.template get<M>().begin(),dst2.size()/2));
+      boost::next(
+        dst2.template get<M>().begin(),(std::ptrdiff_t)(dst2.size()/2)));
     test_merge_same(
       dst2.template get<N>(),boost::move(dst2.template get<M>()),
       dst2.template get<M>().begin(),
-      boost::next(dst2.template get<M>().begin(),dst2.size()/2));
+      boost::next(
+        dst2.template get<M>().begin(),(std::ptrdiff_t)(dst2.size()/2)));
   }
 }
 
@@ -702,14 +707,16 @@ void test_merge_different(Dst& dst,Src& src)
     Src src2=src1;
     test_merge_different(
       dst2.template get<N>(),src2.template get<M>(),
-      boost::next(src2.template get<M>().begin(),src2.size()/2));
+      boost::next(
+        src2.template get<M>().begin(),(std::ptrdiff_t)(src2.size()/2)));
   }
   {
     Dst dst2=dst1;
     Src src2=src1;
     test_merge_different(
       dst2.template get<N>(),boost::move(src2.template get<M>()),
-      boost::next(src2.template get<M>().begin(),src2.size()/2));
+      boost::next(
+        src2.template get<M>().begin(),(std::ptrdiff_t)(src2.size()/2)));
   }
   {
     Dst dst2=dst1;
@@ -717,7 +724,8 @@ void test_merge_different(Dst& dst,Src& src)
     test_merge_different(
       dst2.template get<N>(),src2.template get<M>(),
       src2.template get<M>().begin(),
-      boost::next(src2.template get<M>().begin(),src2.size()/2));
+      boost::next(
+        src2.template get<M>().begin(),(std::ptrdiff_t)(src2.size()/2)));
   }
   {
     Dst dst2=dst1;
@@ -725,7 +733,8 @@ void test_merge_different(Dst& dst,Src& src)
     test_merge_different(
       dst2.template get<N>(),boost::move(src2.template get<M>()),
       src2.template get<M>().begin(),
-      boost::next(src2.template get<M>().begin(),src2.size()/2));
+      boost::next(
+        src2.template get<M>().begin(),(std::ptrdiff_t)(src2.size()/2)));
   }
 }
 
