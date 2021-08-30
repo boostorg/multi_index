@@ -83,6 +83,11 @@ namespace detail{
  * Category tags defined in hash_index_node.hpp.
  */
 
+#if defined(BOOST_MSVC)
+#pragma warning(push)
+#pragma warning(disable:4355) /* this used in base member initializer list */
+#endif
+
 template<
   typename KeyFromValue,typename Hash,typename Pred,
   typename SuperMeta,typename TagList,typename Category
@@ -744,12 +749,6 @@ public:
   }
 
 BOOST_MULTI_INDEX_PROTECTED_IF_MEMBER_TEMPLATE_FRIENDS:
-
-#if defined(BOOST_MSVC)
-#pragma warning(push)
-#pragma warning(disable:4355) /* this used in base member initializer list */
-#endif
-
   hashed_index(const ctor_args_list& args_list,const allocator_type& al):
     super(args_list.get_tail(),al),
     key(tuples::get<1>(args_list.get_head())),
@@ -803,10 +802,6 @@ BOOST_MULTI_INDEX_PROTECTED_IF_MEMBER_TEMPLATE_FRIENDS:
   {
      calculate_max_load();
   }
-
-#if defined(BOOST_MSVC)
-#pragma warning(pop) /* C4355 */
-#endif
 
   ~hashed_index()
   {
@@ -1793,6 +1788,10 @@ private:
 #pragma parse_mfunc_templ reset
 #endif
 };
+
+#if defined(BOOST_MSVC)
+#pragma warning(pop) /* C4355 */
+#endif
 
 /* comparison */
 

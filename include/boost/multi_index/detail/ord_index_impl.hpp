@@ -116,6 +116,11 @@ namespace detail{
 struct ordered_unique_tag{};
 struct ordered_non_unique_tag{};
 
+#if defined(BOOST_MSVC)
+#pragma warning(push)
+#pragma warning(disable:4355) /* this used in base member initializer list */
+#endif
+
 template<
   typename KeyFromValue,typename Compare,
   typename SuperMeta,typename TagList,typename Category,typename AugmentPolicy
@@ -720,12 +725,6 @@ public:
   }
 
 BOOST_MULTI_INDEX_PROTECTED_IF_MEMBER_TEMPLATE_FRIENDS:
-
-#if defined(BOOST_MSVC)
-#pragma warning(push)
-#pragma warning(disable:4355) /* this used in base member initializer list */
-#endif
-
   ordered_index_impl(const ctor_args_list& args_list,const allocator_type& al):
     super(args_list.get_tail(),al),
     key(tuples::get<0>(args_list.get_head())),
@@ -771,10 +770,6 @@ BOOST_MULTI_INDEX_PROTECTED_IF_MEMBER_TEMPLATE_FRIENDS:
   {
     empty_initialize();
   }
-
-#if defined(BOOST_MSVC)
-#pragma warning(pop) /* C4355 */
-#endif
 
   ~ordered_index_impl()
   {
@@ -1600,6 +1595,10 @@ protected:
   ordered_index(const ordered_index& x,do_not_copy_elements_tag):
     super(x,do_not_copy_elements_tag()){}
 };
+
+#if defined(BOOST_MSVC)
+#pragma warning(pop) /* C4355 */
+#endif
 
 /* comparison */
 
