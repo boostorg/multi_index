@@ -1,6 +1,6 @@
 /* Boost.MultiIndex test for safe_mode.
  *
- * Copyright 2003-2020 Joaquin M Lopez Munoz.
+ * Copyright 2003-2021 Joaquin M Lopez Munoz.
  * Distributed under the Boost Software License, Version 1.0.
  * (See accompanying file LICENSE_1_0.txt or copy at
  * http://www.boost.org/LICENSE_1_0.txt)
@@ -326,7 +326,7 @@ static void local_test_safe_mode_with_rearrange()
 
   TRY_SAFE_MODE
     i.splice(i.begin(),i);
-  CATCH_SAFE_MODE(safe_mode::same_container)
+  CATCH_SAFE_MODE(safe_mode::inside_range)
 
   TRY_SAFE_MODE
     iterator it;

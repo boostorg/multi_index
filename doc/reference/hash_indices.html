@@ -308,6 +308,16 @@ requirements.
   <span class=keyword>void</span> <span class=identifier>clear</span><span class=special>()</span><span class=keyword>noexcept</span><span class=special>;</span>
   <span class=keyword>void</span> <span class=identifier>swap</span><span class=special>(</span><b>index class name</b><span class=special>&amp;</span> <span class=identifier>x</span><span class=special>);</span>
 
+  <span class=keyword>template</span><span class=special>&lt;</span><span class=keyword>typename</span> <span class=identifier>Index</span><span class=special>&gt;</span> <span class=keyword>void</span> <span class=identifier>merge</span><span class=special>(</span><span class=identifier>Index</span><span class=special>&amp;&amp;</span> <span class=identifier>x</span><span class=special>);</span>
+  <span class=keyword>template</span><span class=special>&lt;</span><span class=keyword>typename</span> <span class=identifier>Index</span><span class=special>&gt;</span>
+  <span class=identifier>std</span><span class=special>::</span><span class=identifier>pair</span><span class=special>&lt;</span><span class=identifier>iterator</span><span class=special>,</span><span class=keyword>bool</span><span class=special>&gt;</span> <span class=identifier>merge</span><span class=special>(</span>
+    <span class=identifier>Index</span><span class=special>&amp;&amp;</span> <span class=identifier>x</span><span class=special>,</span><span class=keyword>typename</span> <span class=identifier>std</span><span class=special>::</span><span class=identifier>remove_reference_t</span><span class=special>&lt;</span><span class=identifier>Index</span><span class=special>&gt;::</span><span class=identifier>const_iterator</span> <span class=identifier>i</span><span class=special>);</span>
+  <span class=keyword>template</span><span class=special>&lt;</span><span class=keyword>typename</span> <span class=identifier>Index</span><span class=special>&gt;</span>
+  <span class=keyword>void</span> <span class=identifier>merge</span><span class=special>(</span>
+    <span class=identifier>Index</span><span class=special>&amp;&amp;</span> <span class=identifier>x</span><span class=special>,</span>
+    <span class=keyword>typename</span> <span class=identifier>std</span><span class=special>::</span><span class=identifier>remove_reference_t</span><span class=special>&lt;</span><span class=identifier>Index</span><span class=special>&gt;::</span><span class=identifier>const_iterator</span> <span class=identifier>first</span><span class=special>,</span>
+    <span class=keyword>typename</span> <span class=identifier>std</span><span class=special>::</span><span class=identifier>remove_reference_t</span><span class=special>&lt;</span><span class=identifier>Index</span><span class=special>&gt;::</span><span class=identifier>const_iterator</span> <span class=identifier>last</span><span class=special>);</span>
+
   <span class=comment>// observers:</span>
 
   <span class=identifier>key_from_value</span> <span class=identifier>key_extractor</span><span class=special>()</span><span class=keyword>const</span><span class=special>;</span>
@@ -474,7 +484,10 @@ local_iterator<br>
 const_local_iterator</code>
 
 <blockquote>
-These types are forward iterators.
+These types are forward iterators. They depend only on <code>node_type</code>,
+the position of the index in the <code>multi_index_container</code>, and whether
+the index is unique or not (this implies that, for instance, iterators to elements transferred
+from a unique index to a non-unique one will become invalid).
 </blockquote>
 
 <h4><a name="constructors">Constructors, copy and assignment</a></h4>
@@ -925,6 +938,89 @@ with <code>mod'</code> and <code>back</code> defined in such a way that
 <code>key</code> is the internal <code>KeyFromValue</code> object of the index.
 </blockquote>
 
+<code>template&lt;typename Index&gt; void merge(Index&amp;&amp; x);</code>
+
+<blockquote>
+<b>Requires:</b> <code>x</code> is a non-const reference to an index of a
+<a href="multi_index_container.html#node_type">node-compatible</a>
+<code>multi_index_container</code>. <code>get_allocator()==x.get_allocator()</code>.<br>
+<b>Effects:</b> 
+<blockquote><pre>
+<span class=identifier>merge</span><span class=special>(</span><span class=identifier>x</span><span class=special>,</span><span class=identifier>x</span><span class=special>.</span><span class=identifier>begin</span><span class=special>(),</span><span class=identifier>x</span><span class=special>.</span><span class=identifier>end</span><span class=special>());</span>
+</pre></blockquote>
+</blockquote>
+
+<code>
+template&lt;typename Index&gt; std::pair&lt;iterator,bool&gt; merge(<br>
+&nbsp;&nbsp;Index&amp;&amp; x,typename std::remove_reference_t&lt;Index&gt;::const_iterator i);
+</code>
+
+<blockquote>
+<b>Requires:</b> <code>x</code> is a non-const reference to an index of a
+<a href="multi_index_container.html#node_type">node-compatible</a>
+<code>multi_index_container</code>. <code>get_allocator()==x.get_allocator()</code>.
+<code>i</code> is a valid dereferenceable iterator of <code>x</code>.<br>
+<b>Effects:</b> Does nothing if the source and destination containers are the same;
+otherwise, transfers the node of the element referred to by <code>i</code> into the
+<code>multi_index_container</code> to which the destination index belongs if
+<ul>
+  <li>the index is non-unique OR no other element exists with
+    equivalent key,</li>
+  <li>AND insertion is allowed by all other indices of the
+    <code>multi_index_container</code>.</li>
+</ul>
+Note that no element is copied or destroyed in the process.<br>
+<b>Postconditions:</b> If transfer succeeds, for any index in the source container
+having the same <code>iterator</code>/<code>const_iterator</code> types as the corresponding
+index in the destination container, iterators referring to <code>*i</code>
+remain valid and behave as iterators of the destination index.<br>
+<b>Returns:</b> The return value is a pair <code>p</code>. <code>p.second</code>
+is <code>true</code> if and only if transfer took place or the source and destination
+containers are the same. If <code>p.second</code> is <code>true</code>,
+<code>p.first</code> points to <code>*i</code>; otherwise, <code>p.first</code>
+points to an element that caused the insertion to be banned. Note that more than
+one element can be causing insertion not to be allowed.<br>
+<b>Complexity:</b> If the source and destination containers are the same,
+constant; otherwise, <code>O(I(n)+D(x.size()))</code>.<br>
+<b>Exception safety:</b> If the source and destination containers are the same,
+<code>nothrow</code>; otherwise strong.
+</blockquote>
+
+<code>
+template&lt;typename Index&gt; void merge(<br>
+&nbsp;&nbsp;Index&amp;&amp; x,<br>
+&nbsp;&nbsp;typename std::remove_reference_t&lt;Index&gt;::const_iterator first,<br>
+&nbsp;&nbsp;typename std::remove_reference_t&lt;Index&gt;::const_iterator last);
+</code>
+
+<blockquote>
+<b>Requires:</b> <code>x</code> is a non-const reference to an index of a
+<a href="multi_index_container.html#node_type">node-compatible</a>
+<code>multi_index_container</code>. <code>get_allocator()==x.get_allocator()</code>.
+[<code>first</code>,<code>last</code>) is a valid range of <code>x</code>.<br>
+<b>Effects:</b> Does nothing if the source and destination containers are the same;
+otherwise, for each node in [<code>first</code>,<code>last</code>), in this order,
+the node is transferred to the <code>multi_index_container</code> to which the
+destination index belongs if
+<ul>
+  <li>the index is non-unique OR no other element exists with
+    equivalent key,</li>
+  <li>AND insertion is allowed by all other indices of the
+    <code>multi_index_container</code>.</li>
+</ul>
+Note that no element is copied or destroyed in the process.<br>
+<b>Postconditions:</b> For any index in the source container having the same
+<code>iterator</code>/<code>const_iterator</code> types as the corresponding
+index in the destination container, iterators referring to the transferred elements
+remain valid and behave as iterators of the destination index.<br>
+<b>Complexity:</b> If the source and destination containers are the same,
+constant; otherwise, <code>O(m*(I(n+m)+D(x.size())))</code>, where
+<code>m</code> is the number of elements in [<code>first</code>,
+<code>last</code>).<br>
+<b>Exception safety:</b> If the source and destination containers are the same,
+<code>nothrow</code>; otherwise basic.
+</blockquote>
+    
 <h4><a name="observers">Observers</a></h4>
 
 <p>Apart from standard <code>hash_function</code> and <code>key_eq</code>,
@@ -1275,7 +1371,7 @@ Sequenced indices
 
 <br>
 
-<p>Revised July 29th 2021</p>
+<p>Revised August 30th 2021</p>
 
 <p>&copy; Copyright 2003-2021 Joaqu&iacute;n M L&oacute;pez Mu&ntilde;oz.
 Distributed under the Boost Software 
