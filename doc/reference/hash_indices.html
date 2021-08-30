@@ -484,7 +484,8 @@ local_iterator<br>
 const_local_iterator</code>
 
 <blockquote>
-These types are forward iterators. They depend only on <code>node_type</code> and whether
+These types are forward iterators. They depend only on <code>node_type</code>,
+the position of the index in the <code>multi_index_container</code>, and whether
 the index is unique or not (this implies that, for instance, iterators to elements transferred
 from a unique index to a non-unique one will become invalid).
 </blockquote>
@@ -1370,7 +1371,7 @@ Sequenced indices
 
 <br>
 
-<p>Revised August 16th 2021</p>
+<p>Revised August 30th 2021</p>
 
 <p>&copy; Copyright 2003-2021 Joaqu&iacute;n M L&oacute;pez Mu&ntilde;oz.
 Distributed under the Boost Software 
