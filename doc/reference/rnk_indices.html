@@ -177,6 +177,8 @@ distance to it from the beginning of the index. Besides this extension, ranked i
 public interface of ordered indices with the difference, complexity-wise, that <a href="#complexity_signature">deletion</a>
 is done in logarithmic rather than constant time. Also, execution times and memory consumption are
 expected to be poorer due to the internal bookkeeping needed to maintain rank-related information.
+However, the complexity of <code>count</code> is <code>log(n)</code> rather than
+<code>log(n)+count(x)</code>.
 As with ordered indices, ranked indices can be unique (no duplicate elements are allowed)
 or non-unique: either version is associated to a different index specifier, but
 the interface of both index types is the same.
@@ -454,6 +456,8 @@ section</a>. The complexity signature of ranked indices is:
 These complexity guarantees are the same as those of
 <a href="ord_indices.html#complexity_signature">ordered indices</a>
 except for deletion, which is <code>log(n)</code> here and amortized constant there.
+Another difference is that functions <code>count</code> run in <code>log(n)</code> here,
+instead of <code>log(n) + count(x)</code> and <code>log(n) + count(x,comp)</code> there.
 </p>
 
 <h4><a name="instantiation_types">Instantiation types</a></h4>
