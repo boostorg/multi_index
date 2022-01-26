@@ -148,6 +148,19 @@ public:
     return range_rank(lower,upper,dispatch());
   }
 
+  template<typename CompatibleKey>
+  size_type count(const CompatibleKey& x)const
+  {
+    return count(x,this->comp_);
+  }
+
+  template<typename CompatibleKey,typename CompatibleCompare>
+  size_type count(const CompatibleKey& x,const CompatibleCompare& comp)const
+  {
+    std::pair<size_type,size_type> p=this->equal_range_rank(x,comp);
+    return p.second-p.first;
+  }
+
 protected:
   ranked_index(const ranked_index& x):super(x){};
 
