@@ -16,6 +16,7 @@
 #include "test_composite_key.hpp"
 #include "test_conv_iterators.hpp"
 #include "test_copy_assignment.hpp"
+#include "test_count.hpp"
 #include "test_hash_ops.hpp"
 #include "test_iterators.hpp"
 #include "test_key.hpp"
@@ -44,6 +45,7 @@ int main()
   test_composite_key();
   test_conv_iterators();
   test_copy_assignment();
+  test_count();
   test_hash_ops();
   test_iterators();
   test_key();
