@@ -1,6 +1,6 @@
 /* Boost.MultiIndex test for standard set operations.
  *
- * Copyright 2003-2021 Joaquin M Lopez Munoz.
+ * Copyright 2003-2022 Joaquin M Lopez Munoz.
  * Distributed under the Boost Software License, Version 1.0.
  * (See accompanying file LICENSE_1_0.txt or copy at
  * http://www.boost.org/LICENSE_1_0.txt)
@@ -72,6 +72,7 @@ void test_set_ops()
   BOOST_TEST(i4.find(5601)->name=="Robert");
 
   BOOST_TEST(i1.count("John")==2);
+  BOOST_TEST(i2.count(20)==1);
   BOOST_TEST(es.count(employee(10,"",-1,0))==0);
   BOOST_TEST(i4.count(7881)==0);
 
