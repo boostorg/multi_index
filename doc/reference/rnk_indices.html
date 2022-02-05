@@ -43,6 +43,7 @@ Hashed indices
           <li><a href="#complexity_signature">Complexity signature</a></li>
           <li><a href="#instantiation_types">Instantiation types</a></li>
           <li><a href="#types">Nested types</a></li>
+          <li><a href="#set_operations">Set operations</a></li>
           <li><a href="#rank_operations">Rank operations</a></li>
           <li><a href="#serialization">Serialization</a></li>
         </ul>
@@ -174,16 +175,19 @@ explanations on their acceptable type values.
 Ranked indices are a variation of <a href="ord_indices.html">ordered indices</a>
 providing additional capabilities for calculation of and access by rank; the <i>rank</i> of an element is the
 distance to it from the beginning of the index. Besides this extension, ranked indices replicate the
-public interface of ordered indices with the difference, complexity-wise, that <a href="#complexity_signature">deletion</a>
-is done in logarithmic rather than constant time. Also, execution times and memory consumption are
-expected to be poorer due to the internal bookkeeping needed to maintain rank-related information.
+public interface of ordered indices with the difference, complexity-wise, that 
+<a href="#complexity_signature">hinted insertion</a> and <a href="#complexity_signature">deletion</a>
+are done in logarithmic rather than constant time. Also, execution times and memory consumption are
+expected to be poorer due to the internal bookkeeping needed to maintain rank-related information
+(an exception being <a href="#count"><code>count</code> operations</a>, which are actually faster).
 As with ordered indices, ranked indices can be unique (no duplicate elements are allowed)
 or non-unique: either version is associated to a different index specifier, but
 the interface of both index types is the same.
 </p>
 
 <p>
-In what follows, we only describe the extra operations provided by ranked indices: for the
+In what follows, we only describe the extra operations provided by ranked indices or those
+operations with improved performance: for the
 rest refer to the <a href="ord_indices.html#ord_indices">documentation</a> for ordered
 indices, bearing in mind the occasional differences in complexity.
 </p>
@@ -224,6 +228,8 @@ indices, bearing in mind the occasional differences in complexity.
     std::reverse_iterator&lt;iterator&gt;</b>                  <span class=identifier>reverse_iterator</span><span class=special>;</span>
   <span class=keyword>typedef</span> <b>equivalent to
     std::reverse_iterator&lt;const_iterator&gt;</b>            <span class=identifier>const_reverse_iterator</span><span class=special>;</span>
+  <span class=keyword>typedef</span> <b>same as owning container                   </b><span class=identifier>node_type</span><span class=special>;</span>
+  <span class=keyword>typedef</span> <b>following [container.insert.return] spec   </b><span class=identifier>insert_return_type</span><span class=special>;</span>
 
   <span class=comment>// construct/copy/destroy:</span>
 
@@ -269,6 +275,11 @@ indices, bearing in mind the occasional differences in complexity.
   <span class=keyword>template</span><span class=special>&lt;</span><span class=keyword>typename</span> <span class=identifier>InputIterator</span><span class=special>&gt;</span>
   <span class=keyword>void</span> <span class=identifier>insert</span><span class=special>(</span><span class=identifier>InputIterator</span> <span class=identifier>first</span><span class=special>,</span><span class=identifier>InputIterator</span> <span class=identifier>last</span><span class=special>);</span>
   <span class=keyword>void</span> <span class=identifier>insert</span><span class=special>(</span><span class=identifier>std</span><span class=special>::</span><span class=identifier>initializer_list</span><span class=special>&lt;</span><span class=identifier>value_type</span><span class=special>&gt;</span> <span class=identifier>list</span><span class=special>);</span>
+  <span class=identifier>insert_return_type</span> <span class=identifier>insert</span><span class=special>(</span><span class=identifier>node_type</span><span class=special>&amp;&amp;</span> <span class=identifier>nh</span><span class=special>);</span>
+  <span class=identifier>iterator</span> <span class=identifier>insert</span><span class=special>(</span><span class=identifier>const_iterator</span> <span class=identifier>position</span><span class=special>,</span><span class=identifier>node_type</span><span class=special>&amp;&amp;</span> <span class=identifier>nh</span><span class=special>);</span>
+
+  <span class=identifier>node_type</span> <span class=identifier>extract</span><span class=special>(</span><span class=identifier>const_iterator</span> <span class=identifier>position</span><span class=special>);</span>
+  <span class=identifier>node_type</span> <span class=identifier>extract</span><span class=special>(</span><span class=keyword>const</span> <span class=identifier>key_type</span><span class=special>&amp;</span> <span class=identifier>x</span><span class=special>);</span>
 
   <span class=identifier>iterator</span>  <span class=identifier>erase</span><span class=special>(</span><span class=identifier>iterator</span> <span class=identifier>position</span><span class=special>);</span>
   <span class=identifier>size_type</span> <span class=identifier>erase</span><span class=special>(</span><span class=keyword>const</span> <span class=identifier>key_type</span><span class=special>&amp;</span> <span class=identifier>x</span><span class=special>);</span>
@@ -286,6 +297,16 @@ indices, bearing in mind the occasional differences in complexity.
   <span class=keyword>void</span> <span class=identifier>swap</span><span class=special>(</span><b>index class name</b><span class=special>&amp;</span> <span class=identifier>x</span><span class=special>);</span>
   <span class=keyword>void</span> <span class=identifier>clear</span><span class=special>()</span><span class=keyword>noexcept</span><span class=special>;</span>
 
+  <span class=keyword>template</span><span class=special>&lt;</span><span class=keyword>typename</span> <span class=identifier>Index</span><span class=special>&gt;</span> <span class=keyword>void</span> <span class=identifier>merge</span><span class=special>(</span><span class=identifier>Index</span><span class=special>&amp;&amp;</span> <span class=identifier>x</span><span class=special>);</span>
+  <span class=keyword>template</span><span class=special>&lt;</span><span class=keyword>typename</span> <span class=identifier>Index</span><span class=special>&gt;</span>
+  <span class=identifier>std</span><span class=special>::</span><span class=identifier>pair</span><span class=special>&lt;</span><span class=identifier>iterator</span><span class=special>,</span><span class=keyword>bool</span><span class=special>&gt;</span> <span class=identifier>merge</span><span class=special>(</span>
+    <span class=identifier>Index</span><span class=special>&amp;&amp;</span> <span class=identifier>x</span><span class=special>,</span><span class=keyword>typename</span> <span class=identifier>std</span><span class=special>::</span><span class=identifier>remove_reference_t</span><span class=special>&lt;</span><span class=identifier>Index</span><span class=special>&gt;::</span><span class=identifier>const_iterator</span> <span class=identifier>i</span><span class=special>);</span>
+  <span class=keyword>template</span><span class=special>&lt;</span><span class=keyword>typename</span> <span class=identifier>Index</span><span class=special>&gt;</span>
+  <span class=keyword>void</span> <span class=identifier>merge</span><span class=special>(</span>
+    <span class=identifier>Index</span><span class=special>&amp;&amp;</span> <span class=identifier>x</span><span class=special>,</span>
+    <span class=keyword>typename</span> <span class=identifier>std</span><span class=special>::</span><span class=identifier>remove_reference_t</span><span class=special>&lt;</span><span class=identifier>Index</span><span class=special>&gt;::</span><span class=identifier>const_iterator</span> <span class=identifier>first</span><span class=special>,</span>
+    <span class=keyword>typename</span> <span class=identifier>std</span><span class=special>::</span><span class=identifier>remove_reference_t</span><span class=special>&lt;</span><span class=identifier>Index</span><span class=special>&gt;::</span><span class=identifier>const_iterator</span> <span class=identifier>last</span><span class=special>);</span>
+      
   <span class=comment>// observers:</span>
 
   <span class=identifier>key_from_value</span> <span class=identifier>key_extractor</span><span class=special>()</span><span class=keyword>const</span><span class=special>;</span>
@@ -441,8 +462,7 @@ section</a>. The complexity signature of ranked indices is:
 <ul>
   <li>copying: <code>c(n)=n*log(n)</code>,</li>
   <li>insertion: <code>i(n)=log(n)</code>,</li>
-  <li>hinted insertion: <code>h(n)=1</code> (constant) if the hint element
-    is immediately after the point of insertion, <code>h(n)=log(n)</code> otherwise,</li>
+  <li>hinted insertion: <b><code>h(n)=log(n)</code></b>,</li>
   <li>deletion: <b><code>d(n)=log(n)</code></b> ,</li>
   <li>replacement: <code>r(n)=1</code> (constant) if the element position does not
     change, <code>r(n)=log(n)</code> otherwise,</li>
@@ -453,12 +473,12 @@ section</a>. The complexity signature of ranked indices is:
 <p>
 These complexity guarantees are the same as those of
 <a href="ord_indices.html#complexity_signature">ordered indices</a>
-except for deletion, which is <code>log(n)</code> here and amortized constant there.
+except for hinted insertion and deletion, which are <code>log(n)</code> here and amortized constant there.
 </p>
 
 <h4><a name="instantiation_types">Instantiation types</a></h4>
 
-<p>Ordered indices are instantiated internally to <code>multi_index_container</code> and
+<p>Ranked indices are instantiated internally to <code>multi_index_container</code> and
 specified by means of <a href="indices.html#indexed_by"><code>indexed_by</code></a>
 with <a href="#unique_non_unique"> index specifiers <code>ranked_unique</code>
 and <code>ranked_non_unique</code></a>. Instantiations are dependent on the
@@ -482,6 +502,37 @@ const_iterator</code>
 <blockquote>
 These types depend only on <code>node_type</code> and the position of
 the index in the <code>multi_index_container</code>.
+</blockquote>
+
+<h4><a name="set_operations">Set operations</a></h4>
+
+<p>
+See the documentation of ordered indices for an explanation of the notions of
+<a href="ord_indices.html#set_operations"><i>compatible extension</i> and 
+<i>compatible key</i></a>, which are referred to below.
+</p>
+
+<a name="count">
+<code>template&lt;typename CompatibleKey><br>
+size_type count(const CompatibleKey&amp; x)const;
+</code></a>
+
+<blockquote>
+<b>Requires:</b> <code>CompatibleKey</code> is a compatible key of
+<code>key_compare</code>.<br>
+<b>Effects:</b> Returns the number of elements with key equivalent to <code>x</code>.<br>
+<b>Complexity:</b> <code>O(log(n))</code>.<br>
+</blockquote>
+
+<code>template&lt;typename CompatibleKey,typename CompatibleCompare><br>
+size_type count(const CompatibleKey&amp; x,const CompatibleCompare&amp; comp)const;
+</code>
+
+<blockquote>
+<b>Requires:</b> (<code>CompatibleKey</code>, <code>CompatibleCompare</code>)
+is a compatible extension of <code>key_compare</code>.<br>
+<b>Effects:</b> Returns the number of elements with key equivalent to <code>x</code>.<br>
+<b>Complexity:</b> <code>O(log(n))</code>.<br>
 </blockquote>
 
 <h4><a name="rank_operations">Rank operations</a></h4>
@@ -648,9 +699,9 @@ Hashed indices
 
 <br>
 
-<p>Revised August 30th 2021</p>
+<p>Revised February 5th 2022</p>
 
-<p>&copy; Copyright 2003-2021 Joaqu&iacute;n M L&oacute;pez Mu&ntilde;oz.
+<p>&copy; Copyright 2003-2022 Joaqu&iacute;n M L&oacute;pez Mu&ntilde;oz.
 Distributed under the Boost Software 
 License, Version 1.0. (See accompanying file <a href="../../../../LICENSE_1_0.txt">
 LICENSE_1_0.txt</a> or copy at <a href="http://www.boost.org/LICENSE_1_0.txt">
