@@ -15,7 +15,7 @@
 
 #include <boost/config.hpp> /* keep it first to prevent nasty warns in MSVC */
 #include <boost/multi_index/detail/index_matcher.hpp>
-#include <boost/noncopyable.hpp>
+#include <boost/core/noncopyable.hpp>
 #include <boost/serialization/nvp.hpp>
 #include <cstddef>
 

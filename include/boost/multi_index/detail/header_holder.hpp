@@ -13,7 +13,7 @@
 #pragma once
 #endif
 
-#include <boost/noncopyable.hpp>
+#include <boost/core/noncopyable.hpp>
 
 namespace boost{
 

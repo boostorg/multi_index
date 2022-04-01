@@ -15,9 +15,9 @@
 
 #include <boost/config.hpp> /* keep it first to prevent nasty warns in MSVC */
 #include <algorithm>
+#include <boost/core/noncopyable.hpp>
 #include <boost/multi_index/detail/adl_swap.hpp>
 #include <boost/multi_index/detail/allocator_traits.hpp>
-#include <boost/noncopyable.hpp>
 #include <boost/type_traits/integral_constant.hpp>
 #include <memory>
 

@@ -15,10 +15,10 @@
 
 #include <boost/config.hpp> /* keep it first to prevent nasty warns in MSVC */
 #include <algorithm>
+#include <boost/core/noncopyable.hpp>
 #include <boost/multi_index/detail/allocator_traits.hpp>
 #include <boost/multi_index/detail/auto_space.hpp>
 #include <boost/multi_index/detail/rnd_index_node.hpp>
-#include <boost/noncopyable.hpp>
 
 namespace boost{
 
