@@ -13,6 +13,7 @@
 #include <boost/config.hpp> /* keep it first to prevent nasty warns in MSVC */
 #include <algorithm>
 #include <iterator>
+#include <boost/core/ref.hpp>
 #include <boost/detail/lightweight_test.hpp>
 #include "pre_multi_index.hpp"
 #include <boost/multi_index_container.hpp>
@@ -20,7 +21,6 @@
 #include <boost/multi_index/random_access_index.hpp>
 #include <boost/next_prior.hpp>
 #include <boost/preprocessor/seq/enum.hpp>
-#include <boost/ref.hpp>
 #include <vector>
 
 using namespace boost::multi_index;

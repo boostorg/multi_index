@@ -32,7 +32,7 @@
 #include <functional>
 
 #if !defined(BOOST_NO_FUNCTION_TEMPLATE_ORDERING)
-#include <boost/ref.hpp>
+#include <boost/core/ref.hpp>
 #endif
 
 #if !defined(BOOST_NO_SFINAE)
