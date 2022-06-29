@@ -52,7 +52,7 @@ struct age{};
  */
 
 /* Define a multi_index_container of employees with following indices:
- *   - a unique index sorted by employee::int,
+ *   - a unique index sorted by employee::id,
  *   - a non-unique index sorted by employee::name,
  *   - a non-unique index sorted by employee::age.
  */
