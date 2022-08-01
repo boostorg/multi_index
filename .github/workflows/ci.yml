@@ -466,7 +466,7 @@ jobs:
           - name: "TOOLSET=clang COMPILER=clang++ CXXSTD=03,11,1 Job 26"
             buildtype: "boost"
             packages: ""
-            os: "macos-10.15"
+            os: "macos-11"
             cxx: "clang++"
             sources: ""
             llvm_os: ""
