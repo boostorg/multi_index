@@ -14,12 +14,12 @@
 #endif
 
 #include <boost/config.hpp>
+#include <boost/core/enable_if.hpp>
 #include <boost/detail/workaround.hpp>
 #include <boost/mpl/if.hpp>
 #include <boost/multi_index/identity_fwd.hpp>
 #include <boost/type_traits/is_const.hpp>
 #include <boost/type_traits/remove_const.hpp>
-#include <boost/utility/enable_if.hpp>
 
 #if !defined(BOOST_NO_SFINAE)
 #include <boost/type_traits/is_convertible.hpp>

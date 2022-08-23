@@ -26,9 +26,9 @@
 #include <new>
 
 #if !defined(BOOST_NO_SFINAE)
+#include <boost/core/enable_if.hpp>
 #include <boost/type_traits/is_const.hpp>
 #include <boost/type_traits/is_same.hpp>
-#include <boost/utility/enable_if.hpp>
 #endif
 
 namespace boost{

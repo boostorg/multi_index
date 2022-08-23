@@ -41,6 +41,7 @@ struct is_transparent:mpl::true_{};
     !defined(BOOST_NO_CXX11_DECLTYPE)&& \
     (defined(BOOST_NO_CXX11_FINAL)||defined(BOOST_IS_FINAL))
 
+#include <boost/core/enable_if.hpp>
 #include <boost/mpl/and.hpp>
 #include <boost/mpl/not.hpp>
 #include <boost/mpl/or.hpp>
@@ -51,7 +52,6 @@ struct is_transparent:mpl::true_{};
 #include <boost/type_traits/is_same.hpp>
 #include <boost/type_traits/remove_pointer.hpp>
 #include <boost/utility/declval.hpp>
-#include <boost/utility/enable_if.hpp>
 
 namespace boost{
 
