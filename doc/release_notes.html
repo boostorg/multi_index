@@ -73,6 +73,16 @@ Acknowledgements
 
 <p>
 <ul>
+  <li>Serialization now uses <code>unsigned long</code> instead of
+    <a href="../../serialization/doc/wrappers.html#collection_size_type"><code>collection_size_type</code></a>,
+    and <code>multi_index_container</code> serialization
+    <a href="../../serialization/doc/tutorial.html#versioning">class version</a> has been
+    bumped from 2 to 3 to reflect this change.
+    Reading old archives may fail for custom archive types giving special treatment to
+    <code>collection_size_type</code> values: if this is the case, globally define
+    the macro <code>BOOST_MULTI_INDEX_ENABLE_SERIALIZATION_COMPATIBILITY_V2</code>
+    to ensure backwards compatibility in reading operations.
+  </li>
   <li>Maintenance work.</li>
 </ul>
 </p>
@@ -764,9 +774,9 @@ Acknowledgements
 
 <br>
 
-<p>Revised December 28th 2022</p>
+<p>Revised February 26th 2023</p>
 
-<p>&copy; Copyright 2003-2022 Joaqu&iacute;n M L&oacute;pez Mu&ntilde;oz.
+<p>&copy; Copyright 2003-2023 Joaqu&iacute;n M L&oacute;pez Mu&ntilde;oz.
 Distributed under the Boost Software 
 License, Version 1.0. (See accompanying file <a href="../../../LICENSE_1_0.txt">
 LICENSE_1_0.txt</a> or copy at <a href="http://www.boost.org/LICENSE_1_0.txt">
