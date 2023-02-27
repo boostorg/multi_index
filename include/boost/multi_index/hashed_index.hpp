@@ -1,4 +1,4 @@
-/* Copyright 2003-2021 Joaquin M Lopez Munoz.
+/* Copyright 2003-2023 Joaquin M Lopez Munoz.
  * Distributed under the Boost Software License, Version 1.0.
  * (See accompanying file LICENSE_1_0.txt or copy at
  * http://www.boost.org/LICENSE_1_0.txt)
@@ -55,7 +55,7 @@
 #endif
 
 #if !defined(BOOST_MULTI_INDEX_DISABLE_SERIALIZATION)
-#include <boost/serialization/nvp.hpp>
+#include <boost/core/serialization.hpp>
 #endif
 
 #if defined(BOOST_MULTI_INDEX_ENABLE_INVARIANT_CHECKING)
@@ -1238,14 +1238,14 @@ BOOST_MULTI_INDEX_PROTECTED_IF_MEMBER_TEMPLATE_FRIENDS:
   void save_(
     Archive& ar,const unsigned int version,const index_saver_type& sm)const
   {
-    ar<<serialization::make_nvp("position",buckets);
+    ar<<core::make_nvp("position",buckets);
     super::save_(ar,version,sm);
   }
 
   template<typename Archive>
   void load_(Archive& ar,const unsigned int version,const index_loader_type& lm)
   {
-    ar>>serialization::make_nvp("position",buckets);
+    ar>>core::make_nvp("position",buckets);
     super::load_(ar,version,lm);
   }
 #endif

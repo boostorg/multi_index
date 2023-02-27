@@ -80,8 +80,8 @@
 #endif
 
 #if !defined(BOOST_MULTI_INDEX_DISABLE_SERIALIZATION)
-#include <boost/archive/archive_exception.hpp>
 #include <boost/bind/bind.hpp>
+#include <boost/multi_index/detail/bad_archive_exception.hpp>
 #include <boost/multi_index/detail/duplicates_iterator.hpp>
 #include <boost/throw_exception.hpp> 
 #endif
@@ -1513,9 +1513,7 @@ private:
     }
     else if(comp_(key(x->value()),key(position->value()))){
       /* inconsistent rearrangement */
-      throw_exception(
-        archive::archive_exception(
-          archive::archive_exception::other_exception));
+      throw_exception(bad_archive_exception());
     }
     else index_node_type::increment(position);
 
