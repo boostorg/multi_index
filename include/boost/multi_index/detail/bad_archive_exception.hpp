@@ -6,8 +6,8 @@
  * See http://www.boost.org/libs/multi_index for library home page.
  */
 
-#ifndef BOOST_MULTI_INDEX_BAD_ARCHIVE_EXCEPTION_HPP
-#define BOOST_MULTI_INDEX_BAD_ARCHIVE_EXCEPTION_HPP
+#ifndef BOOST_MULTI_INDEX_DETAIL_BAD_ARCHIVE_EXCEPTION_HPP
+#define BOOST_MULTI_INDEX_DETAIL_BAD_ARCHIVE_EXCEPTION_HPP
 
 #if defined(_MSC_VER)
 #pragma once
