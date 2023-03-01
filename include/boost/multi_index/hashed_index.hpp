@@ -19,7 +19,6 @@
 #include <boost/core/addressof.hpp>
 #include <boost/core/no_exceptions_support.hpp>
 #include <boost/detail/workaround.hpp>
-#include <boost/foreach_fwd.hpp>
 #include <boost/limits.hpp>
 #include <boost/move/core.hpp>
 #include <boost/move/utility_core.hpp>
@@ -1890,16 +1889,21 @@ struct hashed_non_unique
 
 /* Boost.Foreach compatibility */
 
+namespace boost{
+namespace foreach{
+
+template<typename>
+struct is_noncopyable;
+
 template<
   typename KeyFromValue,typename Hash,typename Pred,
   typename SuperMeta,typename TagList,typename Category
 >
-inline boost::mpl::true_* boost_foreach_is_noncopyable(
-  boost::multi_index::detail::hashed_index<
-    KeyFromValue,Hash,Pred,SuperMeta,TagList,Category>*&,
-  boost_foreach_argument_dependent_lookup_hack)
-{
-  return 0;
+struct is_noncopyable<boost::multi_index::detail::hashed_index<
+  KeyFromValue,Hash,Pred,SuperMeta,TagList,Category>
+>:boost::mpl::true_{};
+
+}
 }
 
 #undef BOOST_MULTI_INDEX_HASHED_INDEX_CHECK_INVARIANT

@@ -1,4 +1,4 @@
-/* Copyright 2003-2022 Joaquin M Lopez Munoz.
+/* Copyright 2003-2023 Joaquin M Lopez Munoz.
  * Distributed under the Boost Software License, Version 1.0.
  * (See accompanying file LICENSE_1_0.txt or copy at
  * http://www.boost.org/LICENSE_1_0.txt)
@@ -47,7 +47,6 @@
 #include <boost/core/no_exceptions_support.hpp>
 #include <boost/core/ref.hpp>
 #include <boost/detail/workaround.hpp>
-#include <boost/foreach_fwd.hpp>
 #include <boost/iterator/reverse_iterator.hpp>
 #include <boost/move/core.hpp>
 #include <boost/move/utility_core.hpp>
@@ -1725,16 +1724,22 @@ void swap(
 
 /* Boost.Foreach compatibility */
 
+namespace boost{
+namespace foreach{
+
+template<typename>
+struct is_noncopyable;
+
 template<
   typename KeyFromValue,typename Compare,
   typename SuperMeta,typename TagList,typename Category,typename AugmentPolicy
 >
-inline boost::mpl::true_* boost_foreach_is_noncopyable(
+struct is_noncopyable<
   boost::multi_index::detail::ordered_index<
-    KeyFromValue,Compare,SuperMeta,TagList,Category,AugmentPolicy>*&,
-  boost_foreach_argument_dependent_lookup_hack)
-{
-  return 0;
+    KeyFromValue,Compare,SuperMeta,TagList,Category,AugmentPolicy>
+>:boost::mpl::true_{};
+
+}
 }
 
 #undef BOOST_MULTI_INDEX_ORD_INDEX_CHECK_INVARIANT
