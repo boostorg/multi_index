@@ -15,6 +15,7 @@
 #include "employee.hpp"
 #include <boost/detail/lightweight_test.hpp>
 #include <boost/next_prior.hpp>
+#include <boost/foreach.hpp>
 
 using namespace boost::multi_index;
 
@@ -223,6 +224,24 @@ void test_const_rnd_iterators(const Index& i,int target)
   BOOST_TEST(n==target&&n==m&&n==p&&n==q);
 }
 
+template<typename Index>
+void test_boost_for_each(const Index& i,int)
+{
+  typedef typename Index::value_type value_type;
+  typedef typename Index::size_type  size_type;
+
+  size_type size=i.size();
+  size_type count=0;
+
+  BOOST_FOREACH(value_type const& x, i)
+  {
+    (void)x;
+    ++count;
+  }
+
+  BOOST_TEST_EQ(count, size);
+}
+
 void test_iterators()
 {
   employee_set es;
@@ -237,6 +256,7 @@ void test_iterators()
 
   test_non_const_iterators       (es,target);
   test_const_iterators           (es,target);
+  test_boost_for_each            (es,target);
   test_non_const_hashed_iterators(get<1>(es),target);
   test_const_hashed_iterators    (get<1>(es),target);
   test_non_const_iterators       (get<2>(es),target);
