@@ -1900,7 +1900,9 @@ template<
   typename SuperMeta,typename TagList,typename Category
 >
 struct is_noncopyable<boost::multi_index::detail::hashed_index<
-    KeyFromValue,Hash,Pred,SuperMeta,TagList,Category> > : boost::mpl::true_ {};
+  KeyFromValue,Hash,Pred,SuperMeta,TagList,Category>
+>:boost::mpl::true_{};
+
 }
 }
 

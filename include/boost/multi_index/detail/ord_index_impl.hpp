@@ -1,4 +1,4 @@
-/* Copyright 2003-2022 Joaquin M Lopez Munoz.
+/* Copyright 2003-2023 Joaquin M Lopez Munoz.
  * Distributed under the Boost Software License, Version 1.0.
  * (See accompanying file LICENSE_1_0.txt or copy at
  * http://www.boost.org/LICENSE_1_0.txt)
@@ -1737,7 +1737,8 @@ template<
 struct is_noncopyable<
   boost::multi_index::detail::ordered_index<
     KeyFromValue,Compare,SuperMeta,TagList,Category,AugmentPolicy>
-> : boost::mpl::true_ {};
+>:boost::mpl::true_{};
+
 }
 }
 

@@ -1,4 +1,4 @@
-/* Copyright 2003-2021 Joaquin M Lopez Munoz.
+/* Copyright 2003-2023 Joaquin M Lopez Munoz.
  * Distributed under the Boost Software License, Version 1.0.
  * (See accompanying file LICENSE_1_0.txt or copy at
  * http://www.boost.org/LICENSE_1_0.txt)
@@ -1246,7 +1246,8 @@ struct is_noncopyable;
 template<typename SuperMeta,typename TagList>
 struct is_noncopyable<
   boost::multi_index::detail::sequenced_index<SuperMeta,TagList>
-> : boost::mpl::true_ {};
+>:boost::mpl::true_{};
+
 }
 }
 

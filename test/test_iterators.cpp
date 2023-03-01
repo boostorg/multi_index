@@ -1,6 +1,6 @@
 /* Boost.MultiIndex test for iterators.
  *
- * Copyright 2003-2013 Joaquin M Lopez Munoz.
+ * Copyright 2003-2023 Joaquin M Lopez Munoz.
  * Distributed under the Boost Software License, Version 1.0.
  * (See accompanying file LICENSE_1_0.txt or copy at
  * http://www.boost.org/LICENSE_1_0.txt)
@@ -259,12 +259,17 @@ void test_iterators()
   test_boost_for_each            (es,target);
   test_non_const_hashed_iterators(get<1>(es),target);
   test_const_hashed_iterators    (get<1>(es),target);
+  test_boost_for_each            (get<1>(es),target);
   test_non_const_iterators       (get<2>(es),target);
   test_const_iterators           (get<2>(es),target);
+  test_boost_for_each            (get<2>(es),target);
   test_non_const_iterators       (get<3>(es),target);
   test_const_iterators           (get<3>(es),target);
+  test_boost_for_each            (get<3>(es),target);
   test_non_const_hashed_iterators(get<4>(es),target);
   test_const_hashed_iterators    (get<4>(es),target);
+  test_boost_for_each            (get<4>(es),target);
   test_non_const_rnd_iterators   (get<5>(es),target);
   test_const_rnd_iterators       (get<5>(es),target);
+  test_boost_for_each            (get<5>(es),target);
 }
