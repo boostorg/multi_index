@@ -19,7 +19,6 @@ target_link_libraries(boost_multi_index
     Boost::config
     Boost::container_hash
     Boost::core
-    Boost::foreach
     Boost::integer
     Boost::iterator
     Boost::move
