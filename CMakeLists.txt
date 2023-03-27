@@ -24,7 +24,6 @@ target_link_libraries(boost_multi_index
     Boost::move
     Boost::mpl
     Boost::preprocessor
-    Boost::serialization
     Boost::smart_ptr
     Boost::static_assert
     Boost::throw_exception
