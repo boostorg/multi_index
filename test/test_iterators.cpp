@@ -11,11 +11,14 @@
 #include "test_iterators.hpp"
 
 #include <boost/config.hpp> /* keep it first to prevent nasty warns in MSVC */
+#include "pair_of_ints.hpp"
 #include "pre_multi_index.hpp"
 #include "employee.hpp"
+#include <algorithm>
 #include <boost/detail/lightweight_test.hpp>
 #include <boost/next_prior.hpp>
 #include <boost/foreach.hpp>
+#include <vector>
 
 using namespace boost::multi_index;
 
@@ -272,4 +275,36 @@ void test_iterators()
   test_non_const_rnd_iterators   (get<5>(es),target);
   test_const_rnd_iterators       (get<5>(es),target);
   test_boost_for_each            (get<5>(es),target);
+
+  /* testcase for https://github.com/boostorg/multi_index/issues/68 */
+
+  {
+    typedef multi_index_container<
+      pair_of_ints,
+      indexed_by<
+        ordered_non_unique<member<pair_of_ints,int,&pair_of_ints::first> >
+      >
+    > container;
+    typedef container::iterator iterator;
+
+    container c1,c2;
+
+    std::vector<pair_of_ints> input;
+    input.push_back(pair_of_ints(1,0));
+    input.push_back(pair_of_ints(1,1));
+    input.push_back(pair_of_ints(1,2));
+    input.push_back(pair_of_ints(0,0));
+    input.push_back(pair_of_ints(1,3));
+
+    c1.insert(input.begin(),input.end());
+    for(std::size_t i=0;i<input.size();++i)c2.insert(input[i]);
+
+    std::pair<iterator,iterator> rng1=c1.equal_range(1),
+                                 rng2=c2.equal_range(1);
+
+    BOOST_TEST(
+      std::distance(rng1.first,rng1.second)==
+      std::distance(rng2.first,rng2.second));
+    BOOST_TEST(std::equal(rng1.first,rng1.second,rng2.first));
+  }
 }
