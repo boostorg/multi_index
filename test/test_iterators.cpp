@@ -285,7 +285,7 @@ void test_iterators()
         ordered_non_unique<member<pair_of_ints,int,&pair_of_ints::first> >
       >
     > container;
-    typedef typename container::iterator iterator;
+    typedef container::iterator iterator;
 
     container c1,c2;
 
