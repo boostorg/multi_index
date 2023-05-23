@@ -78,6 +78,13 @@ Acknowledgements
    of equivalent elements
    (<a href="https://github.com/boostorg/multi_index/issues/68">issue #68</a>).
   </li>
+  <li>Serialization now uses <code>std::size_t</code> instead of <code>unsigned long</code>
+    to save and load the size of a <code>multi_index_container</code>
+    (<code>unsigned long</code> is smaller than <code>std::size_t</code> in LLP64 data models).
+    <code>multi_index_container</code> serialization
+    <a href="../../serialization/doc/tutorial.html#versioning">class version</a> has been
+    bumped from 3 to 4 to reflect this change.
+  </li>
 </ul>
 </p>
 
@@ -786,7 +793,7 @@ Acknowledgements
 
 <br>
 
-<p>Revised May 21st 2023</p>
+<p>Revised May 22nd 2023</p>
 
 <p>&copy; Copyright 2003-2023 Joaqu&iacute;n M L&oacute;pez Mu&ntilde;oz.
 Distributed under the Boost Software 
