@@ -24,6 +24,7 @@ exe complex_structs
 
 exe composite_keys
     : composite_keys.cpp
+      /boost/tokenizer//boost_tokenizer
     : <include>$(BOOST_ROOT)
     ;
 
@@ -34,11 +35,13 @@ exe fun_key
 
 exe hashed
     : hashed.cpp
+      /boost/tokenizer//boost_tokenizer
     : <include>$(BOOST_ROOT)
     ;
 
 exe ip_allocator
     : ip_allocator.cpp
+      /boost/interprocess//boost_interprocess
     : <include>$(BOOST_ROOT) <threading>multi
     ;
 
@@ -49,16 +52,19 @@ exe non_default_ctor
 
 exe random_access
     : random_access.cpp
+      /boost/tokenizer//boost_tokenizer
     : <include>$(BOOST_ROOT)
     ;
 
 exe rearrange
     : rearrange.cpp
+      /boost/random//boost_random
     : <include>$(BOOST_ROOT)
     ;
 
 exe sequenced
     : sequenced.cpp
+      /boost/tokenizer//boost_tokenizer
     : <include>$(BOOST_ROOT)
     ;
 

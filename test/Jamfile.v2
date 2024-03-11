@@ -46,7 +46,8 @@ test-suite "multi_index" :
     [ run test_conv_iterators.cpp   test_conv_iterators_main.cpp   ]
     [ run test_copy_assignment.cpp  test_copy_assignment_main.cpp  ]
     [ run test_hash_ops.cpp         test_hash_ops_main.cpp         ]
-    [ run test_iterators.cpp        test_iterators_main.cpp        ]
+    [ run test_iterators.cpp        test_iterators_main.cpp
+        /boost/foreach//boost_foreach                              ]
     [ run test_key.cpp              test_key_main.cpp
         : : :
         [ check-target-builds boost_multi_index_key_supported
@@ -71,6 +72,6 @@ test-suite "multi_index" :
     [ run test_special_set_ops.cpp  test_special_set_ops_main.cpp  ]
     [ run test_update.cpp           test_update_main.cpp 
         : : : 
-        -<tag>@$(BOOST_JAMROOT_MODULE)%$(BOOST_JAMROOT_MODULE).tag
+        -<tag>@%boostcpp.tag
         <tag>@change-test_update-exe-name                          ]
     ;
