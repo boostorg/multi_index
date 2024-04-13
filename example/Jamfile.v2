@@ -1,6 +1,6 @@
 # Boost.MultiIndex examples Jamfile
 #
-# Copyright 2003-2007 Joaquín M López Muñoz.
+# Copyright 2003-2007 Joaquï¿½n M Lï¿½pez Muï¿½oz.
 # Distributed under the Boost Software License, Version 1.0.
 # (See accompanying file LICENSE_1_0.txt or copy at
 # http://www.boost.org/LICENSE_1_0.txt)
@@ -9,67 +9,56 @@
 
 exe basic
     : basic.cpp
-    : <include>$(BOOST_ROOT)
     ;
 
 exe bimap
     : bimap.cpp
-    : <include>$(BOOST_ROOT)
     ;
 
 exe complex_structs
     : complex_structs.cpp
-    : <include>$(BOOST_ROOT)
     ;
 
 exe composite_keys
     : composite_keys.cpp
       /boost/tokenizer//boost_tokenizer
-    : <include>$(BOOST_ROOT)
     ;
 
 exe fun_key
     : fun_key.cpp
-    : <include>$(BOOST_ROOT)
     ;
 
 exe hashed
     : hashed.cpp
       /boost/tokenizer//boost_tokenizer
-    : <include>$(BOOST_ROOT)
     ;
 
 exe ip_allocator
     : ip_allocator.cpp
       /boost/interprocess//boost_interprocess
-    : <include>$(BOOST_ROOT) <threading>multi
+    : <threading>multi
     ;
 
 exe non_default_ctor
     : non_default_ctor.cpp
-    : <include>$(BOOST_ROOT)
     ;
 
 exe random_access
     : random_access.cpp
       /boost/tokenizer//boost_tokenizer
-    : <include>$(BOOST_ROOT)
     ;
 
 exe rearrange
     : rearrange.cpp
       /boost/random//boost_random
-    : <include>$(BOOST_ROOT)
     ;
 
 exe sequenced
     : sequenced.cpp
       /boost/tokenizer//boost_tokenizer
-    : <include>$(BOOST_ROOT)
     ;
 
 exe serialization
     : serialization.cpp
       /boost/serialization//boost_serialization
-    : <include>$(BOOST_ROOT)
     ;
