@@ -7,6 +7,8 @@
 #
 # See http://www.boost.org/libs/multi_index for library home page.
 
+project : requirements <library>/boost/multi_index//boost_multi_index ;
+
 exe basic
     : basic.cpp
     ;
