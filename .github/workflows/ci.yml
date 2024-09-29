@@ -378,7 +378,7 @@ jobs:
             sudo python3 get-pip.py
             sudo /usr/local/bin/pip install cmake
 
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       - name: linux
         shell: bash
@@ -479,7 +479,7 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       - name: Set DEVELOPER_DIR
         if: matrix.xcode_version != ''
