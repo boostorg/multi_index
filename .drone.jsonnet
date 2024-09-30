@@ -170,72 +170,107 @@ local windows_pipeline(name, image, environment, arch = "amd64") =
     ),
 
     linux_pipeline(
-        "Linux 22.04 GCC 12 32/64 C++11-17",
+        "Linux 22.04 GCC 12 32/64 C++11-14",
         "cppalliance/droneubuntu2204:1",
-        { TOOLSET: 'gcc', COMPILER: 'g++-12', CXXSTD: '11,14,17', ADDRMD: '32,64' },
+        { TOOLSET: 'gcc', COMPILER: 'g++-12', CXXSTD: '11,14', ADDRMD: '32,64' },
+        "g++-12-multilib",
+    ),
+
+    linux_pipeline(
+        "Linux 22.04 GCC 12 32/64 C++17-20",
+        "cppalliance/droneubuntu2204:1",
+        { TOOLSET: 'gcc', COMPILER: 'g++-12', CXXSTD: '17,20', ADDRMD: '32,64' },
         "g++-12-multilib",
     ),
 
     linux_pipeline(
         "Linux 22.04 GCC 12 32/64",
         "cppalliance/droneubuntu2204:1",
-        { TOOLSET: 'gcc', COMPILER: 'g++-12', CXXSTD: '20,2b', ADDRMD: '32,64' },
+        { TOOLSET: 'gcc', COMPILER: 'g++-12', CXXSTD: '2b', ADDRMD: '32,64' },
         "g++-12-multilib",
     ),
 
     linux_pipeline(
-        "Linux 23.04 GCC 13 32/64 UBSAN C++11-17",
+        "Linux 23.04 GCC 13 32/64 UBSAN C++11-14",
         "cppalliance/droneubuntu2304:1",
-        { TOOLSET: 'gcc', COMPILER: 'g++-13', CXXSTD: '11,14,17', ADDRMD: '32,64' } + ubsan,
+        { TOOLSET: 'gcc', COMPILER: 'g++-13', CXXSTD: '11,14', ADDRMD: '32,64' } + ubsan,
+        "g++-13-multilib",
+    ),
+
+    linux_pipeline(
+        "Linux 23.04 GCC 13 32/64 UBSAN C++17-20",
+        "cppalliance/droneubuntu2304:1",
+        { TOOLSET: 'gcc', COMPILER: 'g++-13', CXXSTD: '17,20', ADDRMD: '32,64' } + ubsan,
         "g++-13-multilib",
     ),
 
     linux_pipeline(
         "Linux 23.04 GCC 13 32/64 UBSAN",
         "cppalliance/droneubuntu2304:1",
-        { TOOLSET: 'gcc', COMPILER: 'g++-13', CXXSTD: '20,2b', ADDRMD: '32,64' } + ubsan,
+        { TOOLSET: 'gcc', COMPILER: 'g++-13', CXXSTD: '2b', ADDRMD: '32,64' } + ubsan,
         "g++-13-multilib",
     ),
 
     linux_pipeline(
-        "Linux 23.04 GCC 13 32 ASAN C++11-17",
+        "Linux 23.04 GCC 13 32 ASAN C++11-15",
         "cppalliance/droneubuntu2304:1",
-        { TOOLSET: 'gcc', COMPILER: 'g++-13', CXXSTD: '11,14,17', ADDRMD: '32' } + asan,
+        { TOOLSET: 'gcc', COMPILER: 'g++-13', CXXSTD: '11,14', ADDRMD: '32' } + asan,
+        "g++-13-multilib",
+    ),
+
+    linux_pipeline(
+        "Linux 23.04 GCC 13 32 ASAN C++17-20",
+        "cppalliance/droneubuntu2304:1",
+        { TOOLSET: 'gcc', COMPILER: 'g++-13', CXXSTD: '17,20', ADDRMD: '32' } + asan,
         "g++-13-multilib",
     ),
 
     linux_pipeline(
         "Linux 23.04 GCC 13 32 ASAN",
         "cppalliance/droneubuntu2304:1",
-        { TOOLSET: 'gcc', COMPILER: 'g++-13', CXXSTD: '20,2b', ADDRMD: '32' } + asan,
+        { TOOLSET: 'gcc', COMPILER: 'g++-13', CXXSTD: '2b', ADDRMD: '32' } + asan,
         "g++-13-multilib",
     ),
 
     linux_pipeline(
-        "Linux 24.04 GCC 14 UBSAN C++11-17",
+        "Linux 24.04 GCC 14 UBSAN C++11-14",
         "cppalliance/droneubuntu2404:1",
-        { TOOLSET: 'gcc', COMPILER: 'g++-14', CXXSTD: '11,14,17' } + ubsan,
+        { TOOLSET: 'gcc', COMPILER: 'g++-14', CXXSTD: '11,14' } + ubsan,
+        "g++-14-multilib",
+    ),
+
+    linux_pipeline(
+        "Linux 24.04 GCC 14 UBSAN C++17-20",
+        "cppalliance/droneubuntu2404:1",
+        { TOOLSET: 'gcc', COMPILER: 'g++-14', CXXSTD: '17,20' } + ubsan,
         "g++-14-multilib",
     ),
 
     linux_pipeline(
         "Linux 24.04 GCC 14 UBSAN",
         "cppalliance/droneubuntu2404:1",
-        { TOOLSET: 'gcc', COMPILER: 'g++-14', CXXSTD: '20,2b' } + ubsan,
+        { TOOLSET: 'gcc', COMPILER: 'g++-14', CXXSTD: '2b' } + ubsan,
         "g++-14-multilib",
     ),
 
     linux_pipeline(
-        "Linux 24.04 GCC 14 ASAN C++11-17",
+        "Linux 24.04 GCC 14 ASAN C++11-14",
         "cppalliance/droneubuntu2404:1",
-        { TOOLSET: 'gcc', COMPILER: 'g++-14', CXXSTD: '11,14,17' } + asan,
+        { TOOLSET: 'gcc', COMPILER: 'g++-14', CXXSTD: '11,14' } + asan,
+        "g++-14-multilib",
+    ),
+
+    linux_pipeline(
+        "Linux 24.04 GCC 14 ASAN C++17-20",
+        "cppalliance/droneubuntu2404:1",
+        { TOOLSET: 'gcc', COMPILER: 'g++-14', CXXSTD: '17,20' } + asan,
         "g++-14-multilib",
     ),
 
     linux_pipeline(
         "Linux 24.04 GCC 14 ASAN",
         "cppalliance/droneubuntu2404:1",
-        { TOOLSET: 'gcc', COMPILER: 'g++-14', CXXSTD: '20,2b' } + asan,
+        { TOOLSET: 'gcc', COMPILER: 'g++-14', CXXSTD: '2b' } + asan,
         "g++-14-multilib",
     ),
 
