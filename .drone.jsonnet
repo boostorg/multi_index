@@ -212,7 +212,7 @@ local windows_pipeline(name, image, environment, arch = "amd64") =
     ),
 
     linux_pipeline(
-        "Linux 23.04 GCC 13 32 ASAN C++11-15",
+        "Linux 23.04 GCC 13 32 ASAN C++11-14",
         "cppalliance/droneubuntu2304:1",
         { TOOLSET: 'gcc', COMPILER: 'g++-13', CXXSTD: '11,14', ADDRMD: '32' } + asan,
         "g++-13-multilib",
