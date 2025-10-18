@@ -1,4 +1,4 @@
-/* Copyright 2003-2023 Joaquin M Lopez Munoz.
+/* Copyright 2003-2025 Joaquin M Lopez Munoz.
  * Distributed under the Boost Software License, Version 1.0.
  * (See accompanying file LICENSE_1_0.txt or copy at
  * http://www.boost.org/LICENSE_1_0.txt)
@@ -50,9 +50,9 @@
 #include <boost/iterator/reverse_iterator.hpp>
 #include <boost/move/core.hpp>
 #include <boost/move/utility_core.hpp>
+#include <boost/mp11/list.hpp>
 #include <boost/mpl/bool.hpp>
 #include <boost/mpl/if.hpp>
-#include <boost/mpl/push_front.hpp>
 #include <boost/multi_index/detail/access_specifier.hpp>
 #include <boost/multi_index/detail/adl_swap.hpp>
 #include <boost/multi_index/detail/allocator_traits.hpp>
@@ -204,18 +204,18 @@ protected:
   typedef tuples::cons<
     ctor_args, 
     typename super::ctor_args_list>                  ctor_args_list;
-  typedef typename mpl::push_front<
+  typedef typename mp11::mp_push_front<
     typename super::index_type_list,
     ordered_index<
       KeyFromValue,Compare,
       SuperMeta,TagList,Category,AugmentPolicy
-    > >::type                                        index_type_list;
-  typedef typename mpl::push_front<
+    >>                                               index_type_list;
+  typedef typename mp11::mp_push_front<
     typename super::iterator_type_list,
-    iterator>::type    iterator_type_list;
-  typedef typename mpl::push_front<
+    iterator>                                        iterator_type_list;
+  typedef typename mp11::mp_push_front<
     typename super::const_iterator_type_list,
-    const_iterator>::type                            const_iterator_type_list;
+    const_iterator>                                  const_iterator_type_list;
   typedef typename super::copy_map_type              copy_map_type;
 
 #if !defined(BOOST_MULTI_INDEX_DISABLE_SERIALIZATION)
