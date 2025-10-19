@@ -14,6 +14,7 @@
 #endif
 
 #include <boost/config.hpp> /* keep it first to prevent nasty warns in MSVC */
+#include <boost/mp11/utility.hpp>
 #include <boost/multi_index/detail/ord_index_impl.hpp>
 #include <boost/multi_index/detail/rnk_index_ops.hpp>
 #include <boost/multi_index/ranked_index_fwd.hpp>
@@ -146,19 +147,19 @@ public:
   std::pair<size_type,size_type>
   range_rank(LowerBounder lower,UpperBounder upper)const
   {
-    typedef typename mpl::if_<
+    typedef mp11::mp_if<
       is_same<LowerBounder,unbounded_type>,
-      BOOST_DEDUCED_TYPENAME mpl::if_<
+      mp11::mp_if<
         is_same<UpperBounder,unbounded_type>,
         both_unbounded_tag,
         lower_unbounded_tag
-      >::type,
-      BOOST_DEDUCED_TYPENAME mpl::if_<
+      >,
+      mp11::mp_if<
         is_same<UpperBounder,unbounded_type>,
         upper_unbounded_tag,
         none_unbounded_tag
-      >::type
-    >::type dispatch;
+      >
+    > dispatch;
 
     return range_rank(lower,upper,dispatch());
   }

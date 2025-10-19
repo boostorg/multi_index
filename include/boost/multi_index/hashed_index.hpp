@@ -23,8 +23,7 @@
 #include <boost/move/core.hpp>
 #include <boost/move/utility_core.hpp>
 #include <boost/mp11/list.hpp>
-#include <boost/mpl/bool.hpp>
-#include <boost/mpl/if.hpp>
+#include <boost/mp11/utility.hpp>
 #include <boost/multi_index/detail/access_specifier.hpp>
 #include <boost/multi_index/detail/adl_swap.hpp>
 #include <boost/multi_index/detail/allocator_traits.hpp>
@@ -47,6 +46,7 @@
 #include <cstddef>
 #include <functional>
 #include <iterator>
+#include <type_traits>
 #include <utility>
 
 #if !defined(BOOST_NO_CXX11_HDR_INITIALIZER_LIST)
@@ -1303,11 +1303,11 @@ private:
     node_impl_base_pointer first,last;
   };
 
-  typedef typename mpl::if_<
+  typedef mp11::mp_if<
     is_same<Category,hashed_unique_tag>,
     node_impl_base_pointer,
     link_info_non_unique
-  >::type                                link_info;
+  >                                      link_info;
 
   bool link_point(value_param_type v,link_info& pos)
   {
@@ -1687,9 +1687,9 @@ private:
   >
   iterator find(
     const key_type& k,
-    const CompatibleHash& hash,const CompatiblePred& eq,mpl::true_)const
+    const CompatibleHash& hash,const CompatiblePred& eq,std::true_type)const
   {
-    return find(k,hash,eq,mpl::false_());
+    return find(k,hash,eq,std::false_type());
   }
 
   template<
@@ -1697,7 +1697,7 @@ private:
   >
   iterator find(
     const CompatibleKey& k,
-    const CompatibleHash& hash,const CompatiblePred& eq,mpl::false_)const
+    const CompatibleHash& hash,const CompatiblePred& eq,std::false_type)const
   {
     std::size_t buc=buckets.position(hash(k));
     for(node_impl_pointer x=buckets.at(buc)->prior();
@@ -1714,9 +1714,9 @@ private:
   >
   size_type count(
     const key_type& k,
-    const CompatibleHash& hash,const CompatiblePred& eq,mpl::true_)const
+    const CompatibleHash& hash,const CompatiblePred& eq,std::true_type)const
   {
-    return count(k,hash,eq,mpl::false_());
+    return count(k,hash,eq,std::false_type());
   }
 
   template<
@@ -1724,7 +1724,7 @@ private:
   >
   size_type count(
     const CompatibleKey& k,
-    const CompatibleHash& hash,const CompatiblePred& eq,mpl::false_)const
+    const CompatibleHash& hash,const CompatiblePred& eq,std::false_type)const
   {
     std::size_t buc=buckets.position(hash(k));
     for(node_impl_pointer x=buckets.at(buc)->prior();
@@ -1747,9 +1747,9 @@ private:
   >
   std::pair<iterator,iterator> equal_range(
     const key_type& k,
-    const CompatibleHash& hash,const CompatiblePred& eq,mpl::true_)const
+    const CompatibleHash& hash,const CompatiblePred& eq,std::true_type)const
   {
-    return equal_range(k,hash,eq,mpl::false_());
+    return equal_range(k,hash,eq,std::false_type());
   }
 
   template<
@@ -1757,7 +1757,7 @@ private:
   >
   std::pair<iterator,iterator> equal_range(
     const CompatibleKey& k,
-    const CompatibleHash& hash,const CompatiblePred& eq,mpl::false_)const
+    const CompatibleHash& hash,const CompatiblePred& eq,std::false_type)const
   {
     std::size_t buc=buckets.position(hash(k));
     for(node_impl_pointer x=buckets.at(buc)->prior();
@@ -1901,7 +1901,7 @@ template<
 >
 struct is_noncopyable<boost::multi_index::detail::hashed_index<
   KeyFromValue,Hash,Pred,SuperMeta,TagList,Category>
->:boost::mpl::true_{};
+>:std::true_type{};
 
 }
 }

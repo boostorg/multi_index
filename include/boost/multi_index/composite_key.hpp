@@ -1,4 +1,4 @@
-/* Copyright 2003-2022 Joaquin M Lopez Munoz.
+/* Copyright 2003-2025 Joaquin M Lopez Munoz.
  * Distributed under the Boost Software License, Version 1.0.
  * (See accompanying file LICENSE_1_0.txt or copy at
  * http://www.boost.org/LICENSE_1_0.txt)
@@ -17,10 +17,7 @@
 #include <boost/container_hash/hash_fwd.hpp>
 #include <boost/core/enable_if.hpp>
 #include <boost/multi_index/detail/access_specifier.hpp>
-#include <boost/mpl/eval_if.hpp>
-#include <boost/mpl/identity.hpp>
-#include <boost/mpl/if.hpp>
-#include <boost/mpl/or.hpp>
+#include <boost/mp11/utility.hpp>
 #include <boost/preprocessor/cat.hpp>
 #include <boost/preprocessor/control/expr_if.hpp>
 #include <boost/preprocessor/list/at.hpp>
@@ -117,11 +114,11 @@ template<typename CompositeKey,int N>
 struct nth_key_from_value
 {
   typedef typename CompositeKey::key_extractor_tuple key_extractor_tuple;
-  typedef typename mpl::eval_if_c<
+  typedef typename mp11::mp_if_c<
     N<tuples::length<key_extractor_tuple>::value,
     tuples::element<N,key_extractor_tuple>,
-    mpl::identity<tuples::null_type>
-  >::type                                            type;
+    mp11::mp_identity<tuples::null_type>
+  >::type                                         type;
 };
 
 /* nth_composite_key_##name<CompositeKey,N>::type yields
@@ -249,14 +246,12 @@ template
   typename EqualCons
 >
 struct equal_ckey_ckey:
-  mpl::if_<
-    mpl::or_<
-      is_same<KeyCons1,tuples::null_type>,
-      is_same<KeyCons2,tuples::null_type>
-    >,
+  mp11::mp_if_c<
+    is_same<KeyCons1,tuples::null_type>::value||
+    is_same<KeyCons2,tuples::null_type>::value,
     equal_ckey_ckey_terminal<KeyCons1,Value1,KeyCons2,Value2,EqualCons>,
     equal_ckey_ckey_normal<KeyCons1,Value1,KeyCons2,Value2,EqualCons>
-  >::type
+  >
 {
 };
 
@@ -325,14 +320,12 @@ template
   typename ValCons,typename EqualCons
 >
 struct equal_ckey_cval:
-  mpl::if_<
-    mpl::or_<
-      is_same<KeyCons,tuples::null_type>,
-      is_same<ValCons,tuples::null_type>
-    >,
+  mp11::mp_if_c<
+    is_same<KeyCons,tuples::null_type>::value||
+    is_same<ValCons,tuples::null_type>::value,
     equal_ckey_cval_terminal<KeyCons,Value,ValCons,EqualCons>,
     equal_ckey_cval_normal<KeyCons,Value,ValCons,EqualCons>
-  >::type
+  >
 {
 };
 
@@ -391,14 +384,12 @@ template
   typename CompareCons
 >
 struct compare_ckey_ckey:
-  mpl::if_<
-    mpl::or_<
-      is_same<KeyCons1,tuples::null_type>,
-      is_same<KeyCons2,tuples::null_type>
-    >,
+  mp11::mp_if_c<
+    is_same<KeyCons1,tuples::null_type>::value||
+    is_same<KeyCons2,tuples::null_type>::value,
     compare_ckey_ckey_terminal<KeyCons1,Value1,KeyCons2,Value2,CompareCons>,
     compare_ckey_ckey_normal<KeyCons1,Value1,KeyCons2,Value2,CompareCons>
-  >::type
+  >
 {
 };
 
@@ -469,14 +460,12 @@ template
   typename ValCons,typename CompareCons
 >
 struct compare_ckey_cval:
-  mpl::if_<
-    mpl::or_<
-      is_same<KeyCons,tuples::null_type>,
-      is_same<ValCons,tuples::null_type>
-    >,
+  mp11::mp_if_c<
+    is_same<KeyCons,tuples::null_type>::value||
+    is_same<ValCons,tuples::null_type>::value,
     compare_ckey_cval_terminal<KeyCons,Value,ValCons,CompareCons>,
     compare_ckey_cval_normal<KeyCons,Value,ValCons,CompareCons>
-  >::type
+  >
 {
 };
 
@@ -511,11 +500,11 @@ struct hash_ckey_normal
 
 template<typename KeyCons,typename Value,typename HashCons>
 struct hash_ckey:
-  mpl::if_<
-    is_same<KeyCons,tuples::null_type>,
+  mp11::mp_if_c<
+    is_same<KeyCons,tuples::null_type>::value,
     hash_ckey_terminal<KeyCons,Value,HashCons>,
     hash_ckey_normal<KeyCons,Value,HashCons>
-  >::type
+  >
 {
 };
 
@@ -547,11 +536,11 @@ struct hash_cval_normal
 
 template<typename ValCons,typename HashCons>
 struct hash_cval:
-  mpl::if_<
-    is_same<ValCons,tuples::null_type>,
+  mp11::mp_if_c<
+    is_same<ValCons,tuples::null_type>::value,
     hash_cval_terminal<ValCons,HashCons>,
     hash_cval_normal<ValCons,HashCons>
-  >::type
+  >
 {
 };
 

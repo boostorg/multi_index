@@ -23,8 +23,7 @@
 #include <boost/move/core.hpp>
 #include <boost/move/utility_core.hpp>
 #include <boost/mp11/list.hpp>
-#include <boost/mpl/bool.hpp>
-#include <boost/mpl/not.hpp>
+#include <boost/mp11/function.hpp>
 #include <boost/multi_index/detail/access_specifier.hpp>
 #include <boost/multi_index/detail/allocator_traits.hpp>
 #include <boost/multi_index/detail/bidir_node_iterator.hpp>
@@ -41,6 +40,7 @@
 #include <boost/type_traits/is_copy_constructible.hpp>
 #include <boost/type_traits/is_integral.hpp>
 #include <functional>
+#include <type_traits>
 #include <utility>
 
 #if !defined(BOOST_NO_CXX11_HDR_INITIALIZER_LIST)
@@ -194,7 +194,7 @@ public:
   template <class InputIterator>
   void assign(InputIterator first,InputIterator last)
   {
-    assign_iter(first,last,mpl::not_<is_integral<InputIterator> >());
+    assign_iter(first,last,mp11::mp_not<is_integral<InputIterator> >());
   }
 
 #if !defined(BOOST_NO_CXX11_HDR_INITIALIZER_LIST)
@@ -343,7 +343,7 @@ public:
   template<typename InputIterator>
   void insert(iterator position,InputIterator first,InputIterator last)
   {
-    insert_iter(position,first,last,mpl::not_<is_integral<InputIterator> >());
+    insert_iter(position,first,last,mp11::mp_not<is_integral<InputIterator> >());
   }
 
 #if !defined(BOOST_NO_CXX11_HDR_INITIALIZER_LIST)
@@ -955,14 +955,14 @@ private:
 #endif
 
   template <class InputIterator>
-  void assign_iter(InputIterator first,InputIterator last,mpl::true_)
+  void assign_iter(InputIterator first,InputIterator last,std::true_type)
   {
     BOOST_MULTI_INDEX_SEQ_INDEX_CHECK_INVARIANT;
     clear();
     for(;first!=last;++first)this->final_insert_ref_(*first);
   }
 
-  void assign_iter(size_type n,value_param_type value,mpl::false_)
+  void assign_iter(size_type n,value_param_type value,std::false_type)
   {
     BOOST_MULTI_INDEX_SEQ_INDEX_CHECK_INVARIANT;
     clear();
@@ -971,7 +971,7 @@ private:
 
   template<typename InputIterator>
   void insert_iter(
-    iterator position,InputIterator first,InputIterator last,mpl::true_)
+    iterator position,InputIterator first,InputIterator last,std::true_type)
   {
     BOOST_MULTI_INDEX_SEQ_INDEX_CHECK_INVARIANT;
     for(;first!=last;++first){
@@ -984,7 +984,7 @@ private:
   }
 
   void insert_iter(
-    iterator position,size_type n,value_param_type x,mpl::false_)
+    iterator position,size_type n,value_param_type x,std::false_type)
   {
     BOOST_MULTI_INDEX_CHECK_VALID_ITERATOR(position);
     BOOST_MULTI_INDEX_CHECK_IS_OWNER(position,*this);
@@ -1246,7 +1246,7 @@ struct is_noncopyable;
 template<typename SuperMeta,typename TagList>
 struct is_noncopyable<
   boost::multi_index::detail::sequenced_index<SuperMeta,TagList>
->:boost::mpl::true_{};
+>:std::true_type{};
 
 }
 }
