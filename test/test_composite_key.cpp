@@ -1,6 +1,6 @@
 /* Boost.MultiIndex test for composite_key.
  *
- * Copyright 2003-2021 Joaquin M Lopez Munoz.
+ * Copyright 2003-2025 Joaquin M Lopez Munoz.
  * Distributed under the Boost Software License, Version 1.0.
  * (See accompanying file LICENSE_1_0.txt or copy at
  * http://www.boost.org/LICENSE_1_0.txt)
@@ -13,6 +13,7 @@
 #include <boost/config.hpp> /* keep it first to prevent nasty warns in MSVC */
 #include <boost/detail/lightweight_test.hpp>
 #include "pre_multi_index.hpp"
+#include <boost/mp11/utility.hpp>
 #include <boost/multi_index_container.hpp>
 #include <boost/multi_index/composite_key.hpp>
 #include <boost/multi_index/hashed_index.hpp>
@@ -84,15 +85,15 @@ struct is_boost_tuple
 template<typename T>
 struct composite_object_length
 {
-  typedef typename boost::mpl::if_c<
-    is_composite_key_result<T>::value,
+  typedef boost::mp11::mp_if<
+    is_composite_key_result<T>,
     composite_key_result_length<T>,
-    typename boost::mpl::if_c<
-      is_boost_tuple<T>::value,
+    boost::mp11::mp_if<
+      is_boost_tuple<T>,
       boost::tuples::length<T>,
       std::tuple_size<T>
-    >::type
-  >::type type;
+    >
+  > type;
 
   BOOST_STATIC_CONSTANT(int,value=type::value);
 };
@@ -100,11 +101,11 @@ struct composite_object_length
 template<typename T>
 struct composite_object_length
 {
-  typedef typename boost::mpl::if_c<
-    is_composite_key_result<T>::value,
+  typedef boost::mp11::mp_if<
+    is_composite_key_result<T>,
     composite_key_result_length<T>,
     boost::tuples::length<T>
-  >::type type;
+  > type;
 
   BOOST_STATIC_CONSTANT(int,value=type::value);
 };
@@ -240,12 +241,12 @@ struct comparison_different_length
 
 template<typename CompositeKeyResult,typename T2>
 struct comparison_helper:
-  boost::mpl::if_c<
+  boost::mp11::mp_if_c<
     composite_key_result_length<CompositeKeyResult>::value==
       composite_object_length<T2>::value,
     comparison_equal_length<CompositeKeyResult,T2>,
     comparison_different_length<CompositeKeyResult,T2>
-  >::type
+  >
 {
 };
 
