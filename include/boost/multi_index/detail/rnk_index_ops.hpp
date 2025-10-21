@@ -290,7 +290,7 @@ ranked_index_equal_range_rank(
 {
   typedef typename Node::size_type size_type;
 
-  if(!top)return std::pair<size_type,size_type>(0,0);
+  if(!top)return std::pair<size_type,size_type>((size_type)0,(size_type)0);
 
   size_type s=top->impl()->size;
 
@@ -305,12 +305,12 @@ ranked_index_equal_range_rank(
     }
     else{
       return std::pair<size_type,size_type>(
-        s-top->impl()->size+
+        (size_type)(s-top->impl()->size+
           ranked_index_lower_bound_rank(
-           Node::from_impl(top->left()),top,key,x,comp,std::false_type()),
-        s-ranked_node_size(top->right())+
+           Node::from_impl(top->left()),top,key,x,comp,std::false_type())),
+        (size_type)(s-ranked_node_size(top->right())+
           ranked_index_upper_bound_rank(
-            Node::from_impl(top->right()),y,key,x,comp,std::false_type()));
+            Node::from_impl(top->right()),y,key,x,comp,std::false_type())));
     }
   }while(top);
 

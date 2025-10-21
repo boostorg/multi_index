@@ -182,7 +182,7 @@ private:
     index_node_type* y=this->header();
     index_node_type* z=this->root();
 
-    if(!z)return std::pair<size_type,size_type>(0,0);
+    if(!z)return std::pair<size_type,size_type>((size_type)0,(size_type)0);
 
     size_type s=z->impl()->size;
 
@@ -212,7 +212,7 @@ private:
   range_rank(LowerBounder,UpperBounder upper,lower_unbounded_tag)const
   {
     return std::pair<size_type,size_type>(
-      0,
+      (size_type)0,
       upper_range_rank(this->root(),this->header(),upper));
   }
 
@@ -229,7 +229,7 @@ private:
   std::pair<size_type,size_type>
   range_rank(LowerBounder,UpperBounder,both_unbounded_tag)const
   {
-    return std::pair<size_type,size_type>(0,this->size());
+    return std::pair<size_type,size_type>((size_type)0,this->size());
   }
 
   template<typename LowerBounder>
