@@ -123,7 +123,7 @@ struct is_tag
 
 } /* namespace multi_index::detail */
 
-template<typename... T>
+template<typename... Ts>
 struct tag:private detail::tag_marker
 {
   BOOST_STATIC_ASSERT(detail::no_duplicate_tags<tag>::value);
