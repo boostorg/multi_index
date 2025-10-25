@@ -10,7 +10,7 @@
 
 #include "test_mpl_ops.hpp"
 
-#define BOOST_MULTI_INDEX_ENABLE_MPL_INDEXED_BY
+#define BOOST_MULTI_INDEX_ENABLE_MPL_SUPPORT
 #include <boost/config.hpp> /* keep it first to prevent nasty warns in MSVC */
 #include "pre_multi_index.hpp"
 #include <boost/multi_index_container.hpp>

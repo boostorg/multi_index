@@ -18,7 +18,7 @@
 #include <sstream>
 #include <vector>
 
-#if defined(BOOST_MULTI_INDEX_ENABLE_MPL_INDEXED_BY)
+#if defined(BOOST_MULTI_INDEX_ENABLE_MPL_SUPPORT)
 #include <boost/mpl/size.hpp>
 #else
 #include <boost/mp11/list.hpp>
@@ -53,7 +53,7 @@ template<class MultiIndexContainer>
 bool all_indices_equal(
   const MultiIndexContainer& m1,const MultiIndexContainer& m2)
 {
-#if defined(BOOST_MULTI_INDEX_ENABLE_MPL_INDEXED_BY)
+#if defined(BOOST_MULTI_INDEX_ENABLE_MPL_SUPPORT)
   BOOST_STATIC_CONSTANT(int,
     N=boost::mpl::size<
     BOOST_DEDUCED_TYPENAME MultiIndexContainer::index_type_list>::value);
