@@ -1,6 +1,6 @@
 # Boost.MultiIndex tests Jamfile
 #
-# Copyright 2003-2020 Joaqu�n M L�pez Mu�oz.
+# Copyright 2003-2025 Joaquín M López Muñoz.
 # Distributed under the Boost Software License, Version 1.0.
 # (See accompanying file LICENSE_1_0.txt or copy at
 # http://www.boost.org/LICENSE_1_0.txt)
@@ -30,6 +30,25 @@ rule change-test_update-exe-name ( name : type ? : property-set )
 project
     : requirements
       <library>/boost/multi_index//boost_multi_index
+      <library>/boost/assert//boost_assert
+      <library>/boost/bind//boost_bind
+      <library>/boost/config//boost_config
+      <library>/boost/container_hash//boost_container_hash
+      <library>/boost/core//boost_core
+      <library>/boost/foreach//boost_foreach
+      <library>/boost/integer//boost_integer
+      <library>/boost/iterator//boost_iterator
+      <library>/boost/move//boost_move
+      <library>/boost/mp11//boost_mp11
+      <library>/boost/mpl//boost_mpl
+      <library>/boost/preprocessor//boost_preprocessor
+      <library>/boost/serialization//boost_serialization
+      <library>/boost/smart_ptr//boost_smart_ptr
+      <library>/boost/static_assert//boost_static_assert
+      <library>/boost/throw_exception//boost_throw_exception
+      <library>/boost/tuple//boost_tuple
+      <library>/boost/type_traits//boost_type_traits
+      <library>/boost/utility//boost_utility
       <toolset>msvc:<define>_SCL_SECURE_NO_WARNINGS
       <toolset>msvc:<define>_CRT_SECURE_NO_WARNINGS
       <toolset>msvc:<define>_SILENCE_ALL_CXX17_DEPRECATION_WARNINGS

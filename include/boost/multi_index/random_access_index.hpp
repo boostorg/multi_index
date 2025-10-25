@@ -20,7 +20,6 @@
 #include <boost/core/addressof.hpp>
 #include <boost/core/no_exceptions_support.hpp>
 #include <boost/detail/workaround.hpp>
-#include <boost/iterator/reverse_iterator.hpp>
 #include <boost/move/core.hpp>
 #include <boost/move/utility_core.hpp>
 #include <boost/mp11/function.hpp>
@@ -43,6 +42,7 @@
 #include <boost/type_traits/is_copy_constructible.hpp>
 #include <boost/type_traits/is_integral.hpp>
 #include <functional>
+#include <iterator>
 #include <stdexcept> 
 #include <type_traits>
 #include <utility>
@@ -141,9 +141,9 @@ public:
   typedef typename alloc_traits::size_type       size_type;
   typedef typename alloc_traits::difference_type difference_type;
   typedef typename
-    boost::reverse_iterator<iterator>            reverse_iterator;
+    std::reverse_iterator<iterator>              reverse_iterator;
   typedef typename
-    boost::reverse_iterator<const_iterator>      const_reverse_iterator;
+    std::reverse_iterator<const_iterator>        const_reverse_iterator;
   typedef typename super::final_node_handle_type node_type;
   typedef detail::insert_return_type<
     iterator,node_type>                          insert_return_type;
@@ -241,13 +241,13 @@ public:
   const_iterator
     end()const BOOST_NOEXCEPT{return make_iterator(header());}
   reverse_iterator
-    rbegin()BOOST_NOEXCEPT{return boost::make_reverse_iterator(end());}
+    rbegin()BOOST_NOEXCEPT{return reverse_iterator{end()};}
   const_reverse_iterator
-    rbegin()const BOOST_NOEXCEPT{return boost::make_reverse_iterator(end());}
+    rbegin()const BOOST_NOEXCEPT{return const_reverse_iterator{end()};}
   reverse_iterator
-    rend()BOOST_NOEXCEPT{return boost::make_reverse_iterator(begin());}
+    rend()BOOST_NOEXCEPT{return reverse_iterator{begin()};}
   const_reverse_iterator
-    rend()const BOOST_NOEXCEPT{return boost::make_reverse_iterator(begin());}
+    rend()const BOOST_NOEXCEPT{return const_reverse_iterator{begin()};}
   const_iterator
     cbegin()const BOOST_NOEXCEPT{return begin();}
   const_iterator

@@ -47,7 +47,6 @@
 #include <boost/core/no_exceptions_support.hpp>
 #include <boost/core/ref.hpp>
 #include <boost/detail/workaround.hpp>
-#include <boost/iterator/reverse_iterator.hpp>
 #include <boost/move/core.hpp>
 #include <boost/move/utility_core.hpp>
 #include <boost/mp11/utility.hpp>
@@ -71,6 +70,7 @@
 #include <boost/multi_index/detail/ord_index_impl_fwd.hpp>
 #include <boost/tuple/tuple.hpp>
 #include <boost/type_traits/is_same.hpp>
+#include <iterator>
 #include <type_traits>
 #include <utility>
 
@@ -191,9 +191,9 @@ public:
   typedef typename alloc_traits::pointer             pointer;
   typedef typename alloc_traits::const_pointer       const_pointer;
   typedef typename
-    boost::reverse_iterator<iterator>                reverse_iterator;
+    std::reverse_iterator<iterator>                  reverse_iterator;
   typedef typename
-    boost::reverse_iterator<const_iterator>          const_reverse_iterator;
+    std::reverse_iterator<const_iterator>            const_reverse_iterator;
   typedef typename super::final_node_handle_type     node_type;
   typedef detail::insert_return_type<
     iterator,node_type>                              insert_return_type;
@@ -261,13 +261,13 @@ public:
   const_iterator
     end()const BOOST_NOEXCEPT{return make_iterator(header());}
   reverse_iterator
-    rbegin()BOOST_NOEXCEPT{return boost::make_reverse_iterator(end());}
+    rbegin()BOOST_NOEXCEPT{return reverse_iterator{end()};}
   const_reverse_iterator
-    rbegin()const BOOST_NOEXCEPT{return boost::make_reverse_iterator(end());}
+    rbegin()const BOOST_NOEXCEPT{return const_reverse_iterator{end()};}
   reverse_iterator
-    rend()BOOST_NOEXCEPT{return boost::make_reverse_iterator(begin());}
+    rend()BOOST_NOEXCEPT{return reverse_iterator{begin()};}
   const_reverse_iterator
-    rend()const BOOST_NOEXCEPT{return boost::make_reverse_iterator(begin());}
+    rend()const BOOST_NOEXCEPT{return const_reverse_iterator{begin()};}
   const_iterator
     cbegin()const BOOST_NOEXCEPT{return begin();}
   const_iterator
