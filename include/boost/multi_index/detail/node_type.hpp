@@ -16,7 +16,6 @@
 #include <boost/config.hpp> /* keep it first to prevent nasty warns in MSVC */
 #include <boost/detail/workaround.hpp>
 #include <boost/mp11/algorithm.hpp>
-#include <boost/mp11/list.hpp>
 #include <boost/multi_index_container_fwd.hpp>
 #include <boost/multi_index/detail/header_holder.hpp>
 #include <boost/multi_index/detail/index_node_base.hpp>
@@ -42,7 +41,7 @@ struct multi_index_node_type
   BOOST_STATIC_ASSERT(detail::is_index_list<IndexSpecifierList>::value);
 
   typedef mp11::mp_reverse_fold<
-    mp11::mp_rename<detail::mp11_index_list<IndexSpecifierList>,mp11::mp_list>,
+    detail::mp11_index_list<IndexSpecifierList>,
     index_node_base<Value,Allocator>,
     node_type
   > type;
