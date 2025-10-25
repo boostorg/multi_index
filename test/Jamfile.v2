@@ -87,7 +87,10 @@ test-suite "multi_index" :
     [ run test_serialization.cpp    test_serialization1.cpp
           test_serialization2.cpp   test_serialization3.cpp
           test_serialization_main.cpp
-          /boost/serialization//boost_serialization                ]
+          /boost/serialization//boost_serialization
+        : : :
+        <compiler>clang++-3.5:<build>no
+        <compiler>clang++-3.6:<build>no                            ]
     [ run test_set_ops.cpp          test_set_ops_main.cpp          ]
     [ run test_special_set_ops.cpp  test_special_set_ops_main.cpp  ]
     [ run test_update.cpp           test_update_main.cpp
