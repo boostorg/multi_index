@@ -42,7 +42,7 @@ struct multi_index_node_type
   BOOST_STATIC_ASSERT(detail::is_index_list<IndexSpecifierList>::value);
 
   typedef mp11::mp_reverse_fold<
-    mp11::mp_rename<IndexSpecifierList,mp11::mp_list>,
+    mp11::mp_rename<detail::mp11_index_list<IndexSpecifierList>,mp11::mp_list>,
     index_node_base<Value,Allocator>,
     node_type
   > type;

@@ -31,25 +31,27 @@ namespace detail{
  * an index list.
  */
 
-template<typename N,typename IndexSpecifierList,typename SuperMeta>
-using nth_layer_index=typename mp11::mp_at<IndexSpecifierList,N>::
+template<typename N,typename Mp11IndexSpecifierList,typename SuperMeta>
+using nth_layer_index=typename mp11::mp_at<Mp11IndexSpecifierList,N>::
   template index_class<SuperMeta>::type;
 
 template<int N,typename Value,typename IndexSpecifierList,typename Allocator>
 struct nth_layer
 {
-  typedef mp11::mp_eval_if_c<
-    N==mp11::mp_size<IndexSpecifierList>::value,
+  using Mp11IndexSpecifierList=detail::mp11_index_list<IndexSpecifierList>;
+  using type=mp11::mp_eval_if_c<
+    N==mp11::mp_size<Mp11IndexSpecifierList>::value,
     index_base<Value,IndexSpecifierList,Allocator>,
     nth_layer_index,
     mp11::mp_int<N>,
-    IndexSpecifierList,
+    Mp11IndexSpecifierList,
     nth_layer<N+1,Value,IndexSpecifierList,Allocator>
-  > type;
+  >;
 };
 
 template<typename Value,typename IndexSpecifierList,typename Allocator>
-struct multi_index_base_type:nth_layer<0,Value,IndexSpecifierList,Allocator>
+struct multi_index_base_type:
+  nth_layer<0,Value,IndexSpecifierList,Allocator>
 {
   BOOST_STATIC_ASSERT(detail::is_index_list<IndexSpecifierList>::value);
 };

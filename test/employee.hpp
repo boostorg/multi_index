@@ -14,7 +14,6 @@
 #include <boost/config.hpp> /* keep it first to prevent nasty warns in MSVC */
 #include <boost/move/core.hpp>
 #include <boost/move/utility_core.hpp>
-#include <boost/mp11/list.hpp>
 #include <boost/multi_index_container.hpp>
 #include <boost/multi_index/hashed_index.hpp>
 #include <boost/multi_index/identity.hpp>
@@ -103,7 +102,7 @@ struct ssn{};
 struct randomly{};
 
 using employee_set_indices=
-  boost::mp11::mp_list<
+  boost::multi_index::indexed_by<
     boost::multi_index::ordered_unique<
       boost::multi_index::identity<employee> >,
     boost::multi_index::hashed_non_unique<

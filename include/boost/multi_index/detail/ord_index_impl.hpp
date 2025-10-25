@@ -64,6 +64,7 @@
 #include <boost/multi_index/detail/ord_index_ops.hpp>
 #include <boost/multi_index/detail/safe_mode.hpp>
 #include <boost/multi_index/detail/scope_guard.hpp>
+#include <boost/multi_index/detail/type_list.hpp>
 #include <boost/multi_index/detail/unbounded.hpp>
 #include <boost/multi_index/detail/value_compare.hpp>
 #include <boost/multi_index/detail/vartempl_support.hpp>
@@ -203,16 +204,16 @@ protected:
   typedef tuples::cons<
     ctor_args, 
     typename super::ctor_args_list>                  ctor_args_list;
-  typedef typename mp11::mp_push_front<
+  typedef type_list_push_front<
     typename super::index_type_list,
     ordered_index<
       KeyFromValue,Compare,
       SuperMeta,TagList,Category,AugmentPolicy
     >>                                               index_type_list;
-  typedef typename mp11::mp_push_front<
+  typedef type_list_push_front<
     typename super::iterator_type_list,
     iterator>                                        iterator_type_list;
-  typedef typename mp11::mp_push_front<
+  typedef type_list_push_front<
     typename super::const_iterator_type_list,
     const_iterator>                                  const_iterator_type_list;
   typedef typename super::copy_map_type              copy_map_type;

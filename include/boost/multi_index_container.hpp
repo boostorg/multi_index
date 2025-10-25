@@ -35,6 +35,7 @@
 #include <boost/multi_index/detail/header_holder.hpp>
 #include <boost/multi_index/detail/has_tag.hpp>
 #include <boost/multi_index/detail/invalidate_iterators.hpp>
+#include <boost/multi_index/detail/is_index_list.hpp>
 #include <boost/multi_index/detail/no_duplicate_tags.hpp>
 #include <boost/multi_index/detail/safe_mode.hpp>
 #include <boost/multi_index/detail/scope_guard.hpp>
@@ -164,7 +165,8 @@ public:
   typedef typename super::const_iterator           const_iterator;
 
   BOOST_STATIC_ASSERT(
-    detail::no_duplicate_tags_in_index_list<index_type_list>::value);
+    detail::no_duplicate_tags_in_index_list<
+      detail::mp11_index_list<index_type_list>>::value);
 
   /* global project() needs to see this publicly */
 
