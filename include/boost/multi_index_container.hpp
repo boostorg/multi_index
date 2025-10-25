@@ -37,6 +37,7 @@
 #include <boost/multi_index/detail/invalidate_iterators.hpp>
 #include <boost/multi_index/detail/is_index_list.hpp>
 #include <boost/multi_index/detail/no_duplicate_tags.hpp>
+#include <boost/multi_index/detail/no_duplicate_tags_in_index_list.hpp>
 #include <boost/multi_index/detail/safe_mode.hpp>
 #include <boost/multi_index/detail/scope_guard.hpp>
 #include <boost/multi_index/detail/vartempl_support.hpp>

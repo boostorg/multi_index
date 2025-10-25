@@ -15,25 +15,14 @@
 
 #include <boost/config.hpp> /* keep it first to prevent nasty warns in MSVC */
 
-#if defined(BOOST_MULTI_INDEX_ENABLE_MPL_INDEXED_BY)
-#define BOOST_MULTI_INDEX_BLOCK_BOOSTDEP_HEADER \
-  <boost/mpl/begin_end.hpp>
-#include BOOST_MULTI_INDEX_BLOCK_BOOSTDEP_HEADER
-#undef BOOST_MULTI_INDEX_BLOCK_BOOSTDEP_HEADER
-#define BOOST_MULTI_INDEX_BLOCK_BOOSTDEP_HEADER \
-  <boost/mpl/deref.hpp>
-#include BOOST_MULTI_INDEX_BLOCK_BOOSTDEP_HEADER
-#undef BOOST_MULTI_INDEX_BLOCK_BOOSTDEP_HEADER
+#if defined(BOOST_MULTI_INDEX_ENABLE_MPL_SUPPORT)
+#include <boost/multi_index/detail/mpl_to_mp11_list.hpp>
 #define BOOST_MULTI_INDEX_BLOCK_BOOSTDEP_HEADER \
   <boost/mpl/empty.hpp>
 #include BOOST_MULTI_INDEX_BLOCK_BOOSTDEP_HEADER
 #undef BOOST_MULTI_INDEX_BLOCK_BOOSTDEP_HEADER
 #define BOOST_MULTI_INDEX_BLOCK_BOOSTDEP_HEADER \
   <boost/mpl/is_sequence.hpp>
-#include BOOST_MULTI_INDEX_BLOCK_BOOSTDEP_HEADER
-#undef BOOST_MULTI_INDEX_BLOCK_BOOSTDEP_HEADER
-#define BOOST_MULTI_INDEX_BLOCK_BOOSTDEP_HEADER \
-  <boost/mpl/next.hpp>
 #include BOOST_MULTI_INDEX_BLOCK_BOOSTDEP_HEADER
 #undef BOOST_MULTI_INDEX_BLOCK_BOOSTDEP_HEADER
 #include <type_traits>
@@ -55,23 +44,8 @@ struct is_index_list
   BOOST_STATIC_CONSTANT(bool,value=mpl_sequence&&non_empty);
 };
 
-template<typename First,typename Last,typename... Ts>
-struct mp11_index_list_impl:mp11_index_list_impl<
-  typename mpl::next<First>::type,Last,
-  Ts...,typename mpl::deref<First>::type
->{};
-
-template<typename Last,typename... Ts>
-struct mp11_index_list_impl<Last,Last,Ts...>
-{
-  using type=mp11::mp_list<Ts...>;
-};
-
 template<typename IndexList>
-using mp11_index_list=typename mp11_index_list_impl<
-  typename mpl::begin<IndexList>::type,
-  typename boost::mpl::end<IndexList>::type
->::type;
+using mp11_index_list=mpl_to_mp11_list<IndexList>;
 
 } /* namespace multi_index::detail */
 

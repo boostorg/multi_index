@@ -13,7 +13,7 @@
 #pragma once
 #endif
 
-#if defined(BOOST_MULTI_INDEX_ENABLE_MPL_INDEXED_BY)
+#if defined(BOOST_MULTI_INDEX_ENABLE_MPL_SUPPORT)
 #define BOOST_MULTI_INDEX_BLOCK_BOOSTDEP_HEADER \
   <boost/mpl/push_front.hpp>
 #include BOOST_MULTI_INDEX_BLOCK_BOOSTDEP_HEADER

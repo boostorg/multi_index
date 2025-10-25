@@ -17,11 +17,11 @@
 
 /* An Mp11 list containing the index specifiers for instantiation
  * of a multi_index_container.
- * If BOOST_MULTI_INDEX_ENABLE_MPL_INDEXED_BY is defined, the old
+ * If BOOST_MULTI_INDEX_ENABLE_MPL_SUPPORT is defined, the old
  * MPL-based definition of indexed_by is kept.
  */
 
-#if defined(BOOST_MULTI_INDEX_ENABLE_MPL_INDEXED_BY)
+#if defined(BOOST_MULTI_INDEX_ENABLE_MPL_SUPPORT)
 #define BOOST_MULTI_INDEX_BLOCK_BOOSTDEP_HEADER \
   <boost/mpl/vector.hpp>
 #include BOOST_MULTI_INDEX_BLOCK_BOOSTDEP_HEADER
