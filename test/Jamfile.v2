@@ -42,7 +42,6 @@ project
       <library>/boost/mp11//boost_mp11
       <library>/boost/mpl//boost_mpl
       <library>/boost/preprocessor//boost_preprocessor
-      <library>/boost/serialization//boost_serialization
       <library>/boost/smart_ptr//boost_smart_ptr
       <library>/boost/static_assert//boost_static_assert
       <library>/boost/throw_exception//boost_throw_exception
