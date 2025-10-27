@@ -1,4 +1,4 @@
-/* Copyright 2003-2023 Joaquin M Lopez Munoz.
+/* Copyright 2003-2025 Joaquin M Lopez Munoz.
  * Distributed under the Boost Software License, Version 1.0.
  * (See accompanying file LICENSE_1_0.txt or copy at
  * http://www.boost.org/LICENSE_1_0.txt)
@@ -47,12 +47,9 @@
 #include <boost/core/no_exceptions_support.hpp>
 #include <boost/core/ref.hpp>
 #include <boost/detail/workaround.hpp>
-#include <boost/iterator/reverse_iterator.hpp>
 #include <boost/move/core.hpp>
 #include <boost/move/utility_core.hpp>
-#include <boost/mpl/bool.hpp>
-#include <boost/mpl/if.hpp>
-#include <boost/mpl/push_front.hpp>
+#include <boost/mp11/utility.hpp>
 #include <boost/multi_index/detail/access_specifier.hpp>
 #include <boost/multi_index/detail/adl_swap.hpp>
 #include <boost/multi_index/detail/allocator_traits.hpp>
@@ -66,12 +63,15 @@
 #include <boost/multi_index/detail/ord_index_ops.hpp>
 #include <boost/multi_index/detail/safe_mode.hpp>
 #include <boost/multi_index/detail/scope_guard.hpp>
+#include <boost/multi_index/detail/type_list.hpp>
 #include <boost/multi_index/detail/unbounded.hpp>
 #include <boost/multi_index/detail/value_compare.hpp>
 #include <boost/multi_index/detail/vartempl_support.hpp>
 #include <boost/multi_index/detail/ord_index_impl_fwd.hpp>
 #include <boost/tuple/tuple.hpp>
 #include <boost/type_traits/is_same.hpp>
+#include <iterator>
+#include <type_traits>
 #include <utility>
 
 #if !defined(BOOST_NO_CXX11_HDR_INITIALIZER_LIST)
@@ -191,9 +191,9 @@ public:
   typedef typename alloc_traits::pointer             pointer;
   typedef typename alloc_traits::const_pointer       const_pointer;
   typedef typename
-    boost::reverse_iterator<iterator>                reverse_iterator;
+    std::reverse_iterator<iterator>                  reverse_iterator;
   typedef typename
-    boost::reverse_iterator<const_iterator>          const_reverse_iterator;
+    std::reverse_iterator<const_iterator>            const_reverse_iterator;
   typedef typename super::final_node_handle_type     node_type;
   typedef detail::insert_return_type<
     iterator,node_type>                              insert_return_type;
@@ -204,18 +204,18 @@ protected:
   typedef tuples::cons<
     ctor_args, 
     typename super::ctor_args_list>                  ctor_args_list;
-  typedef typename mpl::push_front<
+  typedef type_list_push_front<
     typename super::index_type_list,
     ordered_index<
       KeyFromValue,Compare,
       SuperMeta,TagList,Category,AugmentPolicy
-    > >::type                                        index_type_list;
-  typedef typename mpl::push_front<
+    >>                                               index_type_list;
+  typedef type_list_push_front<
     typename super::iterator_type_list,
-    iterator>::type    iterator_type_list;
-  typedef typename mpl::push_front<
+    iterator>                                        iterator_type_list;
+  typedef type_list_push_front<
     typename super::const_iterator_type_list,
-    const_iterator>::type                            const_iterator_type_list;
+    const_iterator>                                  const_iterator_type_list;
   typedef typename super::copy_map_type              copy_map_type;
 
 #if !defined(BOOST_MULTI_INDEX_DISABLE_SERIALIZATION)
@@ -261,13 +261,13 @@ public:
   const_iterator
     end()const BOOST_NOEXCEPT{return make_iterator(header());}
   reverse_iterator
-    rbegin()BOOST_NOEXCEPT{return boost::make_reverse_iterator(end());}
+    rbegin()BOOST_NOEXCEPT{return reverse_iterator{end()};}
   const_reverse_iterator
-    rbegin()const BOOST_NOEXCEPT{return boost::make_reverse_iterator(end());}
+    rbegin()const BOOST_NOEXCEPT{return const_reverse_iterator{end()};}
   reverse_iterator
-    rend()BOOST_NOEXCEPT{return boost::make_reverse_iterator(begin());}
+    rend()BOOST_NOEXCEPT{return reverse_iterator{begin()};}
   const_reverse_iterator
-    rend()const BOOST_NOEXCEPT{return boost::make_reverse_iterator(begin());}
+    rend()const BOOST_NOEXCEPT{return const_reverse_iterator{begin()};}
   const_iterator
     cbegin()const BOOST_NOEXCEPT{return begin();}
   const_iterator
@@ -701,19 +701,19 @@ public:
   std::pair<iterator,iterator>
   range(LowerBounder lower,UpperBounder upper)const
   {
-    typedef typename mpl::if_<
+    typedef typename mp11::mp_if<
       is_same<LowerBounder,unbounded_type>,
-      BOOST_DEDUCED_TYPENAME mpl::if_<
+      mp11::mp_if<
         is_same<UpperBounder,unbounded_type>,
         both_unbounded_tag,
         lower_unbounded_tag
-      >::type,
-      BOOST_DEDUCED_TYPENAME mpl::if_<
+      >,
+      mp11::mp_if<
         is_same<UpperBounder,unbounded_type>,
         upper_unbounded_tag,
         none_unbounded_tag
-      >::type
-    >::type dispatch;
+      >
+    > dispatch;
 
     return range(lower,upper,dispatch());
   }
@@ -1732,7 +1732,7 @@ template<
 struct is_noncopyable<
   boost::multi_index::detail::ordered_index<
     KeyFromValue,Compare,SuperMeta,TagList,Category,AugmentPolicy>
->:boost::mpl::true_{};
+>:std::true_type{};
 
 }
 }

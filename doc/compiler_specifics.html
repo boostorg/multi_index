@@ -44,7 +44,6 @@ We list some of the possible limitations along with suitable workarounds when av
   <li><a href="#symbol_reduction">Reduction of symbol name lengths</a>
     <ul>
       <li><a href="#argument_limitation">Limitation of maximum number of arguments</a></li>
-      <li><a href="#type_hiding">Type hiding</a></li>
   </ul>
   </li>
   <li><a href="#legacy">Legacy compilers</a></li>
@@ -118,153 +117,13 @@ messages are more readable.
 <h3><a name="argument_limitation">Limitation of maximum number of arguments</a></h3>
 
 <p>
-The class templates <a href="reference/indices.html#indexed_by"><code>indexed_by</code></a>,
-<a href="reference/indices.html#tag"><code>tag</code></a> and
+The class template 
 <a href="reference/key_extraction.html#composite_key"><code>composite_key</code></a>
-accept a variable number of arguments whose maximum number is limited by
-internal macros. Even non-used arguments contribute to the final types,
-so manually adjusting the corresponding macros can result in a modest reduction
+accepts a variable number of arguments whose maximum number is limited by
+the macro <code>BOOST_MULTI_INDEX_LIMIT_COMPOSITE_KEY_SIZE</code> (defaulting to 10
+if not defined). Even non-used arguments contribute to the final types,
+so manually adjusting the macro can result in a modest reduction
 of symbol names.
-</p>
-
-<p align="center">
-<table cellspacing="0">
-  <caption><b>Limiting maximum number of arguments of some class templates
-  of Boost.MultiIndex.</b></caption>
-<tr>
-  <th>class template</th>
-  <th>limiting macro</th>
-  <th>default value</th>
-</tr>
-<tr>
-  <td align="center">&nbsp;<code>indexed_by</code>&nbsp;</td>
-  <td align="center">&nbsp;<code>BOOST_MULTI_INDEX_LIMIT_INDEXED_BY_SIZE</code>&nbsp;</td>
-  <td align="center">20</td>
-</tr>
-<tr class="odd_tr">
-  <td align="center">&nbsp;<code>tag</code>&nbsp;</td>
-  <td align="center">&nbsp;<code>BOOST_MULTI_INDEX_LIMIT_TAG_SIZE</code>&nbsp;</td>
-  <td align="center">20</td>
-</tr>
-<tr>
-  <td align="center">&nbsp;<code>composite_key</code>&nbsp;</td>
-  <td align="center">&nbsp;<code>BOOST_MULTI_INDEX_LIMIT_COMPOSITE_KEY_SIZE</code>&nbsp;</td>
-  <td align="center">10</td>
-</tr>
-</table>
-</p>
-
-<h3><a name="type_hiding">Type hiding</a></h3>
-
-<p>
-Consider a typical instantiation of <code>multi_index_container</code>:
-</p>
-
-<blockquote><pre>
-<span class=keyword>typedef</span> <span class=identifier>multi_index_container</span><span class=special>&lt;</span>
-  <span class=identifier>employee</span><span class=special>,</span>
-  <span class=identifier>indexed_by</span><span class=special>&lt;</span>
-    <span class=identifier>ordered_unique</span><span class=special>&lt;</span><span class=identifier>identity</span><span class=special>&lt;</span><span class=identifier>employee</span><span class=special>&gt;</span> <span class=special>&gt;,</span>
-    <span class=identifier>ordered_non_unique</span><span class=special>&lt;</span><span class=identifier>member</span><span class=special>&lt;</span><span class=identifier>employee</span><span class=special>,</span><span class=identifier>std</span><span class=special>::</span><span class=identifier>string</span><span class=special>,&amp;</span><span class=identifier>employee</span><span class=special>::</span><span class=identifier>name</span><span class=special>&gt;</span> <span class=special>&gt;,</span>
-    <span class=identifier>ordered_unique</span><span class=special>&lt;</span><span class=identifier>member</span><span class=special>&lt;</span><span class=identifier>employee</span><span class=special>,</span><span class=keyword>int</span><span class=special>,&amp;</span><span class=identifier>employee</span><span class=special>::</span><span class=identifier>ssnumber</span><span class=special>&gt;</span> <span class=special>&gt;</span>
-  <span class=special>&gt;</span>
-<span class=special>&gt;</span> <span class=identifier>employee_set</span><span class=special>;</span>
-</pre></blockquote>
-
-<p>
-Then, for instance, the type <code>employee_set::nth_index&lt;0&gt;::type</code>
-resolves to the following in GCC:
-</p>
-
-<blockquote><pre>
-<span class=identifier>boost</span><span class=special>::</span><span class=identifier>multi_index</span><span class=special>::</span><span class=identifier>detail</span><span class=special>::</span><span class=identifier>ordered_index</span><span class=special>&lt;</span>
-  <span class=identifier>boost</span><span class=special>::</span><span class=identifier>multi_index</span><span class=special>::</span><span class=identifier>identity</span><span class=special>&lt;</span><span class=identifier>employee</span><span class=special>&gt;,</span>
-  <span class=identifier>std</span><span class=special>::</span><span class=identifier>less</span><span class=special>&lt;</span><span class=identifier>employee</span><span class=special>&gt;,</span>
-  <span class=identifier>boost</span><span class=special>::</span><span class=identifier>multi_index</span><span class=special>::</span><span class=identifier>detail</span><span class=special>::</span><span class=identifier>nth_layer</span><span class=special>&lt;</span>
-    <span class=number>1</span><span class=special>,</span> <span class=identifier>employee</span><span class=special>,</span>
-    <span class=identifier>boost</span><span class=special>::</span><span class=identifier>multi_index</span><span class=special>::</span><span class=identifier>indexed_by</span><span class=special>&lt;</span>
-      <span class=identifier>boost</span><span class=special>::</span><span class=identifier>multi_index</span><span class=special>::</span><span class=identifier>ordered_unique</span><span class=special>&lt;</span>
-        <span class=identifier>boost</span><span class=special>::</span><span class=identifier>multi_index</span><span class=special>::</span><span class=identifier>identity</span><span class=special>&lt;</span><span class=identifier>employee</span><span class=special>&gt;,</span> <span class=identifier>mpl_</span><span class=special>::</span><span class=identifier>na</span><span class=special>,</span> <span class=identifier>mpl_</span><span class=special>::</span><span class=identifier>na</span>
-      <span class=special>&gt;,</span>
-      <span class=identifier>boost</span><span class=special>::</span><span class=identifier>multi_index</span><span class=special>::</span><span class=identifier>ordered_non_unique</span><span class=special>&lt;</span>
-        <span class=identifier>boost</span><span class=special>::</span><span class=identifier>multi_index</span><span class=special>::</span><span class=identifier>member</span><span class=special>&lt;</span><span class=identifier>employee</span><span class=special>,</span> <span class=identifier>std</span><span class=special>::</span><span class=identifier>string</span><span class=special>,</span> <span class=special>&amp;</span><span class=identifier>employee</span><span class=special>::</span><span class=identifier>name</span><span class=special>&gt;,</span>
-        <span class=identifier>mpl_</span><span class=special>::</span><span class=identifier>na</span><span class=special>,</span> <span class=identifier>mpl_</span><span class=special>::</span><span class=identifier>na</span>
-      <span class=special>&gt;,</span>
-      <span class=identifier>boost</span><span class=special>::</span><span class=identifier>multi_index</span><span class=special>::</span><span class=identifier>ordered_unique</span><span class=special>&lt;</span>
-        <span class=identifier>boost</span><span class=special>::</span><span class=identifier>multi_index</span><span class=special>::</span><span class=identifier>member</span><span class=special>&lt;</span><span class=identifier>employee</span><span class=special>,</span> <span class=keyword>int</span><span class=special>,</span> <span class=special>&amp;</span><span class=identifier>employee</span><span class=special>::</span><span class=identifier>ssnumber</span><span class=special>&gt;,</span>
-        <span class=identifier>mpl_</span><span class=special>::</span><span class=identifier>na</span><span class=special>,</span> <span class=identifier>mpl_</span><span class=special>::</span><span class=identifier>na</span>
-      <span class=special>&gt;,</span>
-      <span class=identifier>mpl_</span><span class=special>::</span><span class=identifier>na</span><span class=special>,</span> <span class=identifier>mpl_</span><span class=special>::</span><span class=identifier>na</span><span class=special>,</span> <span class=identifier>mpl_</span><span class=special>::</span><span class=identifier>na</span><span class=special>,</span> <span class=identifier>mpl_</span><span class=special>::</span><span class=identifier>na</span><span class=special>,</span> <span class=identifier>mpl_</span><span class=special>::</span><span class=identifier>na</span><span class=special>,</span> <span class=identifier>mpl_</span><span class=special>::</span><span class=identifier>na</span><span class=special>,</span>
-      <span class=identifier>mpl_</span><span class=special>::</span><span class=identifier>na</span><span class=special>,</span> <span class=identifier>mpl_</span><span class=special>::</span><span class=identifier>na</span><span class=special>,</span> <span class=identifier>mpl_</span><span class=special>::</span><span class=identifier>na</span><span class=special>,</span> <span class=identifier>mpl_</span><span class=special>::</span><span class=identifier>na</span><span class=special>,</span> <span class=identifier>mpl_</span><span class=special>::</span><span class=identifier>na</span><span class=special>,</span> <span class=identifier>mpl_</span><span class=special>::</span><span class=identifier>na</span><span class=special>,</span>
-      <span class=identifier>mpl_</span><span class=special>::</span><span class=identifier>na</span><span class=special>,</span> <span class=identifier>mpl_</span><span class=special>::</span><span class=identifier>na</span><span class=special>,</span> <span class=identifier>mpl_</span><span class=special>::</span><span class=identifier>na</span><span class=special>,</span> <span class=identifier>mpl_</span><span class=special>::</span><span class=identifier>na</span><span class=special>,</span> <span class=identifier>mpl_</span><span class=special>::</span><span class=identifier>na</span>
-    <span class=special>&gt;,</span>
-    <span class=identifier>std</span><span class=special>::</span><span class=identifier>allocator</span><span class=special>&lt;</span><span class=identifier>employee</span><span class=special>&gt;</span>
-  <span class=special>&gt;,</span>
-  <span class=identifier>boost</span><span class=special>::</span><span class=identifier>mpl</span><span class=special>::</span><span class=identifier>vector0</span><span class=special>&lt;</span><span class=identifier>mpl_</span><span class=special>::</span><span class=identifier>na</span><span class=special>&gt;,</span>
-  <span class=identifier>boost</span><span class=special>::</span><span class=identifier>multi_index</span><span class=special>::</span><span class=identifier>detail</span><span class=special>::</span><span class=identifier>ordered_unique_tag</span>
-<span class=special>&gt;</span>
-</pre></blockquote>
-
-<p>
-It can be seen that a significant portion of the type name is contributed by
-the <code>indexed_by&lt;...&gt;</code> part, which is nothing but an expanded
-version of the index specifier list provided in the definition of
-<code>employee_set</code>. We can prevent this very long name from appearing
-in the final type by encapsulating it into another, shorter-named construct:
-</p>
-
-<blockquote><pre>
-<span class=comment>// reducing symbol names through type hiding
-// type hide the index specifier list within employee_set_indices</span>
-
-<span class=keyword>struct</span> <span class=identifier>employee_set_indices</span><span class=special>:</span>
-  <span class=identifier>indexed_by</span><span class=special>&lt;</span>
-    <span class=identifier>ordered_unique</span><span class=special>&lt;</span><span class=identifier>identity</span><span class=special>&lt;</span><span class=identifier>employee</span><span class=special>&gt;</span> <span class=special>&gt;,</span>
-    <span class=identifier>ordered_non_unique</span><span class=special>&lt;</span><span class=identifier>member</span><span class=special>&lt;</span><span class=identifier>employee</span><span class=special>,</span><span class=identifier>std</span><span class=special>::</span><span class=identifier>string</span><span class=special>,&amp;</span><span class=identifier>employee</span><span class=special>::</span><span class=identifier>name</span><span class=special>&gt;</span> <span class=special>&gt;,</span>
-    <span class=identifier>ordered_unique</span><span class=special>&lt;</span><span class=identifier>member</span><span class=special>&lt;</span><span class=identifier>employee</span><span class=special>,</span><span class=keyword>int</span><span class=special>,&amp;</span><span class=identifier>employee</span><span class=special>::</span><span class=identifier>ssnumber</span><span class=special>&gt;</span> <span class=special>&gt;</span>
-  <span class=special>&gt;</span>
-<span class=special>{};</span>
-
-<span class=keyword>typedef</span> <span class=identifier>multi_index_container</span><span class=special>&lt;</span>
-  <span class=identifier>employee</span><span class=special>,</span>
-  <span class=identifier>employee_set_indices</span>
-<span class=special>&gt;</span> <span class=identifier>employee_set</span><span class=special>;</span>
-</pre></blockquote>
-
-<p>
-<code>employee_set_indices</code> works as a conventional <code>typedef</code>
-in all respects, save for a detail: its name does not explicitly
-include the information contained in the <code>indexed_by</code> instantiation.
-Applying this technique, <code>employee_set::nth_index&lt;0&gt;::type</code>
-now becomes:
-</p>
-
-<blockquote><pre>
-<span class=identifier>boost</span><span class=special>::</span><span class=identifier>multi_index</span><span class=special>::</span><span class=identifier>detail</span><span class=special>::</span><span class=identifier>ordered_index</span><span class=special>&lt;</span>
-  <span class=identifier>boost</span><span class=special>::</span><span class=identifier>multi_index</span><span class=special>::</span><span class=identifier>identity</span><span class=special>&lt;</span><span class=identifier>employee</span><span class=special>&gt;,</span>
-  <span class=identifier>std</span><span class=special>::</span><span class=identifier>less</span><span class=special>&lt;</span><span class=identifier>employee</span><span class=special>&gt;,</span>
-  <span class=identifier>boost</span><span class=special>::</span><span class=identifier>multi_index</span><span class=special>::</span><span class=identifier>detail</span><span class=special>::</span><span class=identifier>nth_layer</span><span class=special>&lt;</span>
-    <span class=number>1</span><span class=special>,</span> <span class=identifier>employee</span><span class=special>,</span>
-    <span class=identifier>employee_set_indices</span><span class=special>,</span>
-    <span class=identifier>std</span><span class=special>::</span><span class=identifier>allocator</span><span class=special>&lt;</span><span class=identifier>employee</span><span class=special>&gt;</span>
-  <span class=special>&gt;,</span>
-  <span class=identifier>boost</span><span class=special>::</span><span class=identifier>mpl</span><span class=special>::</span><span class=identifier>vector0</span><span class=special>&lt;</span><span class=identifier>mpl_</span><span class=special>::</span><span class=identifier>na</span><span class=special>&gt;,</span>
-  <span class=identifier>boost</span><span class=special>::</span><span class=identifier>multi_index</span><span class=special>::</span><span class=identifier>detail</span><span class=special>::</span><span class=identifier>ordered_unique_tag</span>
-<span class=special>&gt;</span>
-</pre></blockquote>
-
-<p>
-which is considerably shorter than the original, and also more
-easily parsed by a human reader. Type hiding would not work if, instead of
-making <code>employee_set_indices</code> a derived <code>struct</code> of
-<code>indexed_by&lt;...&gt;</code>, we had defined it as a <code>typedef</code>:
-<code>typedef</code>s are syntactic aliases and usually get expanded
-by the compiler before doing any further type handling.
-</p>
-
-<p>
-Type hiding techniques can also be applied to <code>composite_key</code> instantiations,
-which often contribute a great deal to symbol name lengths.
 </p>
 
 <h2><a name="legacy">Legacy compilers</a></h2>
@@ -389,9 +248,9 @@ Performance
 
 <br>
 
-<p>Revised January 25th 2020</p>
+<p>Revised October 25th 2025</p>
 
-<p>&copy; Copyright 2003-2020 Joaqu&iacute;n M L&oacute;pez Mu&ntilde;oz.
+<p>&copy; Copyright 2003-2025 Joaqu&iacute;n M L&oacute;pez Mu&ntilde;oz.
 Distributed under the Boost Software 
 License, Version 1.0. (See accompanying file <a href="../../../LICENSE_1_0.txt">
 LICENSE_1_0.txt</a> or copy at <a href="http://www.boost.org/LICENSE_1_0.txt">

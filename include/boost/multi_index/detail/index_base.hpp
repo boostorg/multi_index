@@ -1,4 +1,4 @@
-/* Copyright 2003-2021 Joaquin M Lopez Munoz.
+/* Copyright 2003-2025 Joaquin M Lopez Munoz.
  * Distributed under the Boost Software License, Version 1.0.
  * (See accompanying file LICENSE_1_0.txt or copy at
  * http://www.boost.org/LICENSE_1_0.txt)
@@ -18,13 +18,13 @@
 #include <boost/core/no_exceptions_support.hpp>
 #include <boost/detail/workaround.hpp>
 #include <boost/move/utility_core.hpp>
-#include <boost/mpl/vector.hpp>
 #include <boost/multi_index/detail/allocator_traits.hpp>
 #include <boost/multi_index/detail/copy_map.hpp>
 #include <boost/multi_index/detail/do_not_copy_elements_tag.hpp>
 #include <boost/multi_index/detail/index_access_sequence.hpp>
 #include <boost/multi_index/detail/node_handle.hpp>
 #include <boost/multi_index/detail/node_type.hpp>
+#include <boost/multi_index/detail/type_list.hpp>
 #include <boost/multi_index/detail/vartempl_support.hpp>
 #include <boost/multi_index_container_fwd.hpp>
 #include <boost/tuple/tuple.hpp>
@@ -68,9 +68,9 @@ protected:
   >::type                                     final_allocator_type;
   typedef node_handle<
     final_node_type,final_allocator_type>     final_node_handle_type;
-  typedef mpl::vector0<>                      index_type_list;
-  typedef mpl::vector0<>                      iterator_type_list;
-  typedef mpl::vector0<>                      const_iterator_type_list;
+  typedef empty_type_list                     index_type_list;
+  typedef empty_type_list                     iterator_type_list;
+  typedef empty_type_list                     const_iterator_type_list;
   typedef copy_map<
     final_node_type,
     final_allocator_type>                     copy_map_type;

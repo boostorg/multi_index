@@ -1,4 +1,4 @@
-/* Copyright 2003-2023 Joaquin M Lopez Munoz.
+/* Copyright 2003-2025 Joaquin M Lopez Munoz.
  * Distributed under the Boost Software License, Version 1.0.
  * (See accompanying file LICENSE_1_0.txt or copy at
  * http://www.boost.org/LICENSE_1_0.txt)
@@ -20,12 +20,9 @@
 #include <boost/core/addressof.hpp>
 #include <boost/core/no_exceptions_support.hpp>
 #include <boost/detail/workaround.hpp>
-#include <boost/iterator/reverse_iterator.hpp>
 #include <boost/move/core.hpp>
 #include <boost/move/utility_core.hpp>
-#include <boost/mpl/bool.hpp>
-#include <boost/mpl/not.hpp>
-#include <boost/mpl/push_front.hpp>
+#include <boost/mp11/function.hpp>
 #include <boost/multi_index/detail/access_specifier.hpp>
 #include <boost/multi_index/detail/allocator_traits.hpp>
 #include <boost/multi_index/detail/do_not_copy_elements_tag.hpp>
@@ -37,6 +34,7 @@
 #include <boost/multi_index/detail/rnd_index_ptr_array.hpp>
 #include <boost/multi_index/detail/safe_mode.hpp>
 #include <boost/multi_index/detail/scope_guard.hpp>
+#include <boost/multi_index/detail/type_list.hpp>
 #include <boost/multi_index/detail/vartempl_support.hpp>
 #include <boost/multi_index/random_access_index_fwd.hpp>
 #include <boost/throw_exception.hpp> 
@@ -44,7 +42,9 @@
 #include <boost/type_traits/is_copy_constructible.hpp>
 #include <boost/type_traits/is_integral.hpp>
 #include <functional>
+#include <iterator>
 #include <stdexcept> 
+#include <type_traits>
 #include <utility>
 
 #if !defined(BOOST_NO_CXX11_HDR_INITIALIZER_LIST)
@@ -141,9 +141,9 @@ public:
   typedef typename alloc_traits::size_type       size_type;
   typedef typename alloc_traits::difference_type difference_type;
   typedef typename
-    boost::reverse_iterator<iterator>            reverse_iterator;
+    std::reverse_iterator<iterator>              reverse_iterator;
   typedef typename
-    boost::reverse_iterator<const_iterator>      const_reverse_iterator;
+    std::reverse_iterator<const_iterator>        const_reverse_iterator;
   typedef typename super::final_node_handle_type node_type;
   typedef detail::insert_return_type<
     iterator,node_type>                          insert_return_type;
@@ -154,15 +154,15 @@ protected:
   typedef tuples::cons<
     ctor_args, 
     typename super::ctor_args_list>           ctor_args_list;
-  typedef typename mpl::push_front<
+  typedef type_list_push_front<
     typename super::index_type_list,
-    random_access_index>::type                index_type_list;
-  typedef typename mpl::push_front<
+    random_access_index>                      index_type_list;
+  typedef type_list_push_front<
     typename super::iterator_type_list,
-    iterator>::type                           iterator_type_list;
-  typedef typename mpl::push_front<
+    iterator>                                 iterator_type_list;
+  typedef type_list_push_front<
     typename super::const_iterator_type_list,
-    const_iterator>::type                     const_iterator_type_list;
+    const_iterator>                           const_iterator_type_list;
   typedef typename super::copy_map_type       copy_map_type;
 
 #if !defined(BOOST_MULTI_INDEX_DISABLE_SERIALIZATION)
@@ -208,7 +208,7 @@ public:
   template <class InputIterator>
   void assign(InputIterator first,InputIterator last)
   {
-    assign_iter(first,last,mpl::not_<is_integral<InputIterator> >());
+    assign_iter(first,last,mp11::mp_not<is_integral<InputIterator> >());
   }
 
 #if !defined(BOOST_NO_CXX11_HDR_INITIALIZER_LIST)
@@ -241,13 +241,13 @@ public:
   const_iterator
     end()const BOOST_NOEXCEPT{return make_iterator(header());}
   reverse_iterator
-    rbegin()BOOST_NOEXCEPT{return boost::make_reverse_iterator(end());}
+    rbegin()BOOST_NOEXCEPT{return reverse_iterator{end()};}
   const_reverse_iterator
-    rbegin()const BOOST_NOEXCEPT{return boost::make_reverse_iterator(end());}
+    rbegin()const BOOST_NOEXCEPT{return const_reverse_iterator{end()};}
   reverse_iterator
-    rend()BOOST_NOEXCEPT{return boost::make_reverse_iterator(begin());}
+    rend()BOOST_NOEXCEPT{return reverse_iterator{begin()};}
   const_reverse_iterator
-    rend()const BOOST_NOEXCEPT{return boost::make_reverse_iterator(begin());}
+    rend()const BOOST_NOEXCEPT{return const_reverse_iterator{begin()};}
   const_iterator
     cbegin()const BOOST_NOEXCEPT{return begin();}
   const_iterator
@@ -392,7 +392,7 @@ public:
   template<typename InputIterator>
   void insert(iterator position,InputIterator first,InputIterator last)
   {
-    insert_iter(position,first,last,mpl::not_<is_integral<InputIterator> >());
+    insert_iter(position,first,last,mp11::mp_not<is_integral<InputIterator> >());
   }
 
 #if !defined(BOOST_NO_CXX11_HDR_INITIALIZER_LIST)
@@ -1027,14 +1027,14 @@ private:
 #endif
 
   template <class InputIterator>
-  void assign_iter(InputIterator first,InputIterator last,mpl::true_)
+  void assign_iter(InputIterator first,InputIterator last,std::true_type)
   {
     BOOST_MULTI_INDEX_RND_INDEX_CHECK_INVARIANT;
     clear();
     for(;first!=last;++first)this->final_insert_ref_(*first);
   }
 
-  void assign_iter(size_type n,value_param_type value,mpl::false_)
+  void assign_iter(size_type n,value_param_type value,std::false_type)
   {
     BOOST_MULTI_INDEX_RND_INDEX_CHECK_INVARIANT;
     clear();
@@ -1043,7 +1043,7 @@ private:
 
   template<typename InputIterator>
   void insert_iter(
-    iterator position,InputIterator first,InputIterator last,mpl::true_)
+    iterator position,InputIterator first,InputIterator last,std::true_type)
   {
     BOOST_MULTI_INDEX_RND_INDEX_CHECK_INVARIANT;
     size_type s=0;
@@ -1061,7 +1061,7 @@ private:
   }
 
   void insert_iter(
-    iterator position,size_type n,value_param_type x,mpl::false_)
+    iterator position,size_type n,value_param_type x,std::false_type)
   {
     BOOST_MULTI_INDEX_CHECK_VALID_ITERATOR(position);
     BOOST_MULTI_INDEX_CHECK_IS_OWNER(position,*this);
@@ -1331,8 +1331,7 @@ struct random_access
   template<typename SuperMeta>
   struct index_class
   {
-    typedef detail::random_access_index<
-      SuperMeta,typename TagList::type>  type;
+    typedef detail::random_access_index<SuperMeta,TagList>  type;
   };
 };
 
@@ -1351,7 +1350,7 @@ struct is_noncopyable;
 template<typename SuperMeta,typename TagList>
 struct is_noncopyable<
   boost::multi_index::detail::random_access_index<SuperMeta,TagList>
->:boost::mpl::true_{};
+>:std::true_type{};
 
 }
 }
