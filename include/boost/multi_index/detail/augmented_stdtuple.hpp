@@ -100,6 +100,8 @@ private:
   {}
 
 public:
+  augmented_stdtuple()=default; /* seemingly needed by MSVC 14.0 */
+
   template<
     typename... Args,
     typename std::enable_if<
