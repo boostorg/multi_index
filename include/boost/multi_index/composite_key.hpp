@@ -337,6 +337,7 @@ public:
   typedef composite_key_result<composite_key>       result_type;
 
   using super::super;
+  composite_key()=default;
   composite_key(const composite_key&)=default;
 
   const key_extractor_tuple& key_extractors()const{return *this;}
@@ -585,6 +586,7 @@ public:
   typedef std::tuple<Pred,Preds...> key_eq_tuple;
 
   using super::super;
+  composite_key_equal_to()=default;
   composite_key_equal_to(const composite_key_equal_to&)=default;
 
   const key_eq_tuple& key_eqs()const{return *this;}
@@ -702,6 +704,7 @@ public:
   typedef std::tuple<Compare,Compares...> key_comp_tuple;
 
   using super::super;
+  composite_key_compare()=default;
   composite_key_compare(const composite_key_compare&)=default;
 
   const key_comp_tuple& key_comps()const{return *this;}
@@ -834,6 +837,7 @@ public:
   typedef std::tuple<Hash,Hashes...> key_hasher_tuple;
 
   using super::super;
+  composite_key_hash()=default;
   composite_key_hash(const composite_key_hash&)=default;
 
   const key_hasher_tuple& key_hash_functions()const{return *this;}
