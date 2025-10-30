@@ -52,7 +52,7 @@ template<typename CompositeKeyResult>
 struct composite_key_result_length
 {
   BOOST_STATIC_CONSTANT(int,
-    value=boost::tuples::length<
+    value=std::tuple_size<
       BOOST_DEDUCED_TYPENAME 
       CompositeKeyResult::composite_key_type::key_extractor_tuple
     >::value);
