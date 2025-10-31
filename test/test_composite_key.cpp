@@ -58,8 +58,6 @@ struct composite_key_result_length
     >::value);
 };
 
-#if !defined(BOOST_NO_CXX11_HDR_TUPLE)&&\
-    !defined(BOOST_NO_CXX11_VARIADIC_TEMPLATES)
 struct is_boost_tuple_helper
 {
   typedef char yes;
@@ -97,19 +95,6 @@ struct composite_object_length
 
   BOOST_STATIC_CONSTANT(int,value=type::value);
 };
-#else
-template<typename T>
-struct composite_object_length
-{
-  typedef boost::mp11::mp_if<
-    is_composite_key_result<T>,
-    composite_key_result_length<T>,
-    boost::tuples::length<T>
-  > type;
-
-  BOOST_STATIC_CONSTANT(int,value=type::value);
-};
-#endif
 
 template<typename CompositeKeyResult,typename T2>
 struct comparison_equal_length
@@ -350,11 +335,7 @@ struct name                                             \
 };
 
 DEFINE_TUPLE_MAKER(boost_tuple_maker,boost::tuple)
-
-#if !defined(BOOST_NO_CXX11_HDR_TUPLE)&&\
-    !defined(BOOST_NO_CXX11_VARIADIC_TEMPLATES)
 DEFINE_TUPLE_MAKER(std_tuple_maker,std::tuple)
-#endif
 
 #undef DEFINE_TUPLE_MAKER
 #undef TUPLE_MAKER_CREATE
@@ -399,13 +380,10 @@ void test_composite_key_template()
     std::distance(
       mc1.lower_bound(TupleMaker::create(0,0)),
       mc1.upper_bound(TupleMaker::create(1,0)))==6);
-
-#if !defined(BOOST_NO_FUNCTION_TEMPLATE_ORDERING)
   BOOST_TEST(
     std::distance(
       mc1.lower_bound(1),
       mc1.upper_bound(1))==4);
-#endif
 
   ckey_t1 ck1;
   ckey_t1 ck2(ck1);
@@ -456,11 +434,9 @@ void test_composite_key_template()
   BOOST_TEST(is_less   (ck1(xyz(0,0,0)),TupleMaker::create(1),cp1));
   BOOST_TEST(is_greater(ck1(xyz(0,0,0)),TupleMaker::create(-1),cp1));
 
-#if !defined(BOOST_NO_FUNCTION_TEMPLATE_ORDERING)
   BOOST_TEST(is_equiv  (ck1(xyz(0,0,0)),0,cp1));
   BOOST_TEST(is_less   (ck1(xyz(0,0,0)),1,cp1));
   BOOST_TEST(is_greater(ck1(xyz(0,0,0)),-1,cp1));
-#endif
 
   BOOST_TEST(is_equiv  (ck1(xyz(0,0,0)),TupleMaker::create(0,0),cp1));
   BOOST_TEST(is_less   (ck1(xyz(0,0,0)),TupleMaker::create(0,1),cp1));
@@ -685,12 +661,93 @@ void test_composite_key_template()
     ch1(ck7(xystr(4,5,"world")))==crh(ck7(xystr(4,5,"world"))));
 }
 
+void test_composite_key_with_long_tuple()
+{
+  /* length greater than what boost::tuple allows */
+
+  typedef composite_key<
+    xystr,
+    BOOST_MULTI_INDEX_MEMBER(xystr,std::string,str),
+    BOOST_MULTI_INDEX_MEMBER(xystr,int,x),
+    BOOST_MULTI_INDEX_MEMBER(xystr,int,y),
+    BOOST_MULTI_INDEX_MEMBER(xystr,std::string,str),
+    BOOST_MULTI_INDEX_MEMBER(xystr,int,x),
+    BOOST_MULTI_INDEX_MEMBER(xystr,int,y),
+    BOOST_MULTI_INDEX_MEMBER(xystr,std::string,str),
+    BOOST_MULTI_INDEX_MEMBER(xystr,int,x),
+    BOOST_MULTI_INDEX_MEMBER(xystr,int,y),
+    BOOST_MULTI_INDEX_MEMBER(xystr,std::string,str),
+    BOOST_MULTI_INDEX_MEMBER(xystr,int,x),
+    BOOST_MULTI_INDEX_MEMBER(xystr,int,y)
+  > ckey_t;
+
+  ckey_t ck{
+    BOOST_MULTI_INDEX_MEMBER(xystr,std::string,str)(),
+    BOOST_MULTI_INDEX_MEMBER(xystr,int,x)(),
+    BOOST_MULTI_INDEX_MEMBER(xystr,int,y)(),
+    BOOST_MULTI_INDEX_MEMBER(xystr,std::string,str)(),
+    BOOST_MULTI_INDEX_MEMBER(xystr,int,x)(),
+    BOOST_MULTI_INDEX_MEMBER(xystr,int,y)(),
+    BOOST_MULTI_INDEX_MEMBER(xystr,std::string,str)(),
+    BOOST_MULTI_INDEX_MEMBER(xystr,int,x)(),
+    BOOST_MULTI_INDEX_MEMBER(xystr,int,y)(),
+    BOOST_MULTI_INDEX_MEMBER(xystr,std::string,str)(),
+    BOOST_MULTI_INDEX_MEMBER(xystr,int,x)(),
+    BOOST_MULTI_INDEX_MEMBER(xystr,int,y)()
+  };
+
+  typedef composite_key_equal_to<
+    std::equal_to<std::string>,std::equal_to<int>,std::equal_to<int>,
+    std::equal_to<std::string>,std::equal_to<int>,std::equal_to<int>,
+    std::equal_to<std::string>,std::equal_to<int>,std::equal_to<int>,
+    std::equal_to<std::string>,std::equal_to<int>,std::equal_to<int>
+  > ceq_t;
+
+  ceq_t eq{
+    std::equal_to<std::string>(),std::equal_to<int>(),std::equal_to<int>(),
+    std::equal_to<std::string>(),std::equal_to<int>(),std::equal_to<int>(),
+    std::equal_to<std::string>(),std::equal_to<int>(),std::equal_to<int>(),
+    std::equal_to<std::string>(),std::equal_to<int>(),std::equal_to<int>()
+  };
+
+  typedef composite_key_compare<
+    std::less<std::string>,std::less<int>,std::less<int>,
+    std::less<std::string>,std::less<int>,std::less<int>,
+    std::less<std::string>,std::less<int>,std::less<int>,
+    std::less<std::string>,std::less<int>,std::less<int>
+  > clt_t;
+
+  clt_t lt{
+    std::less<std::string>(),std::less<int>(),std::less<int>(),
+    std::less<std::string>(),std::less<int>(),std::less<int>(),
+    std::less<std::string>(),std::less<int>(),std::less<int>(),
+    std::less<std::string>(),std::less<int>(),std::less<int>()
+  };
+
+  typedef composite_key_hash<
+    boost::hash<std::string>,boost::hash<int>,boost::hash<int>,
+    boost::hash<std::string>,boost::hash<int>,boost::hash<int>,
+    boost::hash<std::string>,boost::hash<int>,boost::hash<int>,
+    boost::hash<std::string>,boost::hash<int>,boost::hash<int>
+  > ch_t;
+
+  ch_t ch{
+    boost::hash<std::string>(),boost::hash<int>(),boost::hash<int>(),
+    boost::hash<std::string>(),boost::hash<int>(),boost::hash<int>(),
+    boost::hash<std::string>(),boost::hash<int>(),boost::hash<int>(),
+    boost::hash<std::string>(),boost::hash<int>(),boost::hash<int>()
+  };
+
+  xystr v{0,1,""};
+
+  BOOST_TEST(eq(ck(v),std::make_tuple("",0,1,"",0,1,"",0,1,"",0,1)));
+  BOOST_TEST(!lt(std::make_tuple("",0,1,"",0,1,"",0,1,"",0,1),ck(v)));
+  BOOST_TEST((ch(ck(v))==ch(std::make_tuple("",0,1,"",0,1,"",0,1,"",0,1))));
+}
+
 void test_composite_key()
 {
   test_composite_key_template<boost_tuple_maker>();
-
-#if !defined(BOOST_NO_CXX11_HDR_TUPLE)&&\
-    !defined(BOOST_NO_CXX11_VARIADIC_TEMPLATES)
   test_composite_key_template<std_tuple_maker>();
-#endif
+  test_composite_key_with_long_tuple();
 }
