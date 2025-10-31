@@ -564,8 +564,8 @@ BOOST_MULTI_INDEX_CK_COMPLETE_COMP_OPS(
 )
 
 BOOST_MULTI_INDEX_CK_COMPLETE_COMP_OPS(
-  typename CompositeKey,
   typename... Values,
+  typename CompositeKey,
   std::tuple<Values...>,
   composite_key_result<CompositeKey>
 )
