@@ -114,14 +114,6 @@ public:
 
   augmented_stdtuple(const super& x):super(x){}
 
-#if 0
-  template<
-    typename Arg=boost_tuple_arg,
-    typename std::enable_if<
-      !std::is_same<Arg,boost_tuple_too_short>::value
-    >::type* =nullptr
-  >
-#endif
   augmented_stdtuple(const boost_tuple_arg& x):
     augmented_stdtuple(
       boost_tuple_ctor(),mp11::make_index_sequence<N>(),x)
