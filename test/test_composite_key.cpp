@@ -415,8 +415,14 @@ void test_composite_key_template()
       BOOST_MULTI_INDEX_MEMBER(xyz,int,y)(),
       BOOST_MULTI_INDEX_MEMBER(xyz,int,z)()));
   ckey_t1 ck4(get<0>(ck1.key_extractors()));
+  ckey_t1 ck5(
+    std::make_tuple(
+      BOOST_MULTI_INDEX_MEMBER(xyz,int,x)(),
+      BOOST_MULTI_INDEX_MEMBER(xyz,int,y)(),
+      BOOST_MULTI_INDEX_MEMBER(xyz,int,z)()));
 
   (void)ck3; /* prevent unused var */
+  (void)ck5; /* prevent unused var */
 
   get<2>(ck4.key_extractors())=
     get<2>(ck2.key_extractors());
@@ -498,9 +504,16 @@ void test_composite_key_template()
   ckey_eq_t2 eq4(
     get<0>(eq3.key_eqs()),
     get<1>(eq3.key_eqs()));
+  ckey_eq_t2 eq5(
+    std::make_tuple(
+      modulo_equal(2),
+      modulo_equal(3),
+      std::equal_to<int>(),
+      std::equal_to<int>()));
 
   eq3=eq4; /* prevent unused var */
   eq4=eq3; /* prevent unused var */
+  eq5=eq4; /* prevent unused var */
 
   BOOST_TEST( eq2(ck1(xyz(0,0,0)),ck1(xyz(0,0,0))));
   BOOST_TEST(!eq2(ck1(xyz(0,1,0)),ck1(xyz(0,0,0))));
@@ -542,10 +555,16 @@ void test_composite_key_template()
       std::greater<int>(),
       std::less<int>()));
   ckey_comp_t3 cp6(get<0>(cp3.key_comps()));
+  ckey_comp_t3 cp7(
+    std::make_tuple(
+      std::less<int>(),
+      std::greater<int>(),
+      std::less<int>()));
 
   cp4=cp5; /* prevent unused var */
   cp5=cp6; /* prevent unused var */
   cp6=cp4; /* prevent unused var */
+  cp7=cp4; /* prevent unused var */
 
   BOOST_TEST(is_equiv  (ck1(xyz(0,0,0)),ck2(xyz(0,0,0)),cp3));
   BOOST_TEST(is_greater(ck1(xyz(0,0,1)),ck2(xyz(0,1,0)),cp3));
@@ -567,23 +586,23 @@ void test_composite_key_template()
     BOOST_MULTI_INDEX_MEMBER(xyz,int,x)
   > ckey_t2;
 
-  ckey_t2 ck5;
+  ckey_t2 ck6;
 
-  BOOST_TEST(is_equiv  (ck1(xyz(0,0,1)),ck5(xyz(0,0,0))));
-  BOOST_TEST(is_less   (ck1(xyz(0,0,0)),ck5(xyz(-1,1,0))));
-  BOOST_TEST(is_greater(ck1(xyz(0,0,0)),ck5(xyz(1,-1,0))));
+  BOOST_TEST(is_equiv  (ck1(xyz(0,0,1)),ck6(xyz(0,0,0))));
+  BOOST_TEST(is_less   (ck1(xyz(0,0,0)),ck6(xyz(-1,1,0))));
+  BOOST_TEST(is_greater(ck1(xyz(0,0,0)),ck6(xyz(1,-1,0))));
 
-  BOOST_TEST(is_equiv  (ck1(xyz(0,0,1)),ck5(xyz(0,0,0)),cp1));
-  BOOST_TEST(is_less   (ck1(xyz(0,0,0)),ck5(xyz(-1,1,0)),cp1));
-  BOOST_TEST(is_greater(ck1(xyz(0,0,0)),ck5(xyz(1,-1,0)),cp1));
+  BOOST_TEST(is_equiv  (ck1(xyz(0,0,1)),ck6(xyz(0,0,0)),cp1));
+  BOOST_TEST(is_less   (ck1(xyz(0,0,0)),ck6(xyz(-1,1,0)),cp1));
+  BOOST_TEST(is_greater(ck1(xyz(0,0,0)),ck6(xyz(1,-1,0)),cp1));
 
-  BOOST_TEST(is_equiv  (ck1(xyz(0,0,1)),ck5(xyz(0,0,0)),cp2));
-  BOOST_TEST(is_greater(ck1(xyz(0,0,0)),ck5(xyz(-1,1,0)),cp2));
-  BOOST_TEST(is_less   (ck1(xyz(0,0,0)),ck5(xyz(1,-1,0)),cp2));
+  BOOST_TEST(is_equiv  (ck1(xyz(0,0,1)),ck6(xyz(0,0,0)),cp2));
+  BOOST_TEST(is_greater(ck1(xyz(0,0,0)),ck6(xyz(-1,1,0)),cp2));
+  BOOST_TEST(is_less   (ck1(xyz(0,0,0)),ck6(xyz(1,-1,0)),cp2));
 
-  BOOST_TEST(is_equiv  (ck1(xyz(0,0,1)),ck5(xyz(0,0,0)),cp3));
-  BOOST_TEST(is_less   (ck1(xyz(0,0,0)),ck5(xyz(-1,1,0)),cp3));
-  BOOST_TEST(is_greater(ck1(xyz(0,0,0)),ck5(xyz(1,-1,0)),cp3));
+  BOOST_TEST(is_equiv  (ck1(xyz(0,0,1)),ck6(xyz(0,0,0)),cp3));
+  BOOST_TEST(is_less   (ck1(xyz(0,0,0)),ck6(xyz(-1,1,0)),cp3));
+  BOOST_TEST(is_greater(ck1(xyz(0,0,0)),ck6(xyz(1,-1,0)),cp3));
 
   typedef multi_index_container<
     xyz,
@@ -622,7 +641,7 @@ void test_composite_key_template()
     BOOST_MULTI_INDEX_MEMBER(xystr,int,y)
   > ckey_t3;
 
-  ckey_t3 ck6;
+  ckey_t3 ck7;
 
   typedef composite_key_hash<
     boost::hash<std::string>,
@@ -638,16 +657,22 @@ void test_composite_key_template()
       boost::hash<int>(),
       boost::hash<int>()));
   ckey_hash_t ch4(get<0>(ch1.key_hash_functions()));
+  ckey_hash_t ch5(
+    std::make_tuple(
+      boost::hash<std::string>(),
+      boost::hash<int>(),
+      boost::hash<int>()));
 
   ch2=ch3; /* prevent unused var */
   ch3=ch4; /* prevent unused var */
   ch4=ch2; /* prevent unused var */
+  ch5=ch2; /* prevent unused var */
 
   BOOST_TEST(
-    ch1(ck6(xystr(0,0,"hello")))==
+    ch1(ck7(xystr(0,0,"hello")))==
     ch1(TupleMaker::create(std::string("hello"),0,0)));
   BOOST_TEST(
-    ch1(ck6(xystr(4,5,"world")))==
+    ch1(ck7(xystr(4,5,"world")))==
     ch1(TupleMaker::create(std::string("world"),4,5)));
 
   typedef boost::hash<composite_key_result<ckey_t3> > ckeyres_hash_t;
@@ -655,9 +680,9 @@ void test_composite_key_template()
   ckeyres_hash_t crh;
 
   BOOST_TEST(
-    ch1(ck6(xystr(0,0,"hello")))==crh(ck6(xystr(0,0,"hello"))));
+    ch1(ck7(xystr(0,0,"hello")))==crh(ck7(xystr(0,0,"hello"))));
   BOOST_TEST(
-    ch1(ck6(xystr(4,5,"world")))==crh(ck6(xystr(4,5,"world"))));
+    ch1(ck7(xystr(4,5,"world")))==crh(ck7(xystr(4,5,"world"))));
 }
 
 void test_composite_key()
