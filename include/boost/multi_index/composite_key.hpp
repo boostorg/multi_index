@@ -344,7 +344,6 @@ public:
   key_extractor_tuple&       key_extractors(){return *this;}
 
   template<typename ChainedPtr>
-
   typename disable_if<
     is_convertible<const ChainedPtr&,const value_type&>,result_type>::type
   operator()(const ChainedPtr& x)const
@@ -407,7 +406,7 @@ inline bool operator==(
     y,detail::cons_generic_operator_equal());
 }
 
-template<typename CompositeKey,typename... Values>
+template<typename... Values,typename CompositeKey>
 inline bool operator==(
   const boost::tuple<Values...>& x,
   const composite_key_result<CompositeKey>& y)
@@ -441,7 +440,7 @@ inline bool operator==(
     detail::make_cons_stdtuple(y),detail::cons_generic_operator_equal());
 }
 
-template<typename CompositeKey,typename... Values>
+template<typename... Values,typename CompositeKey>
 inline bool operator==(
   const std::tuple<Values...>& x,
   const composite_key_result<CompositeKey>& y)
@@ -482,7 +481,7 @@ inline bool operator<(
     y,detail::cons_generic_operator_less());
 }
 
-template<typename CompositeKey,typename... Values>
+template<typename... Values,typename CompositeKey>
 inline bool operator<(
   const boost::tuple<Values...>& x,
   const composite_key_result<CompositeKey>& y)
@@ -502,7 +501,7 @@ inline bool operator<(
     detail::make_cons_stdtuple(y),detail::cons_generic_operator_less());
 }
 
-template<typename CompositeKey,typename... Values>
+template<typename... Values,typename CompositeKey>
 inline bool operator<(
   const std::tuple<Values...>& x,
   const composite_key_result<CompositeKey>& y)
@@ -670,7 +669,7 @@ public:
       detail::make_cons_stdtuple(key_eqs()));
   }
 
-  template<typename CompositeKey,typename... Values>
+  template<typename... Values,typename CompositeKey>
   bool operator()(
     const std::tuple<Values...>& x,
     const composite_key_result<CompositeKey>& y)const
@@ -804,7 +803,7 @@ public:
       detail::make_cons_stdtuple(key_comps()));
   }
 
-  template<typename CompositeKey,typename... Values>
+  template<typename... Values,typename CompositeKey>
   bool operator()(
     const std::tuple<Values...>& x,
     const composite_key_result<CompositeKey>& y)const
