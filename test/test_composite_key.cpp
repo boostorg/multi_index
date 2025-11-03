@@ -19,82 +19,19 @@
 #include <boost/multi_index/hashed_index.hpp>
 #include <boost/multi_index/member.hpp>
 #include <boost/multi_index/ordered_index.hpp>
-#include <boost/preprocessor/repetition/enum_binary_params.hpp>
-#include <boost/preprocessor/repetition/enum_params.hpp>
-#include <boost/preprocessor/repetition/repeat_from_to.hpp>
 
 using namespace boost::multi_index;
-using namespace boost::tuples;
-
-struct is_composite_key_result_helper
-{
-  typedef char yes;
-  struct no{char m[2];};
-
-  static no test(void*);
-
-  template<typename CompositeKey>
-  static yes test(composite_key_result<CompositeKey>*);
-};
 
 template<typename T>
-struct is_composite_key_result
-{
-  typedef is_composite_key_result_helper helper;
+struct composite_object_length:std::tuple_size<T>{};
 
-  BOOST_STATIC_CONSTANT(bool,
-    value=(
-      sizeof(helper::test((T*)0))==
-      sizeof(typename helper::yes)));
-};
-
-template<typename CompositeKeyResult>
-struct composite_key_result_length
-{
-  BOOST_STATIC_CONSTANT(int,
-    value=std::tuple_size<
-      BOOST_DEDUCED_TYPENAME 
-      CompositeKeyResult::composite_key_type::key_extractor_tuple
-    >::value);
-};
-
-struct is_boost_tuple_helper
-{
-  typedef char yes;
-  struct no{char m[2];};
-
-  static no test(void*);
-
-  template<BOOST_PP_ENUM_PARAMS(10,typename T)>
-  static yes test(boost::tuple<BOOST_PP_ENUM_PARAMS(10,T)>*);
-};
-
-template<typename T>
-struct is_boost_tuple
-{
-  typedef is_boost_tuple_helper helper;
-
-  BOOST_STATIC_CONSTANT(bool,
-    value=(
-      sizeof(helper::test((T*)0))==
-      sizeof(typename helper::yes)));
-};
-
-template<typename T>
-struct composite_object_length
-{
-  typedef boost::mp11::mp_if<
-    is_composite_key_result<T>,
-    composite_key_result_length<T>,
-    boost::mp11::mp_if<
-      is_boost_tuple<T>,
-      boost::tuples::length<T>,
-      std::tuple_size<T>
-    >
-  > type;
-
-  BOOST_STATIC_CONSTANT(int,value=type::value);
-};
+template<typename CompositeKey>
+struct composite_object_length<composite_key_result<CompositeKey>>:
+  std::tuple_size<
+    typename composite_key_result<CompositeKey>::
+      composite_key_type::key_extractor_tuple
+  >
+{};
 
 template<typename CompositeKeyResult,typename T2>
 struct comparison_equal_length
@@ -227,7 +164,7 @@ struct comparison_different_length
 template<typename CompositeKeyResult,typename T2>
 struct comparison_helper:
   boost::mp11::mp_if_c<
-    composite_key_result_length<CompositeKeyResult>::value==
+    composite_object_length<CompositeKeyResult>::value==
       composite_object_length<T2>::value,
     comparison_equal_length<CompositeKeyResult,T2>,
     comparison_different_length<CompositeKeyResult,T2>
@@ -319,26 +256,15 @@ struct xystr
   std::string str;
 };
 
-#define TUPLE_MAKER_CREATE(z,n,tuple)                   \
-template<BOOST_PP_ENUM_PARAMS(n,typename T)>            \
-static tuple<BOOST_PP_ENUM_PARAMS(n,T)>                 \
-create(BOOST_PP_ENUM_BINARY_PARAMS(n,const T,& t)){     \
-  return tuple<BOOST_PP_ENUM_PARAMS(n,T)>(              \
-   BOOST_PP_ENUM_PARAMS(n,t));                          \
-}
-
-#define DEFINE_TUPLE_MAKER(name,tuple)                  \
-struct name                                             \
-{                                                       \
-  static tuple<> create(){return tuple<>();}            \
-  BOOST_PP_REPEAT_FROM_TO(1,5,TUPLE_MAKER_CREATE,tuple) \
+template<template<typename...>class Tuple>
+struct tuple_maker
+{
+  template<typename... Ts>
+  static Tuple<Ts...> create(const Ts&... args){return Tuple<Ts...>{args...};}
 };
 
-DEFINE_TUPLE_MAKER(boost_tuple_maker,boost::tuple)
-DEFINE_TUPLE_MAKER(std_tuple_maker,std::tuple)
-
-#undef DEFINE_TUPLE_MAKER
-#undef TUPLE_MAKER_CREATE
+using boost_tuple_maker=tuple_maker<boost::tuple>;
+using std_tuple_maker=tuple_maker<std::tuple>;
 
 template<typename TupleMaker>
 void test_composite_key_template()
