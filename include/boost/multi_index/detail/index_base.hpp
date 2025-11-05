@@ -25,7 +25,6 @@
 #include <boost/multi_index/detail/node_handle.hpp>
 #include <boost/multi_index/detail/node_type.hpp>
 #include <boost/multi_index/detail/type_list.hpp>
-#include <boost/multi_index/detail/vartempl_support.hpp>
 #include <boost/multi_index_container_fwd.hpp>
 #include <boost/tuple/tuple.hpp>
 #include <utility>
@@ -241,11 +240,10 @@ protected:
   std::pair<final_node_type*,bool> final_transfer_(Index& x,final_node_type* n)
     {return final().transfer_(x,n);}
 
-  template<BOOST_MULTI_INDEX_TEMPLATE_PARAM_PACK>
-  std::pair<final_node_type*,bool> final_emplace_(
-    BOOST_MULTI_INDEX_FUNCTION_PARAM_PACK)
+  template<typename... Args>
+  std::pair<final_node_type*,bool> final_emplace_(Args&&... args)
   {
-    return final().emplace_(BOOST_MULTI_INDEX_FORWARD_PARAM_PACK);
+    return final().emplace_(std::forward<Args>(args)...);
   }
 
   std::pair<final_node_type*,bool> final_insert_(
@@ -266,12 +264,11 @@ protected:
     final_node_handle_type& nh,final_node_type* position)
     {return final().insert_nh_(nh,position);}
 
-  template<BOOST_MULTI_INDEX_TEMPLATE_PARAM_PACK>
+  template<typename... Args>
   std::pair<final_node_type*,bool> final_emplace_hint_(
-    final_node_type* position,BOOST_MULTI_INDEX_FUNCTION_PARAM_PACK)
+    final_node_type* position,Args&&... args)
   {
-    return final().emplace_hint_(
-      position,BOOST_MULTI_INDEX_FORWARD_PARAM_PACK);
+    return final().emplace_hint_(position,std::forward<Args>(args)...);
   }
 
   final_node_handle_type final_extract_(final_node_type* x)

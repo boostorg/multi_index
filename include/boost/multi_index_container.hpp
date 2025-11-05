@@ -40,11 +40,11 @@
 #include <boost/multi_index/detail/no_duplicate_tags_in_index_list.hpp>
 #include <boost/multi_index/detail/safe_mode.hpp>
 #include <boost/multi_index/detail/scope_guard.hpp>
-#include <boost/multi_index/detail/vartempl_support.hpp>
 #include <boost/static_assert.hpp>
 #include <boost/type_traits/integral_constant.hpp>
 #include <boost/type_traits/is_same.hpp>
 #include <boost/utility/base_from_member.hpp>
+#include <utility>
 
 #if !defined(BOOST_NO_CXX11_HDR_INITIALIZER_LIST)
 #include <initializer_list>
@@ -650,20 +650,13 @@ BOOST_MULTI_INDEX_PROTECTED_IF_MEMBER_TEMPLATE_FRIENDS:
       bfm_allocator::member,static_cast<node_pointer>(x),1);
   }
 
-  void construct_value(final_node_type* x,const Value& v)
+  template<typename... Args>
+  void construct_value(final_node_type* x,Args&&... args)
   {
     node_alloc_traits::construct(
-      bfm_allocator::member,boost::addressof(x->value()),v);
+      bfm_allocator::member,boost::addressof(x->value()),
+      std::forward<Args>(args)...);
   }
-
-  void construct_value(final_node_type* x,BOOST_RV_REF(Value) v)
-  {
-    node_alloc_traits::construct(
-      bfm_allocator::member,boost::addressof(x->value()),boost::move(v));
-  }
-
-  BOOST_MULTI_INDEX_OVERLOADS_TO_VARTEMPL_EXTRA_ARG(
-    void,construct_value,vartempl_construct_value_impl,final_node_type*,x)
 
   void destroy_value(final_node_type* x)
   {
@@ -780,13 +773,12 @@ BOOST_MULTI_INDEX_PROTECTED_IF_MEMBER_TEMPLATE_FRIENDS:
     }
   }
 
-  template<BOOST_MULTI_INDEX_TEMPLATE_PARAM_PACK>
-  std::pair<final_node_type*,bool> emplace_(
-    BOOST_MULTI_INDEX_FUNCTION_PARAM_PACK)
+  template<typename... Args>
+  std::pair<final_node_type*,bool> emplace_(Args&&... args)
   {
     final_node_type* x=allocate_node();
     BOOST_TRY{
-      construct_value(x,BOOST_MULTI_INDEX_FORWARD_PARAM_PACK);
+      construct_value(x,std::forward<Args>(args)...);
       BOOST_TRY{
         final_node_type* res=super::insert_(
           x->value(),x,detail::emplaced_tag());
@@ -900,14 +892,13 @@ BOOST_MULTI_INDEX_PROTECTED_IF_MEMBER_TEMPLATE_FRIENDS:
     }
   }
 
-  template<BOOST_MULTI_INDEX_TEMPLATE_PARAM_PACK>
+  template<typename... Args>
   std::pair<final_node_type*,bool> emplace_hint_(
-    final_node_type* position,
-    BOOST_MULTI_INDEX_FUNCTION_PARAM_PACK)
+    final_node_type* position,Args&&... args)
   {
     final_node_type* x=allocate_node();
     BOOST_TRY{
-      construct_value(x,BOOST_MULTI_INDEX_FORWARD_PARAM_PACK);
+      construct_value(x,std::forward<Args>(args)...);
       BOOST_TRY{
         final_node_type* res=super::insert_(
           x->value(),position,x,detail::emplaced_tag());
@@ -1206,15 +1197,6 @@ BOOST_MULTI_INDEX_PROTECTED_IF_MEMBER_TEMPLATE_FRIENDS:
 #endif
 
 private:
-  template<BOOST_MULTI_INDEX_TEMPLATE_PARAM_PACK>
-  void vartempl_construct_value_impl(
-    final_node_type* x,BOOST_MULTI_INDEX_FUNCTION_PARAM_PACK)
-  {
-    node_alloc_traits::construct(
-      bfm_allocator::member,boost::addressof(x->value()),
-      BOOST_MULTI_INDEX_FORWARD_PARAM_PACK);
-  }
-
   size_type node_count;
 
 #if defined(BOOST_MULTI_INDEX_ENABLE_INVARIANT_CHECKING)&&\
