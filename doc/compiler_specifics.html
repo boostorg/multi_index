@@ -41,11 +41,6 @@ We list some of the possible limitations along with suitable workarounds when av
   <li><a href="#emplace">Emplace functions</a></li>
   <li><a href="#initializer_list">Initializer lists</a></li>
   <li><a href="#tuple">Tuples</a></li>
-  <li><a href="#symbol_reduction">Reduction of symbol name lengths</a>
-    <ul>
-      <li><a href="#argument_limitation">Limitation of maximum number of arguments</a></li>
-  </ul>
-  </li>
   <li><a href="#legacy">Legacy compilers</a></li>
 </ul>
 
@@ -102,28 +97,6 @@ possible replacement.
 Everywhere where <code>std::tuple</code>s are used in the library interface,
 <code>boost::tuple</code>s can be resorted to in their place. The converse, however,
 is not true.
-</p>
-
-<h2><a name="symbol_reduction">Reduction of symbol name lengths</a></h2>
-
-<p>
-The types generated on the instantiations of <code>multi_index_container</code>s
-typically produce very long symbol names, sometimes beyond the internal limits
-of some compilers. There are several techniques to shorten generated symbol
-names: these techniques have also the beneficial side effect that resulting error
-messages are more readable.
-</p>
-
-<h3><a name="argument_limitation">Limitation of maximum number of arguments</a></h3>
-
-<p>
-The class template 
-<a href="reference/key_extraction.html#composite_key"><code>composite_key</code></a>
-accepts a variable number of arguments whose maximum number is limited by
-the macro <code>BOOST_MULTI_INDEX_LIMIT_COMPOSITE_KEY_SIZE</code> (defaulting to 10
-if not defined). Even non-used arguments contribute to the final types,
-so manually adjusting the macro can result in a modest reduction
-of symbol names.
 </p>
 
 <h2><a name="legacy">Legacy compilers</a></h2>
@@ -248,7 +221,7 @@ Performance
 
 <br>
 
-<p>Revised October 25th 2025</p>
+<p>Revised November 1st 2025</p>
 
 <p>&copy; Copyright 2003-2025 Joaqu&iacute;n M L&oacute;pez Mu&ntilde;oz.
 Distributed under the Boost Software 

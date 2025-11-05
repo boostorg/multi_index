@@ -90,6 +90,15 @@ Acknowledgements
     <code>BOOST_MULTI_INDEX_ENABLE_MPL_SUPPORT</code>.
     Legacy support for Boost.MPL may be eventually deprecated and removed in the future.
   </li>
+  <li><b>Breaking change:</b> <code>composite_key</code> and associated
+    class templates (<code>composite_key_equal_to</code>, <code>composite_key_compare</code>,
+    <code>composite_key_hash</code>) have been made variadic (previously the maximum
+    number of template arguments was limited by <code>BOOST_MULTI_INDEX_LIMIT_COMPOSITE_KEY_SIZE</code>).
+    This change should be transparent to users, with the exception that
+    <code>composite_key::key_extractors</code> returns a <code>std::tuple</code>
+    instead of a <code>boost::tuple</code> (and similarly for the rest of affected
+    class templates).
+  </li>
 </ul>
 </p>
 
@@ -836,7 +845,7 @@ Acknowledgements
 
 <br>
 
-<p>Revised October 25th 2025</p>
+<p>Revised November 3rd 2025</p>
 
 <p>&copy; Copyright 2003-2025 Joaqu&iacute;n M L&oacute;pez Mu&ntilde;oz.
 Distributed under the Boost Software 
