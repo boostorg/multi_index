@@ -1,4 +1,4 @@
-/* Copyright 2003-2022 Joaquin M Lopez Munoz.
+/* Copyright 2003-2025 Joaquin M Lopez Munoz.
  * Distributed under the Boost Software License, Version 1.0.
  * (See accompanying file LICENSE_1_0.txt or copy at
  * http://www.boost.org/LICENSE_1_0.txt)
@@ -16,11 +16,11 @@
 #include <boost/config.hpp> /* keep it first to prevent nasty warns in MSVC */
 #include <algorithm>
 #include <boost/core/addressof.hpp>
+#include <boost/core/allocator_access.hpp>
 #include <boost/detail/workaround.hpp>
 #include <boost/move/core.hpp>
 #include <boost/move/utility_core.hpp>
 #include <boost/multi_index_container_fwd.hpp>
-#include <boost/multi_index/detail/allocator_traits.hpp>
 #include <boost/type_traits/aligned_storage.hpp>
 #include <boost/type_traits/alignment_of.hpp> 
 #include <new>
@@ -49,10 +49,6 @@ public:
   typedef typename Node::value_type        value_type;
   typedef Allocator                        allocator_type;
 
-private:
-  typedef allocator_traits<allocator_type> alloc_traits;
-
-public:
   node_handle()BOOST_NOEXCEPT:node(0){}
 
   node_handle(BOOST_RV_REF(node_handle) x)BOOST_NOEXCEPT:node(x.node)
@@ -79,7 +75,8 @@ public:
         delete_node();
         if(!x.empty()){
           BOOST_MULTI_INDEX_IF_CONSTEXPR(
-            alloc_traits::propagate_on_container_move_assignment::value){
+            allocator_propagate_on_container_move_assignment_t<
+              allocator_type>::value){
             move_assign_allocator(boost::move(x));
           }
           x.destroy_allocator();
@@ -115,13 +112,13 @@ public:
 
   void swap(node_handle& x)
     BOOST_NOEXCEPT_IF(
-      alloc_traits::propagate_on_container_swap::value||
-      alloc_traits::is_always_equal::value)
+      allocator_propagate_on_container_swap_t<allocator_type>::value||
+      allocator_is_always_equal_t<allocator_type>::value)
   {
     if(!empty()){
       if(!x.empty()){
         BOOST_MULTI_INDEX_IF_CONSTEXPR(
-          alloc_traits::propagate_on_container_swap::value){
+          allocator_propagate_on_container_swap_t<allocator_type>::value){
           using std::swap;
           swap(*allocator_ptr(),*x.allocator_ptr());
         }
@@ -192,15 +189,12 @@ private:
 
   void delete_node()
   {
-    typedef typename rebind_alloc_for<
-      allocator_type,Node
-    >::type                                          node_allocator;
-    typedef detail::allocator_traits<node_allocator> node_alloc_traits;
-    typedef typename node_alloc_traits::pointer      node_pointer;
+    typedef allocator_rebind_t<allocator_type,Node>  node_allocator;
+    typedef allocator_pointer_t<node_allocator>      node_pointer;
 
-    alloc_traits::destroy(*allocator_ptr(),boost::addressof(node->value()));
+    allocator_destroy(*allocator_ptr(),boost::addressof(node->value()));
     node_allocator nal(*allocator_ptr());
-    node_alloc_traits::deallocate(nal,static_cast<node_pointer>(node),1);
+    allocator_deallocate(nal,static_cast<node_pointer>(node),1);
   }
 
   Node*                                 node;

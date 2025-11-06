@@ -18,6 +18,7 @@
 #include <boost/config.hpp> /* keep it first to prevent nasty warns in MSVC */
 #include <algorithm>
 #include <boost/core/addressof.hpp>
+#include <boost/core/allocator_access.hpp>
 #include <boost/core/no_exceptions_support.hpp>
 #include <boost/detail/workaround.hpp>
 #include <boost/move/core.hpp>
@@ -28,7 +29,6 @@
 #include <boost/multi_index_container_fwd.hpp>
 #include <boost/multi_index/detail/access_specifier.hpp>
 #include <boost/multi_index/detail/adl_swap.hpp>
-#include <boost/multi_index/detail/allocator_traits.hpp>
 #include <boost/multi_index/detail/base_type.hpp>
 #include <boost/multi_index/detail/do_not_copy_elements_tag.hpp>
 #include <boost/multi_index/detail/converter.hpp>
@@ -96,20 +96,20 @@ struct unequal_alloc_move_ctor_tag{};
 template<typename Value,typename IndexSpecifierList,typename Allocator>
 class multi_index_container:
   private ::boost::base_from_member<
-    typename detail::rebind_alloc_for<
+    allocator_rebind_t<
       Allocator,
       typename detail::multi_index_node_type<
         Value,IndexSpecifierList,Allocator>::type
-    >::type
+    >
   >,
   BOOST_MULTI_INDEX_PRIVATE_IF_MEMBER_TEMPLATE_FRIENDS detail::header_holder<
-    typename detail::allocator_traits<
-      typename detail::rebind_alloc_for<
+    allocator_pointer_t<
+      allocator_rebind_t<
         Allocator,
         typename detail::multi_index_node_type<
           Value,IndexSpecifierList,Allocator>::type
-      >::type
-    >::pointer,
+      >
+    >,
     multi_index_container<Value,IndexSpecifierList,Allocator> >,
   public detail::multi_index_base_type<
     Value,IndexSpecifierList,Allocator>::type
@@ -135,12 +135,11 @@ private:
 
   typedef typename detail::multi_index_base_type<
       Value,IndexSpecifierList,Allocator>::type    super;
-  typedef typename detail::rebind_alloc_for<
+  typedef allocator_rebind_t<
     Allocator,
     typename super::index_node_type
-  >::type                                          node_allocator;
-  typedef detail::allocator_traits<node_allocator> node_alloc_traits;
-  typedef typename node_alloc_traits::pointer      node_pointer;
+  >                                                node_allocator;
+  typedef allocator_pointer_t<node_allocator>      node_pointer;
   typedef ::boost::base_from_member<
     node_allocator>                                bfm_allocator;
   typedef detail::header_holder<
@@ -284,7 +283,7 @@ public:
   multi_index_container(
     const multi_index_container<Value,IndexSpecifierList,Allocator>& x):
     bfm_allocator(
-      node_alloc_traits::select_on_container_copy_construction(
+      allocator_select_on_container_copy_construction(
         x.bfm_allocator::member)),
     bfm_header(),
     super(x),
@@ -361,7 +360,8 @@ public:
   {
     multi_index_container y(
       x,
-      node_alloc_traits::propagate_on_container_copy_assignment::value?
+      allocator_propagate_on_container_copy_assignment_t<
+        node_allocator>::value?
         x.get_allocator():this->get_allocator());
     swap_(y,boost::true_type() /* swap_allocators */);
     return *this;
@@ -373,7 +373,8 @@ public:
 #include <boost/multi_index/detail/define_if_constexpr_macro.hpp>
 
     BOOST_MULTI_INDEX_IF_CONSTEXPR(
-      node_alloc_traits::propagate_on_container_move_assignment::value){
+      allocator_propagate_on_container_move_assignment_t<
+        node_allocator>::value){
       swap_(x,boost::true_type() /* swap_allocators */);
     }
     else if(this->get_allocator()==x.get_allocator()){
@@ -641,26 +642,26 @@ BOOST_MULTI_INDEX_PROTECTED_IF_MEMBER_TEMPLATE_FRIENDS:
 
   final_node_type* allocate_node()
   {
-    return &*node_alloc_traits::allocate(bfm_allocator::member,1);
+    return &*allocator_allocate(bfm_allocator::member,1);
   }
 
   void deallocate_node(final_node_type* x)
   {
-    node_alloc_traits::deallocate(
+    allocator_deallocate(
       bfm_allocator::member,static_cast<node_pointer>(x),1);
   }
 
   template<typename... Args>
   void construct_value(final_node_type* x,Args&&... args)
   {
-    node_alloc_traits::construct(
+    allocator_construct(
       bfm_allocator::member,boost::addressof(x->value()),
       std::forward<Args>(args)...);
   }
 
   void destroy_value(final_node_type* x)
   {
-    node_alloc_traits::destroy(
+    allocator_destroy(
       bfm_allocator::member,boost::addressof(x->value()));
   }
 
@@ -979,7 +980,8 @@ BOOST_MULTI_INDEX_PROTECTED_IF_MEMBER_TEMPLATE_FRIENDS:
     swap_(
       x,
       boost::integral_constant<
-        bool,node_alloc_traits::propagate_on_container_swap::value>());
+        bool,allocator_propagate_on_container_swap_t<
+          node_allocator>::value>());
   }
 
   void swap_(

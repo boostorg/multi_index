@@ -17,6 +17,7 @@
 #include <algorithm>
 #include <boost/call_traits.hpp>
 #include <boost/core/addressof.hpp>
+#include <boost/core/allocator_access.hpp>
 #include <boost/core/no_exceptions_support.hpp>
 #include <boost/detail/workaround.hpp>
 #include <boost/limits.hpp>
@@ -25,7 +26,6 @@
 #include <boost/mp11/utility.hpp>
 #include <boost/multi_index/detail/access_specifier.hpp>
 #include <boost/multi_index/detail/adl_swap.hpp>
-#include <boost/multi_index/detail/allocator_traits.hpp>
 #include <boost/multi_index/detail/auto_space.hpp>
 #include <boost/multi_index/detail/bucket_array.hpp>
 #include <boost/multi_index/detail/do_not_copy_elements_tag.hpp>
@@ -133,17 +133,14 @@ public:
   typedef Hash                                   hasher;
   typedef Pred                                   key_equal;
   typedef typename super::final_allocator_type   allocator_type;
-
-private:
-  typedef allocator_traits<allocator_type>       alloc_traits;
-
-public:
-  typedef typename alloc_traits::pointer         pointer;
-  typedef typename alloc_traits::const_pointer   const_pointer;
+  typedef allocator_pointer_t<allocator_type>    pointer;
+  typedef allocator_const_pointer_t<
+    allocator_type>                              const_pointer;
   typedef value_type&                            reference;
   typedef const value_type&                      const_reference;
-  typedef typename alloc_traits::size_type       size_type;
-  typedef typename alloc_traits::difference_type difference_type;
+  typedef allocator_size_type_t<allocator_type>  size_type;
+  typedef allocator_difference_type_t<
+    allocator_type>                              difference_type;
   typedef tuple<size_type,
     key_from_value,hasher,key_equal>             ctor_args;
 

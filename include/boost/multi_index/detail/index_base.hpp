@@ -15,10 +15,10 @@
 
 #include <boost/config.hpp> /* keep it first to prevent nasty warns in MSVC */
 #include <boost/core/addressof.hpp>
+#include <boost/core/allocator_access.hpp>
 #include <boost/core/no_exceptions_support.hpp>
 #include <boost/detail/workaround.hpp>
 #include <boost/move/utility_core.hpp>
-#include <boost/multi_index/detail/allocator_traits.hpp>
 #include <boost/multi_index/detail/copy_map.hpp>
 #include <boost/multi_index/detail/do_not_copy_elements_tag.hpp>
 #include <boost/multi_index/detail/index_access_sequence.hpp>
@@ -62,9 +62,7 @@ protected:
   typedef multi_index_container<
     Value,IndexSpecifierList,Allocator>       final_type;
   typedef tuples::null_type                   ctor_args_list;
-  typedef typename rebind_alloc_for<
-    Allocator,typename Allocator::value_type
-  >::type                                     final_allocator_type;
+  typedef Allocator                           final_allocator_type;
   typedef node_handle<
     final_node_type,final_allocator_type>     final_node_handle_type;
   typedef empty_type_list                     index_type_list;
@@ -86,8 +84,7 @@ protected:
 
 private:
   typedef Value                               value_type;
-  typedef allocator_traits<Allocator>         alloc_traits;
-  typedef typename alloc_traits::size_type    size_type;
+  typedef allocator_size_type_t<Allocator>    size_type;
 
 protected:
   explicit index_base(const ctor_args_list&,const Allocator&){}

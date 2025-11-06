@@ -44,6 +44,7 @@
 #include <algorithm>
 #include <boost/call_traits.hpp>
 #include <boost/core/addressof.hpp>
+#include <boost/core/allocator_access.hpp>
 #include <boost/core/no_exceptions_support.hpp>
 #include <boost/core/ref.hpp>
 #include <boost/detail/workaround.hpp>
@@ -52,7 +53,6 @@
 #include <boost/mp11/utility.hpp>
 #include <boost/multi_index/detail/access_specifier.hpp>
 #include <boost/multi_index/detail/adl_swap.hpp>
-#include <boost/multi_index/detail/allocator_traits.hpp>
 #include <boost/multi_index/detail/bidir_node_iterator.hpp>
 #include <boost/multi_index/detail/do_not_copy_elements_tag.hpp>
 #include <boost/multi_index/detail/index_node_base.hpp>
@@ -180,15 +180,11 @@ public:
 #endif
 
   typedef iterator                                   const_iterator;
-
-private:
-  typedef allocator_traits<allocator_type>           alloc_traits;
-
-public:
-  typedef typename alloc_traits::size_type           size_type;      
-  typedef typename alloc_traits::difference_type     difference_type;
-  typedef typename alloc_traits::pointer             pointer;
-  typedef typename alloc_traits::const_pointer       const_pointer;
+  typedef allocator_size_type_t<allocator_type>      size_type;      
+  typedef allocator_difference_type_t<
+    allocator_type>                                  difference_type;
+  typedef allocator_pointer_t<allocator_type>        pointer;
+  typedef allocator_const_pointer_t<allocator_type>  const_pointer;
   typedef typename
     std::reverse_iterator<iterator>                  reverse_iterator;
   typedef typename
