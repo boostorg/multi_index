@@ -547,7 +547,7 @@ public:
   template<typename Index>
   BOOST_MULTI_INDEX_ENABLE_IF_MERGEABLE(
     ordered_index_impl,Index,pair_return_type)
-  merge(Index& x,BOOST_DEDUCED_TYPENAME Index::iterator i)
+  merge(Index& x,typename Index::iterator i)
   {
     BOOST_MULTI_INDEX_CHECK_VALID_ITERATOR(i);
     BOOST_MULTI_INDEX_CHECK_DEREFERENCEABLE_ITERATOR(i);
@@ -568,7 +568,7 @@ public:
   template<typename Index>
   BOOST_MULTI_INDEX_ENABLE_IF_MERGEABLE(
     ordered_index_impl,Index,pair_return_type)
-  merge(Index&& x,BOOST_DEDUCED_TYPENAME Index::iterator i)
+  merge(Index&& x,typename Index::iterator i)
   {
     return merge(static_cast<Index&>(x),i);
   }
@@ -577,8 +577,8 @@ public:
   BOOST_MULTI_INDEX_ENABLE_IF_MERGEABLE(ordered_index_impl,Index,void)
   merge(
     Index& x,
-    BOOST_DEDUCED_TYPENAME Index::iterator first,
-    BOOST_DEDUCED_TYPENAME Index::iterator last)
+    typename Index::iterator first,
+    typename Index::iterator last)
   {
     BOOST_MULTI_INDEX_CHECK_VALID_ITERATOR(first);
     BOOST_MULTI_INDEX_CHECK_VALID_ITERATOR(last);
@@ -596,8 +596,8 @@ public:
   BOOST_MULTI_INDEX_ENABLE_IF_MERGEABLE(ordered_index_impl,Index,void)
   merge(
     Index&& x,
-    BOOST_DEDUCED_TYPENAME Index::iterator first,
-    BOOST_DEDUCED_TYPENAME Index::iterator last)
+    typename Index::iterator first,
+    typename Index::iterator last)
   {
     merge(static_cast<Index&>(x),first,last);
   }
@@ -1556,7 +1556,7 @@ public:
 
 #if !defined(BOOST_NO_CXX11_HDR_INITIALIZER_LIST)
   ordered_index& operator=(
-    std::initializer_list<BOOST_DEDUCED_TYPENAME super::value_type> list)
+    std::initializer_list<typename super::value_type> list)
   {
     this->final()=list;
     return *this;

@@ -568,7 +568,7 @@ public:
   BOOST_MULTI_INDEX_ENABLE_IF_MERGEABLE(
     random_access_index,Index,pair_return_type)
   splice(
-    iterator position,Index& x,BOOST_DEDUCED_TYPENAME Index::iterator i)
+    iterator position,Index& x,typename Index::iterator i)
   {
     BOOST_MULTI_INDEX_CHECK_VALID_ITERATOR(position);
     BOOST_MULTI_INDEX_CHECK_IS_OWNER(position,*this);
@@ -595,7 +595,7 @@ public:
     random_access_index,Index,pair_return_type)
   splice(
     iterator position,Index&& x,
-    BOOST_DEDUCED_TYPENAME Index::iterator i)
+    typename Index::iterator i)
   {
     return splice(position,static_cast<Index&>(x),i);
   }
@@ -604,8 +604,8 @@ public:
   BOOST_MULTI_INDEX_ENABLE_IF_MERGEABLE(random_access_index,Index,void)
   splice(
     iterator position,Index& x,
-    BOOST_DEDUCED_TYPENAME Index::iterator first,
-    BOOST_DEDUCED_TYPENAME Index::iterator last)
+    typename Index::iterator first,
+    typename Index::iterator last)
   {
     BOOST_MULTI_INDEX_CHECK_VALID_ITERATOR(position);
     BOOST_MULTI_INDEX_CHECK_IS_OWNER(position,*this);
@@ -629,8 +629,8 @@ public:
   BOOST_MULTI_INDEX_ENABLE_IF_MERGEABLE(random_access_index,Index,void)
   splice(
     iterator position,Index&& x,
-    BOOST_DEDUCED_TYPENAME Index::iterator first,
-    BOOST_DEDUCED_TYPENAME Index::iterator last)
+    typename Index::iterator first,
+    typename Index::iterator last)
   {
     splice(position,static_cast<Index&>(x),first,last);
   }
@@ -1095,7 +1095,7 @@ private:
  
   template<typename Index>
   std::pair<final_node_type*,bool> external_splice(
-    iterator position,Index& x,BOOST_DEDUCED_TYPENAME Index::iterator i,
+    iterator position,Index& x,typename Index::iterator i,
     boost::true_type /* copy-constructible value */)
   {
     if(get_allocator()==x.get_allocator()){
@@ -1113,7 +1113,7 @@ private:
 
   template<typename Index>
   std::pair<final_node_type*,bool> external_splice(
-    iterator position,Index& x,BOOST_DEDUCED_TYPENAME Index::iterator i,
+    iterator position,Index& x,typename Index::iterator i,
     boost::false_type /* copy-constructible value */)
   {
     BOOST_MULTI_INDEX_CHECK_EQUAL_ALLOCATORS(*this,x);
@@ -1157,8 +1157,8 @@ private:
   template<typename Index>
   void external_splice(
     iterator position,Index& x,
-    BOOST_DEDUCED_TYPENAME Index::iterator first,
-    BOOST_DEDUCED_TYPENAME Index::iterator last,
+    typename Index::iterator first,
+    typename Index::iterator last,
     boost::true_type /* copy-constructible value */)
   {
     if(get_allocator()==x.get_allocator()){
@@ -1186,8 +1186,8 @@ private:
   template<typename Index>
   void external_splice(
     iterator position,Index& x,
-    BOOST_DEDUCED_TYPENAME Index::iterator first,
-    BOOST_DEDUCED_TYPENAME Index::iterator last,
+    typename Index::iterator first,
+    typename Index::iterator last,
     boost::false_type /* copy-constructible value */)
   {
     BOOST_MULTI_INDEX_CHECK_EQUAL_ALLOCATORS(*this,x);

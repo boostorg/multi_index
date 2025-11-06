@@ -532,7 +532,7 @@ public:
 
   template<typename Index>
   BOOST_MULTI_INDEX_ENABLE_IF_MERGEABLE(hashed_index,Index,pair_return_type)
-  merge(Index& x,BOOST_DEDUCED_TYPENAME Index::iterator i)
+  merge(Index& x,typename Index::iterator i)
   {
     BOOST_MULTI_INDEX_CHECK_VALID_ITERATOR(i);
     BOOST_MULTI_INDEX_CHECK_DEREFERENCEABLE_ITERATOR(i);
@@ -552,7 +552,7 @@ public:
 
   template<typename Index>
   BOOST_MULTI_INDEX_ENABLE_IF_MERGEABLE(hashed_index,Index,pair_return_type)
-  merge(Index&& x,BOOST_DEDUCED_TYPENAME Index::iterator i)
+  merge(Index&& x,typename Index::iterator i)
   {
     return merge(static_cast<Index&>(x),i);
   }
@@ -561,8 +561,8 @@ public:
   BOOST_MULTI_INDEX_ENABLE_IF_MERGEABLE(hashed_index,Index,void)
   merge(
     Index& x,
-    BOOST_DEDUCED_TYPENAME Index::iterator first,
-    BOOST_DEDUCED_TYPENAME Index::iterator last)
+    typename Index::iterator first,
+    typename Index::iterator last)
   {
     BOOST_MULTI_INDEX_CHECK_VALID_ITERATOR(first);
     BOOST_MULTI_INDEX_CHECK_VALID_ITERATOR(last);
@@ -580,8 +580,8 @@ public:
   BOOST_MULTI_INDEX_ENABLE_IF_MERGEABLE(hashed_index,Index,void)
   merge(
     Index&& x,
-    BOOST_DEDUCED_TYPENAME Index::iterator first,
-    BOOST_DEDUCED_TYPENAME Index::iterator last)
+    typename Index::iterator first,
+    typename Index::iterator last)
   {
     merge(static_cast<Index&>(x),first,last);
   }

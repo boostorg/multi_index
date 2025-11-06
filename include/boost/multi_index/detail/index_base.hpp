@@ -287,8 +287,8 @@ protected:
   template<typename Index>
   void final_transfer_range_(
     Index& x,
-    BOOST_DEDUCED_TYPENAME Index::iterator first,
-    BOOST_DEDUCED_TYPENAME Index::iterator last)
+    typename Index::iterator first,
+    typename Index::iterator last)
     {final().transfer_range_(x,first,last);}
 
   void final_swap_(final_type& x){final().swap_(x);}

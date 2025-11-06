@@ -946,8 +946,8 @@ BOOST_MULTI_INDEX_PROTECTED_IF_MEMBER_TEMPLATE_FRIENDS:
   template<typename Index>
   void transfer_range_(
     Index& x,
-    BOOST_DEDUCED_TYPENAME Index::iterator first,
-    BOOST_DEDUCED_TYPENAME Index::iterator last)
+    typename Index::iterator first,
+    typename Index::iterator last)
   {
     while(first!=last){
       transfer_(x,static_cast<final_node_type*>((first++).get_node()));
@@ -1220,7 +1220,7 @@ get(
   BOOST_STATIC_ASSERT(N>=0&&
     N<
     mp11::mp_size<
-      BOOST_DEDUCED_TYPENAME multi_index_type::index_type_list
+      typename multi_index_type::index_type_list
     >::value);
 
   return detail::converter<multi_index_type,index_type>::index(m);
@@ -1244,7 +1244,7 @@ get(
   BOOST_STATIC_ASSERT(N>=0&&
     N<
     mp11::mp_size<
-      BOOST_DEDUCED_TYPENAME multi_index_type::index_type_list
+      typename multi_index_type::index_type_list
     >::value);
 
   return detail::converter<multi_index_type,index_type>::index(m);
@@ -1338,7 +1338,7 @@ project(
 #if !defined(__SUNPRO_CC)||!(__SUNPRO_CC<0x580) /* Sun C++ 5.7 fails */
   BOOST_STATIC_ASSERT((
     mp11::mp_contains<
-      BOOST_DEDUCED_TYPENAME multi_index_type::iterator_type_list,
+      typename multi_index_type::iterator_type_list,
       IteratorType>::value));
 #endif
 
@@ -1364,10 +1364,10 @@ project(
 #if !defined(__SUNPRO_CC)||!(__SUNPRO_CC<0x580) /* Sun C++ 5.7 fails */
   BOOST_STATIC_ASSERT((
     mp11::mp_contains<
-      BOOST_DEDUCED_TYPENAME multi_index_type::iterator_type_list,
+      typename multi_index_type::iterator_type_list,
       IteratorType>::value||
     mp11::mp_contains<
-      BOOST_DEDUCED_TYPENAME multi_index_type::const_iterator_type_list,
+      typename multi_index_type::const_iterator_type_list,
       IteratorType>::value));
 #endif
 
@@ -1410,7 +1410,7 @@ project(
 #if !defined(__SUNPRO_CC)||!(__SUNPRO_CC<0x580) /* Sun C++ 5.7 fails */
   BOOST_STATIC_ASSERT((
     mp11::mp_contains<
-      BOOST_DEDUCED_TYPENAME multi_index_type::iterator_type_list,
+      typename multi_index_type::iterator_type_list,
       IteratorType>::value));
 #endif
 
@@ -1437,10 +1437,10 @@ project(
 #if !defined(__SUNPRO_CC)||!(__SUNPRO_CC<0x580) /* Sun C++ 5.7 fails */
   BOOST_STATIC_ASSERT((
     mp11::mp_contains<
-      BOOST_DEDUCED_TYPENAME multi_index_type::iterator_type_list,
+      typename multi_index_type::iterator_type_list,
       IteratorType>::value||
     mp11::mp_contains<
-      BOOST_DEDUCED_TYPENAME multi_index_type::const_iterator_type_list,
+      typename multi_index_type::const_iterator_type_list,
       IteratorType>::value));
 #endif
 

@@ -82,7 +82,7 @@ template<
 >
 inline Node* ordered_index_find(
   Node* top,Node* y,const KeyFromValue& key,
-  const BOOST_DEDUCED_TYPENAME KeyFromValue::result_type& x,
+  const typename KeyFromValue::result_type& x,
   const CompatibleCompare& comp,std::true_type)
 {
   return ordered_index_find(top,y,key,x,comp,std::false_type());
@@ -130,7 +130,7 @@ template<
 >
 inline Node* ordered_index_lower_bound(
   Node* top,Node* y,const KeyFromValue& key,
-  const BOOST_DEDUCED_TYPENAME KeyFromValue::result_type& x,
+  const typename KeyFromValue::result_type& x,
   const CompatibleCompare& comp,std::true_type)
 {
   return ordered_index_lower_bound(top,y,key,x,comp,std::false_type());
@@ -176,7 +176,7 @@ template<
 >
 inline Node* ordered_index_upper_bound(
   Node* top,Node* y,const KeyFromValue& key,
-  const BOOST_DEDUCED_TYPENAME KeyFromValue::result_type& x,
+  const typename KeyFromValue::result_type& x,
   const CompatibleCompare& comp,std::true_type)
 {
   return ordered_index_upper_bound(top,y,key,x,comp,std::false_type());
@@ -224,7 +224,7 @@ template<
 >
 inline std::pair<Node*,Node*> ordered_index_equal_range(
   Node* top,Node* y,const KeyFromValue& key,
-  const BOOST_DEDUCED_TYPENAME KeyFromValue::result_type& x,
+  const typename KeyFromValue::result_type& x,
   const CompatibleCompare& comp,std::true_type)
 {
   return ordered_index_equal_range(top,y,key,x,comp,std::false_type());

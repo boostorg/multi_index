@@ -56,11 +56,11 @@ bool all_indices_equal(
 #if defined(BOOST_MULTI_INDEX_ENABLE_MPL_SUPPORT)
   BOOST_STATIC_CONSTANT(int,
     N=boost::mpl::size<
-    BOOST_DEDUCED_TYPENAME MultiIndexContainer::index_type_list>::value);
+    typename MultiIndexContainer::index_type_list>::value);
 #else
   BOOST_STATIC_CONSTANT(int,
     N=boost::mp11::mp_size<
-    BOOST_DEDUCED_TYPENAME MultiIndexContainer::index_type_list>::value);
+    typename MultiIndexContainer::index_type_list>::value);
 #endif
 
   return all_indices_equal_helper<N-1>::compare(m1,m2);
