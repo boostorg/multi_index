@@ -42,13 +42,10 @@
 #include <cmath>
 #include <cstddef>
 #include <functional>
+#include <initializer_list>
 #include <iterator>
 #include <type_traits>
 #include <utility>
-
-#if !defined(BOOST_NO_CXX11_HDR_INITIALIZER_LIST)
-#include <initializer_list>
-#endif
 
 #if !defined(BOOST_MULTI_INDEX_DISABLE_SERIALIZATION)
 #include <boost/core/serialization.hpp>
@@ -214,14 +211,12 @@ public:
     return *this;
   }
 
-#if !defined(BOOST_NO_CXX11_HDR_INITIALIZER_LIST)
   hashed_index<KeyFromValue,Hash,Pred,SuperMeta,TagList,Category>& operator=(
     std::initializer_list<value_type> list)
   {
     this->final()=list;
     return *this;
   }
-#endif
 
   allocator_type get_allocator()const BOOST_NOEXCEPT
   {
@@ -330,12 +325,10 @@ public:
     for(;first!=last;++first)this->final_insert_ref_(*first);
   }
 
-#if !defined(BOOST_NO_CXX11_HDR_INITIALIZER_LIST)
   void insert(std::initializer_list<value_type> list)
   {
     insert(list.begin(),list.end());
   }
-#endif
 
   insert_return_type insert(node_type&& nh)
   {

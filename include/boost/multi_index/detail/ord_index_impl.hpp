@@ -67,13 +67,10 @@
 #include <boost/multi_index/detail/ord_index_impl_fwd.hpp>
 #include <boost/tuple/tuple.hpp>
 #include <boost/type_traits/is_same.hpp>
+#include <initializer_list>
 #include <iterator>
 #include <type_traits>
 #include <utility>
-
-#if !defined(BOOST_NO_CXX11_HDR_INITIALIZER_LIST)
-#include <initializer_list>
-#endif
 
 #if !defined(BOOST_MULTI_INDEX_DISABLE_SERIALIZATION)
 #include <boost/bind/bind.hpp>
@@ -353,12 +350,10 @@ public:
     for(;first!=last;++first)this->final_insert_ref_(*first);
   }
 
-#if !defined(BOOST_NO_CXX11_HDR_INITIALIZER_LIST)
   void insert(std::initializer_list<value_type> list)
   {
     insert(list.begin(),list.end());
   }
-#endif
 
   insert_return_type insert(node_type&& nh)
   {
@@ -1554,14 +1549,12 @@ public:
     return *this;
   }
 
-#if !defined(BOOST_NO_CXX11_HDR_INITIALIZER_LIST)
   ordered_index& operator=(
     std::initializer_list<typename super::value_type> list)
   {
     this->final()=list;
     return *this;
   }
-#endif
 
 protected:
   ordered_index(

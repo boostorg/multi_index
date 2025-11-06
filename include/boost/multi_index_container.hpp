@@ -42,11 +42,8 @@
 #include <boost/type_traits/integral_constant.hpp>
 #include <boost/type_traits/is_same.hpp>
 #include <boost/utility/base_from_member.hpp>
-#include <utility>
-
-#if !defined(BOOST_NO_CXX11_HDR_INITIALIZER_LIST)
 #include <initializer_list>
-#endif
+#include <utility>
 
 #if !defined(BOOST_MULTI_INDEX_DISABLE_SERIALIZATION)
 #include <boost/core/serialization.hpp>
@@ -248,7 +245,6 @@ public:
     BOOST_CATCH_END
   }
 
-#if !defined(BOOST_NO_CXX11_HDR_INITIALIZER_LIST)
   multi_index_container(
     std::initializer_list<Value> list,
     const ctor_args_list& args_list=ctor_args_list(),
@@ -274,7 +270,6 @@ public:
     }
     BOOST_CATCH_END
   }
-#endif
 
   multi_index_container(
     const multi_index_container<Value,IndexSpecifierList,Allocator>& x):
@@ -368,7 +363,6 @@ public:
 #include <boost/multi_index/detail/undef_if_constexpr_macro.hpp>
   }
 
-#if !defined(BOOST_NO_CXX11_HDR_INITIALIZER_LIST)
   multi_index_container<Value,IndexSpecifierList,Allocator>& operator=(
     std::initializer_list<Value> list)
   {
@@ -385,7 +379,6 @@ public:
     x.swap_elements_(*this);
     return*this;
   }
-#endif
 
   allocator_type get_allocator()const BOOST_NOEXCEPT
   {
@@ -583,7 +576,6 @@ BOOST_MULTI_INDEX_PROTECTED_IF_MEMBER_TEMPLATE_FRIENDS:
     BOOST_MULTI_INDEX_CHECK_INVARIANT;
   }
 
-#if !defined(BOOST_NO_CXX11_HDR_INITIALIZER_LIST)
   multi_index_container(
     const multi_index_container<Value,IndexSpecifierList,Allocator>& x,
     detail::do_not_copy_elements_tag):
@@ -594,7 +586,6 @@ BOOST_MULTI_INDEX_PROTECTED_IF_MEMBER_TEMPLATE_FRIENDS:
   {
     BOOST_MULTI_INDEX_CHECK_INVARIANT;
   }
-#endif
 
   void copy_construct_from(
     const multi_index_container<Value,IndexSpecifierList,Allocator>& x)

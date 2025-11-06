@@ -53,11 +53,7 @@ static void test_assign()
   s.assign((const int*)(&a[0]),(const int*)(&a[sa]));
   BOOST_TEST(s.size()==sa&&std::equal(s.begin(),s.end(),&a[0]));
 
-#if !defined(BOOST_NO_CXX11_HDR_INITIALIZER_LIST)
   s.assign({0,1,2,3,4,5});
-#else
-  s.assign(&a[0],&a[sa]);
-#endif
 
   BOOST_TEST(s.size()==sa&&std::equal(s.begin(),s.end(),&a[0]));
 
@@ -156,8 +152,6 @@ void test_copy_assignment()
 
   BOOST_TEST(i5==get<5>(es2));
 
-#if !defined(BOOST_NO_CXX11_HDR_INITIALIZER_LIST)&&\
-    !BOOST_WORKAROUND(BOOST_MSVC,==1800) /* MSVC 12.0 chokes on what follows */
   employee_set es8({{0,"Rose",40,4512},{1,"Mary",38,3345},{2,"Jo",25,7102}});
   employee_set es9;
   es9={{0,"Rose",40,4512},{1,"Mary",38,3345},{2,"Jo",25,7102},
@@ -197,7 +191,6 @@ void test_copy_assignment()
   get<5>(es9)={{1,"Mary",38,3345},{2,"Jo",25,7102},{0,"Rose",40,4512},
                {2,"Jo",25,7102}};
   BOOST_TEST(es9==es8);
-#endif
 
   employee_set es10(produce_employee_set()),es11(produce_employee_set());
   BOOST_TEST(es10==es11);

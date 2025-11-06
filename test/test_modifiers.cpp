@@ -258,10 +258,8 @@ void test_modifiers()
   i1.insert(ve.begin(),ve.end());
   BOOST_TEST(i2.size()==3);
 
-#if !defined(BOOST_NO_CXX11_HDR_INITIALIZER_LIST)
   i1.insert({{4,"Vanessa",20,9236},{5,"Penelope",55,2358}});
   BOOST_TEST(i2.size()==5);
-#endif
 
   BOOST_TEST(i2.erase(i2.begin(),i2.end())==i2.end());
   BOOST_TEST(es.size()==0);
@@ -269,10 +267,8 @@ void test_modifiers()
   i2.insert(ve.begin(),ve.end());
   BOOST_TEST(i3.size()==3);
 
-#if !defined(BOOST_NO_CXX11_HDR_INITIALIZER_LIST)
   i2.insert({{4,"Vanessa",20,9236},{5,"Penelope",55,2358}});
   BOOST_TEST(i3.size()==5);
-#endif
 
   BOOST_TEST(*(i3.erase(i3.begin()))==employee(1,"Rachel",27,9012));
   BOOST_TEST(i3.erase(i3.begin(),i3.end())==i3.end());
@@ -281,11 +277,9 @@ void test_modifiers()
   i3.insert(i3.end(),ve.begin(),ve.end());
   BOOST_TEST(es.size()==3);
 
-#if !defined(BOOST_NO_CXX11_HDR_INITIALIZER_LIST)
   i3.insert(i3.begin(),{{4,"Vanessa",20,9236},{5,"Penelope",55,2358}});
   BOOST_TEST(i3.front().name=="Vanessa");
   BOOST_TEST(i4.size()==5);
-#endif
 
   BOOST_TEST(i4.erase(9012)==1);
   i4.erase(i4.begin());
@@ -300,11 +294,9 @@ void test_modifiers()
   i5.insert(i5.begin(),ve.begin(),ve.end());
   BOOST_TEST(i1.size()==3);
 
-#if !defined(BOOST_NO_CXX11_HDR_INITIALIZER_LIST)
   i5.insert(i5.end(),{{4,"Vanessa",20,9236},{5,"Penelope",55,2358}});
   BOOST_TEST(i5.back().name=="Penelope");
   BOOST_TEST(i1.size()==5);
-#endif
 
   BOOST_TEST(es.erase(es.begin(),es.end())==es.end());
   BOOST_TEST(i2.size()==0);
