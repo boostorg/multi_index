@@ -248,7 +248,7 @@ typename Src::node_type checked_extract(
 {
   typename Src::node_type n=src.extract(k);
   if(n)BOOST_TEST(src.key_extractor()(n.value())==k);
-  return std::move(n);
+  return n;
 }
 
 template<typename Src>
@@ -257,7 +257,7 @@ typename Src::node_type checked_extract(Src& src,typename Src::iterator pos)
   typename Src::value_type x=*pos;
   typename Src::node_type  n=src.extract(pos);
   if(n)BOOST_TEST(n.value()==x);
-  return std::move(n);
+  return n;
 }
 
 template<typename Src,typename Locator,typename Dst>
