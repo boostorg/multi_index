@@ -1,6 +1,6 @@
 /* Boost.MultiIndex example of a bidirectional map.
  *
- * Copyright 2003-2009 Joaquin M Lopez Munoz.
+ * Copyright 2003-2025 Joaquin M Lopez Munoz.
  * Distributed under the Boost Software License, Version 1.0.
  * (See accompanying file LICENSE_1_0.txt or copy at
  * http://www.boost.org/LICENSE_1_0.txt)
@@ -108,22 +108,6 @@ int main()
   std::string word;
   std::getline(std::cin,word);
 
-#if defined(BOOST_NO_MEMBER_TEMPLATES) /* use global get<> and family instead */
-
-  dictionary::iterator it=get<from>(d).find(word);
-  if(it!=d.end()){
-    std::cout<<word<<" is said "<<it->second<<" in English"<<std::endl;
-  }
-  else{
-    nth_index<dictionary,1>::type::iterator it2=get<1>(d).find(word);
-    if(it2!=get<1>(d).end()){
-      std::cout<<word<<" is said "<<it2->first<<" in Spanish"<<std::endl;
-    }
-    else std::cout<<"No such word in the dictionary"<<std::endl;
-  }
-
-#else
-
   /* search the queried word on the from index (Spanish) */
 
   dictionary::iterator it=d.get<from>().find(word);
@@ -142,8 +126,6 @@ int main()
     }
     else std::cout<<"No such word in the dictionary"<<std::endl;
   }
-
-#endif
 
   return 0;
 }

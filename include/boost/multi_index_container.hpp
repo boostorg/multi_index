@@ -387,7 +387,6 @@ public:
 
   /* retrieval of indices by number */
 
-#if !defined(BOOST_NO_MEMBER_TEMPLATES)
   template<int N>
   struct nth_index
   {
@@ -408,11 +407,9 @@ public:
     BOOST_STATIC_ASSERT(N>=0&&N<mp11::mp_size<index_type_list>::value);
     return *this;
   }
-#endif
 
   /* retrieval of indices by tag */
 
-#if !defined(BOOST_NO_MEMBER_TEMPLATES)
   template<typename Tag>
   struct index
   {
@@ -439,11 +436,9 @@ public:
   {
     return *this;
   }
-#endif
 
   /* projection of iterators by number */
 
-#if !defined(BOOST_NO_MEMBER_TEMPLATES)
   template<int N>
   struct nth_index_iterator
   {
@@ -488,11 +483,9 @@ public:
     return index_type::make_iterator(
       static_cast<final_node_type*>(it.get_node()));
   }
-#endif
 
   /* projection of iterators by tag */
 
-#if !defined(BOOST_NO_MEMBER_TEMPLATES)
   template<typename Tag>
   struct index_iterator
   {
@@ -537,7 +530,6 @@ public:
     return index_type::make_iterator(
       static_cast<final_node_type*>(it.get_node()));
   }
-#endif
 
 BOOST_MULTI_INDEX_PROTECTED_IF_MEMBER_TEMPLATE_FRIENDS:
   typedef typename super::final_node_handle_type final_node_handle_type;
