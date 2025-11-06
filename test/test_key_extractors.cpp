@@ -546,7 +546,6 @@ void test_key_extractors()
 
   test_nc_class nc_t(1,0);
   BOOST_TEST(nc_cmpk(nc_td)==make_tuple(boost::cref(nc_t),1,1,true));
-#endif
   
   std::list<test_class> tl;
   for(int i=0;i<20;++i)tl.push_back(test_class(i));
