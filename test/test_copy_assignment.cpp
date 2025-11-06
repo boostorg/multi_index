@@ -1,6 +1,6 @@
 /* Boost.MultiIndex test for copying and assignment.
  *
- * Copyright 2003-2018 Joaquin M Lopez Munoz.
+ * Copyright 2003-2025 Joaquin M Lopez Munoz.
  * Distributed under the Boost Software License, Version 1.0.
  * (See accompanying file LICENSE_1_0.txt or copy at
  * http://www.boost.org/LICENSE_1_0.txt)
@@ -12,9 +12,9 @@
 
 #include <boost/config.hpp> /* keep it first to prevent nasty warns in MSVC */
 #include <algorithm>
-#include <boost/move/utility_core.hpp>
 #include <list>
 #include <numeric>
+#include <utility>
 #include <vector>
 #include "pre_multi_index.hpp"
 #include "employee.hpp"
@@ -202,11 +202,11 @@ void test_copy_assignment()
   employee_set es10(produce_employee_set()),es11(produce_employee_set());
   BOOST_TEST(es10==es11);
 
-  employee_set es12(boost::move(es10));
+  employee_set es12(std::move(es10));
   BOOST_TEST(es10.empty());
   BOOST_TEST(es11==es12);
 
-  es10=boost::move(es12);
+  es10=std::move(es12);
   BOOST_TEST(es12.empty());
   BOOST_TEST(es11==es10);
 

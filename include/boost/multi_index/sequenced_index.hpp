@@ -20,8 +20,6 @@
 #include <boost/core/allocator_access.hpp>
 #include <boost/core/no_exceptions_support.hpp>
 #include <boost/detail/workaround.hpp>
-#include <boost/move/core.hpp>
-#include <boost/move/utility_core.hpp>
 #include <boost/mp11/function.hpp>
 #include <boost/multi_index/detail/access_specifier.hpp>
 #include <boost/multi_index/detail/bidir_node_iterator.hpp>
@@ -292,8 +290,8 @@ public:
 
   std::pair<iterator,bool> push_front(const value_type& x)
                              {return insert(begin(),x);}
-  std::pair<iterator,bool> push_front(BOOST_RV_REF(value_type) x)
-                             {return insert(begin(),boost::move(x));}
+  std::pair<iterator,bool> push_front(value_type&& x)
+                             {return insert(begin(),std::move(x));}
   void                     pop_front(){erase(begin());}
 
   template<typename... Args>
@@ -304,8 +302,8 @@ public:
 
   std::pair<iterator,bool> push_back(const value_type& x)
                              {return insert(end(),x);}
-  std::pair<iterator,bool> push_back(BOOST_RV_REF(value_type) x)
-                             {return insert(end(),boost::move(x));}
+  std::pair<iterator,bool> push_back(value_type&& x)
+                             {return insert(end(),std::move(x));}
   void                     pop_back(){erase(--end());}
 
   template<typename... Args>
@@ -334,7 +332,7 @@ public:
     return std::pair<iterator,bool>(make_iterator(p.first),p.second);
   }
 
-  std::pair<iterator,bool> insert(iterator position,BOOST_RV_REF(value_type) x)
+  std::pair<iterator,bool> insert(iterator position,value_type&& x)
   {
     BOOST_MULTI_INDEX_CHECK_VALID_ITERATOR(position);
     BOOST_MULTI_INDEX_CHECK_IS_OWNER(position,*this);
@@ -367,7 +365,7 @@ public:
   }
 #endif
 
-  insert_return_type insert(const_iterator position,BOOST_RV_REF(node_type) nh)
+  insert_return_type insert(const_iterator position,node_type&& nh)
   {
     BOOST_MULTI_INDEX_CHECK_VALID_ITERATOR(position);
     BOOST_MULTI_INDEX_CHECK_IS_OWNER(position,*this);
@@ -377,7 +375,7 @@ public:
     if(p.second&&position.get_node()!=header()){
       relink(position.get_node(),p.first);
     }
-    return insert_return_type(make_iterator(p.first),p.second,boost::move(nh));
+    return insert_return_type(make_iterator(p.first),p.second,std::move(nh));
   }
 
   node_type extract(const_iterator position)
@@ -424,7 +422,7 @@ public:
       x,static_cast<final_node_type*>(position.get_node()));
   }
 
-  bool replace(iterator position,BOOST_RV_REF(value_type) x)
+  bool replace(iterator position,value_type&& x)
   {
     BOOST_MULTI_INDEX_CHECK_VALID_ITERATOR(position);
     BOOST_MULTI_INDEX_CHECK_DEREFERENCEABLE_ITERATOR(position);
@@ -511,7 +509,7 @@ public:
 
   template<typename Index>
   BOOST_MULTI_INDEX_ENABLE_IF_MERGEABLE(sequenced_index,Index,void)
-  splice(iterator position,BOOST_RV_REF(Index) x)
+  splice(iterator position,Index&& x)
   {
     splice(position,static_cast<Index&>(x));
   }
@@ -546,7 +544,7 @@ public:
   BOOST_MULTI_INDEX_ENABLE_IF_MERGEABLE(
     sequenced_index,Index,pair_return_type)
   splice(
-    iterator position,BOOST_RV_REF(Index) x,
+    iterator position,Index&& x,
     BOOST_DEDUCED_TYPENAME Index::iterator i)
   {
     return splice(position,static_cast<Index&>(x),i);
@@ -580,7 +578,7 @@ public:
   template<typename Index>
   BOOST_MULTI_INDEX_ENABLE_IF_MERGEABLE(sequenced_index,Index,void)
   splice(
-    iterator position,BOOST_RV_REF(Index) x,
+    iterator position,Index&& x,
     BOOST_DEDUCED_TYPENAME Index::iterator first,
     BOOST_DEDUCED_TYPENAME Index::iterator last)
   {

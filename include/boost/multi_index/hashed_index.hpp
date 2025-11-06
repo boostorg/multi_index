@@ -21,8 +21,6 @@
 #include <boost/core/no_exceptions_support.hpp>
 #include <boost/detail/workaround.hpp>
 #include <boost/limits.hpp>
-#include <boost/move/core.hpp>
-#include <boost/move/utility_core.hpp>
 #include <boost/mp11/utility.hpp>
 #include <boost/multi_index/detail/access_specifier.hpp>
 #include <boost/multi_index/detail/adl_swap.hpp>
@@ -298,7 +296,7 @@ public:
     return std::pair<iterator,bool>(make_iterator(p.first),p.second);
   }
 
-  std::pair<iterator,bool> insert(BOOST_RV_REF(value_type) x)
+  std::pair<iterator,bool> insert(value_type&& x)
   {
     BOOST_MULTI_INDEX_HASHED_INDEX_CHECK_INVARIANT;
     std::pair<final_node_type*,bool> p=this->final_insert_rv_(x);
@@ -315,7 +313,7 @@ public:
     return make_iterator(p.first);
   }
     
-  iterator insert(iterator position,BOOST_RV_REF(value_type) x)
+  iterator insert(iterator position,value_type&& x)
   {
     BOOST_MULTI_INDEX_CHECK_VALID_ITERATOR(position);
     BOOST_MULTI_INDEX_CHECK_IS_OWNER(position,*this);
@@ -339,15 +337,15 @@ public:
   }
 #endif
 
-  insert_return_type insert(BOOST_RV_REF(node_type) nh)
+  insert_return_type insert(node_type&& nh)
   {
     if(nh)BOOST_MULTI_INDEX_CHECK_EQUAL_ALLOCATORS(*this,nh);
     BOOST_MULTI_INDEX_HASHED_INDEX_CHECK_INVARIANT;
     std::pair<final_node_type*,bool> p=this->final_insert_nh_(nh);
-    return insert_return_type(make_iterator(p.first),p.second,boost::move(nh));
+    return insert_return_type(make_iterator(p.first),p.second,std::move(nh));
   }
 
-  iterator insert(const_iterator position,BOOST_RV_REF(node_type) nh)
+  iterator insert(const_iterator position,node_type&& nh)
   {
     BOOST_MULTI_INDEX_CHECK_VALID_ITERATOR(position);
     BOOST_MULTI_INDEX_CHECK_IS_OWNER(position,*this);
@@ -432,7 +430,7 @@ public:
       x,static_cast<final_node_type*>(position.get_node()));
   }
 
-  bool replace(iterator position,BOOST_RV_REF(value_type) x)
+  bool replace(iterator position,value_type&& x)
   {
     BOOST_MULTI_INDEX_CHECK_VALID_ITERATOR(position);
     BOOST_MULTI_INDEX_CHECK_DEREFERENCEABLE_ITERATOR(position);
@@ -530,7 +528,7 @@ public:
 
   template<typename Index>
   BOOST_MULTI_INDEX_ENABLE_IF_MERGEABLE(hashed_index,Index,void)
-  merge(BOOST_RV_REF(Index) x){merge(static_cast<Index&>(x));}
+  merge(Index&& x){merge(static_cast<Index&>(x));}
 
   template<typename Index>
   BOOST_MULTI_INDEX_ENABLE_IF_MERGEABLE(hashed_index,Index,pair_return_type)
@@ -554,7 +552,7 @@ public:
 
   template<typename Index>
   BOOST_MULTI_INDEX_ENABLE_IF_MERGEABLE(hashed_index,Index,pair_return_type)
-  merge(BOOST_RV_REF(Index) x,BOOST_DEDUCED_TYPENAME Index::iterator i)
+  merge(Index&& x,BOOST_DEDUCED_TYPENAME Index::iterator i)
   {
     return merge(static_cast<Index&>(x),i);
   }
@@ -581,7 +579,7 @@ public:
   template<typename Index>
   BOOST_MULTI_INDEX_ENABLE_IF_MERGEABLE(hashed_index,Index,void)
   merge(
-    BOOST_RV_REF(Index) x,
+    Index&& x,
     BOOST_DEDUCED_TYPENAME Index::iterator first,
     BOOST_DEDUCED_TYPENAME Index::iterator last)
   {

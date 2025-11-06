@@ -18,12 +18,11 @@
 #include <boost/core/addressof.hpp>
 #include <boost/core/allocator_access.hpp>
 #include <boost/detail/workaround.hpp>
-#include <boost/move/core.hpp>
-#include <boost/move/utility_core.hpp>
 #include <boost/multi_index_container_fwd.hpp>
 #include <boost/type_traits/aligned_storage.hpp>
 #include <boost/type_traits/alignment_of.hpp> 
 #include <new>
+#include <utility>
 
 #if !defined(BOOST_NO_SFINAE)
 #include <boost/core/enable_if.hpp>
@@ -51,10 +50,10 @@ public:
 
   node_handle()BOOST_NOEXCEPT:node(0){}
 
-  node_handle(BOOST_RV_REF(node_handle) x)BOOST_NOEXCEPT:node(x.node)
+  node_handle(node_handle&& x)BOOST_NOEXCEPT:node(x.node)
   {
     if(!x.empty()){
-      move_construct_allocator(boost::move(x));
+      move_construct_allocator(std::move(x));
       x.destroy_allocator();
       x.node=0;
     }
@@ -68,7 +67,7 @@ public:
     }
   }
 
-  node_handle& operator=(BOOST_RV_REF(node_handle) x)
+  node_handle& operator=(node_handle&& x)
   {
     if(this!=&x){
       if(!empty()){
@@ -77,7 +76,7 @@ public:
           BOOST_MULTI_INDEX_IF_CONSTEXPR(
             allocator_propagate_on_container_move_assignment_t<
               allocator_type>::value){
-            move_assign_allocator(boost::move(x));
+            move_assign_allocator(std::move(x));
           }
           x.destroy_allocator();
         }
@@ -86,7 +85,7 @@ public:
         }
       }
       else if(!x.empty()){
-        move_construct_allocator(boost::move(x));
+        move_construct_allocator(std::move(x));
         x.destroy_allocator();
       }
       node=x.node;
@@ -124,12 +123,12 @@ public:
         }
       }
       else{
-        x.move_construct_allocator(boost::move(*this));
+        x.move_construct_allocator(std::move(*this));
         destroy_allocator();
       }
     }
     else if(!x.empty()){
-      move_construct_allocator(boost::move(x));
+      move_construct_allocator(std::move(x));
       x.destroy_allocator();
     }
     std::swap(node,x.node);
@@ -142,8 +141,6 @@ public:
   }
 
 private:
-  BOOST_MOVABLE_BUT_NOT_COPYABLE(node_handle)
-
   template <typename,typename,typename>
   friend class boost::multi_index::multi_index_container;
 
@@ -174,15 +171,15 @@ private:
 
 #include <boost/multi_index/detail/restore_wstrict_aliasing.hpp>
 
-  void move_construct_allocator(BOOST_RV_REF(node_handle) x)
+  void move_construct_allocator(node_handle&& x)
   {
     ::new (static_cast<void*>(allocator_ptr()))
-      allocator_type(boost::move(*x.allocator_ptr()));
+      allocator_type(std::move(*x.allocator_ptr()));
   }
 
-  void move_assign_allocator(BOOST_RV_REF(node_handle) x)
+  void move_assign_allocator(node_handle&& x)
   {
-    *allocator_ptr()=boost::move(*x.allocator_ptr());
+    *allocator_ptr()=std::move(*x.allocator_ptr());
   }
 
   void destroy_allocator(){allocator_ptr()->~allocator_type();}
@@ -214,25 +211,22 @@ template<typename Iterator,typename NodeHandle>
 struct insert_return_type
 {
   insert_return_type(
-    Iterator position_,bool inserted_,BOOST_RV_REF(NodeHandle) node_):
-    position(position_),inserted(inserted_),node(boost::move(node_)){}
-  insert_return_type(BOOST_RV_REF(insert_return_type) x):
-    position(x.position),inserted(x.inserted),node(boost::move(x.node)){}
+    Iterator position_,bool inserted_,NodeHandle&& node_):
+    position(position_),inserted(inserted_),node(std::move(node_)){}
+  insert_return_type(insert_return_type&& x):
+    position(x.position),inserted(x.inserted),node(std::move(x.node)){}
 
-  insert_return_type& operator=(BOOST_RV_REF(insert_return_type) x)
+  insert_return_type& operator=(insert_return_type&& x)
   {
     position=x.position;
     inserted=x.inserted;
-    node=boost::move(x.node);
+    node=std::move(x.node);
     return *this;
   }
 
   Iterator   position;
   bool       inserted;
   NodeHandle node;
-
-private:
-  BOOST_MOVABLE_BUT_NOT_COPYABLE(insert_return_type)
 };
 
 /* utility for SFINAEing merge and related operations */

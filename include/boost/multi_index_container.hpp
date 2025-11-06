@@ -21,8 +21,6 @@
 #include <boost/core/allocator_access.hpp>
 #include <boost/core/no_exceptions_support.hpp>
 #include <boost/detail/workaround.hpp>
-#include <boost/move/core.hpp>
-#include <boost/move/utility_core.hpp>
 #include <boost/mp11/algorithm.hpp>
 #include <boost/mp11/integral.hpp>
 #include <boost/mp11/utility.hpp>
@@ -125,8 +123,6 @@ class multi_index_container:
 #endif
 
 private:
-  BOOST_COPYABLE_AND_MOVABLE(multi_index_container)
-
 #if !defined(BOOST_NO_MEMBER_TEMPLATE_FRIENDS)
   template <typename,typename,typename> friend class  detail::index_base;
   template <typename,typename>          friend struct detail::header_holder;
@@ -292,8 +288,8 @@ public:
     copy_construct_from(x);
   }
 
-  multi_index_container(BOOST_RV_REF(multi_index_container) x):
-    bfm_allocator(boost::move(x.bfm_allocator::member)),
+  multi_index_container(multi_index_container&& x):
+    bfm_allocator(std::move(x.bfm_allocator::member)),
     bfm_header(),
     super(x,detail::do_not_copy_elements_tag()),
     node_count(0)
@@ -315,7 +311,7 @@ public:
   }
 
   multi_index_container(
-    BOOST_RV_REF(multi_index_container) x,const allocator_type& al):
+    multi_index_container&& x,const allocator_type& al):
     bfm_allocator(al),
     bfm_header(),
     super(x,detail::do_not_copy_elements_tag()),
@@ -338,25 +334,8 @@ public:
     delete_all_nodes_();
   }
 
-#if defined(BOOST_NO_CXX11_RVALUE_REFERENCES)
-  /* As per http://www.boost.org/doc/html/move/emulation_limitations.html
-   * #move.emulation_limitations.assignment_operator
-   */
-
   multi_index_container<Value,IndexSpecifierList,Allocator>& operator=(
-    const multi_index_container<Value,IndexSpecifierList,Allocator>& x)
-  {
-    multi_index_container y(
-      x,
-      node_alloc_traits::propagate_on_container_copy_assignment::value?
-        x.get_allocator():this->get_allocator());
-    swap_(y,boost::true_type() /* swap_allocators */);
-    return *this;
-  }
-#endif
-
-  multi_index_container<Value,IndexSpecifierList,Allocator>& operator=(
-    BOOST_COPY_ASSIGN_REF(multi_index_container) x)
+    const multi_index_container& x)
   {
     multi_index_container y(
       x,
@@ -368,7 +347,7 @@ public:
   }
 
   multi_index_container<Value,IndexSpecifierList,Allocator>& operator=(
-    BOOST_RV_REF(multi_index_container) x)
+    multi_index_container&& x)
   {
 #include <boost/multi_index/detail/define_if_constexpr_macro.hpp>
 
@@ -381,7 +360,7 @@ public:
       swap_(x,boost::false_type() /* swap_allocators */);
     }
     else{
-      multi_index_container y(boost::move(x),this->get_allocator());
+      multi_index_container y(std::move(x),this->get_allocator());
       swap_(y,boost::false_type() /* swap_allocators */);
     }
     return *this;

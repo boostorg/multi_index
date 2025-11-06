@@ -18,7 +18,6 @@
 #include <boost/core/allocator_access.hpp>
 #include <boost/core/no_exceptions_support.hpp>
 #include <boost/detail/workaround.hpp>
-#include <boost/move/utility_core.hpp>
 #include <boost/multi_index/detail/copy_map.hpp>
 #include <boost/multi_index/detail/do_not_copy_elements_tag.hpp>
 #include <boost/multi_index/detail/index_access_sequence.hpp>
@@ -116,7 +115,7 @@ protected:
   {
     x=final().allocate_node();
     BOOST_TRY{
-      final().construct_value(x,boost::move(const_cast<value_type&>(v)));
+      final().construct_value(x,std::move(const_cast<value_type&>(v)));
     }
     BOOST_CATCH(...){
       final().deallocate_node(x);
@@ -179,7 +178,7 @@ protected:
 
   bool replace_(const value_type& v,index_node_type* x,rvalue_tag)
   {
-    x->value()=boost::move(const_cast<value_type&>(v));
+    x->value()=std::move(const_cast<value_type&>(v));
     return true;
   }
 
