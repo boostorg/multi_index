@@ -219,18 +219,13 @@ struct member_offset:
 {
 };
 
-/* BOOST_MULTI_INDEX_MEMBER resolves to member in the normal cases,
- * and to member_offset as a workaround in those defective compilers for
- * which BOOST_NO_POINTER_TO_MEMBER_TEMPLATE_PARAMETERS is defined.
+/* BOOST_MULTI_INDEX_MEMBER used to resolve to member_offset in those defective
+ * compilers for which BOOST_NO_POINTER_TO_MEMBER_TEMPLATE_PARAMETERS is
+ * defined, none of which supported is supported any longer.
  */
 
-#if defined(BOOST_NO_POINTER_TO_MEMBER_TEMPLATE_PARAMETERS)
-#define BOOST_MULTI_INDEX_MEMBER(Class,Type,MemberName) \
-::boost::multi_index::member_offset< Class,Type,offsetof(Class,MemberName) >
-#else
 #define BOOST_MULTI_INDEX_MEMBER(Class,Type,MemberName) \
 ::boost::multi_index::member< Class,Type,&Class::MemberName >
-#endif
 
 } /* namespace multi_index */
 

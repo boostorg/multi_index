@@ -44,30 +44,6 @@ struct bidirectional_map
     ToType   second;
   };
 
-#if defined(BOOST_NO_POINTER_TO_MEMBER_TEMPLATE_PARAMETERS) ||\
-    defined(BOOST_MSVC)&&(BOOST_MSVC<1300) ||\
-    defined(BOOST_INTEL_CXX_VERSION)&&defined(_MSC_VER)&&\
-           (BOOST_INTEL_CXX_VERSION<=700)
-
-/* see Compiler specifics: Use of member_offset for info on member<> and
- * member_offset<>
- */
-
-  BOOST_STATIC_CONSTANT(unsigned,from_offset=offsetof(value_type,first));
-  BOOST_STATIC_CONSTANT(unsigned,to_offset  =offsetof(value_type,second));
-
-  typedef multi_index_container<
-    value_type,
-    indexed_by<
-      ordered_unique<
-        tag<from>,member_offset<value_type,FromType,from_offset> >,
-      ordered_unique<
-        tag<to>,  member_offset<value_type,ToType,to_offset> >
-    >
-  > type;
-
-#else
-
   /* A bidirectional map can be simulated as a multi_index_container
    * of pairs of (FromType,ToType) with two unique indices, one
    * for each member of the pair.
@@ -82,8 +58,6 @@ struct bidirectional_map
         tag<to>,  member<value_type,ToType,&value_type::second> >
     >
   > type;
-
-#endif
 };
 
 /* a dictionary is a bidirectional map from strings to strings */
