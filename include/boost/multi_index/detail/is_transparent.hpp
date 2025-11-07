@@ -38,7 +38,6 @@ struct is_transparent:std::true_type{};
 } /* namespace boost */
 
 #if !defined(BOOST_NO_SFINAE_EXPR)&& \
-    !defined(BOOST_NO_CXX11_DECLTYPE)&& \
     (defined(BOOST_NO_CXX11_FINAL)||defined(BOOST_IS_FINAL))
 
 #include <boost/core/enable_if.hpp>
