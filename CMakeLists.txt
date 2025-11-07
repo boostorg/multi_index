@@ -20,7 +20,6 @@ target_link_libraries(boost_multi_index
     Boost::container_hash
     Boost::core
     Boost::integer
-    Boost::move
     Boost::mp11
     Boost::preprocessor
     Boost::smart_ptr
