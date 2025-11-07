@@ -17,7 +17,6 @@
 #include <boost/core/addressof.hpp>
 #include <boost/core/allocator_access.hpp>
 #include <boost/core/no_exceptions_support.hpp>
-#include <boost/detail/workaround.hpp>
 #include <boost/multi_index/detail/copy_map.hpp>
 #include <boost/multi_index/detail/do_not_copy_elements_tag.hpp>
 #include <boost/multi_index/detail/index_access_sequence.hpp>

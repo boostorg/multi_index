@@ -12,7 +12,6 @@
 #define BOOST_MULTI_INDEX_TEST_PRE_MULTI_INDEX_HPP
 
 #include <boost/config.hpp> /* keep it first to prevent nasty warns in MSVC */
-#include <boost/detail/workaround.hpp>
 #include <boost/multi_index/safe_mode_errors.hpp>
 
 #if defined(__GNUC__)&&defined(__APPLE__)&&\

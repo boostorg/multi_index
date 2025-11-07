@@ -19,7 +19,6 @@
 #include <boost/core/addressof.hpp>
 #include <boost/core/allocator_access.hpp>
 #include <boost/core/no_exceptions_support.hpp>
-#include <boost/detail/workaround.hpp>
 #include <boost/limits.hpp>
 #include <boost/mp11/utility.hpp>
 #include <boost/multi_index/detail/adl_swap.hpp>

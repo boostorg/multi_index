@@ -47,7 +47,6 @@
 #include <boost/core/allocator_access.hpp>
 #include <boost/core/no_exceptions_support.hpp>
 #include <boost/core/ref.hpp>
-#include <boost/detail/workaround.hpp>
 #include <boost/mp11/utility.hpp>
 #include <boost/multi_index/detail/adl_swap.hpp>
 #include <boost/multi_index/detail/bidir_node_iterator.hpp>
