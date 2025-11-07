@@ -14,7 +14,6 @@
 #endif
 
 #include <boost/config.hpp> /* keep it first to prevent nasty warns in MSVC */
-#include <boost/detail/workaround.hpp>
 #include <boost/mp11/algorithm.hpp>
 #include <boost/multi_index_container_fwd.hpp>
 #include <boost/multi_index/detail/header_holder.hpp>

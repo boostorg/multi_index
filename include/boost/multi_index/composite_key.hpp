@@ -17,7 +17,6 @@
 #include <boost/container_hash/hash_fwd.hpp>
 #include <boost/core/enable_if.hpp>
 #include <boost/core/ref.hpp>
-#include <boost/multi_index/detail/access_specifier.hpp>
 #include <boost/multi_index/detail/augmented_stdtuple.hpp>
 #include <boost/multi_index/detail/cons_stdtuple.hpp>
 #include <boost/mp11/algorithm.hpp>

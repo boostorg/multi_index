@@ -18,17 +18,14 @@
 #include <boost/config.hpp> /* keep it first to prevent nasty warns in MSVC */
 #include <algorithm>
 #include <boost/core/addressof.hpp>
+#include <boost/core/allocator_access.hpp>
 #include <boost/core/no_exceptions_support.hpp>
 #include <boost/detail/workaround.hpp>
-#include <boost/move/core.hpp>
-#include <boost/move/utility_core.hpp>
 #include <boost/mp11/algorithm.hpp>
 #include <boost/mp11/integral.hpp>
 #include <boost/mp11/utility.hpp>
 #include <boost/multi_index_container_fwd.hpp>
-#include <boost/multi_index/detail/access_specifier.hpp>
 #include <boost/multi_index/detail/adl_swap.hpp>
-#include <boost/multi_index/detail/allocator_traits.hpp>
 #include <boost/multi_index/detail/base_type.hpp>
 #include <boost/multi_index/detail/do_not_copy_elements_tag.hpp>
 #include <boost/multi_index/detail/converter.hpp>
@@ -40,15 +37,12 @@
 #include <boost/multi_index/detail/no_duplicate_tags_in_index_list.hpp>
 #include <boost/multi_index/detail/safe_mode.hpp>
 #include <boost/multi_index/detail/scope_guard.hpp>
-#include <boost/multi_index/detail/vartempl_support.hpp>
 #include <boost/static_assert.hpp>
 #include <boost/type_traits/integral_constant.hpp>
 #include <boost/type_traits/is_same.hpp>
 #include <boost/utility/base_from_member.hpp>
-
-#if !defined(BOOST_NO_CXX11_HDR_INITIALIZER_LIST)
 #include <initializer_list>
-#endif
+#include <utility>
 
 #if !defined(BOOST_MULTI_INDEX_DISABLE_SERIALIZATION)
 #include <boost/core/serialization.hpp>
@@ -96,51 +90,36 @@ struct unequal_alloc_move_ctor_tag{};
 template<typename Value,typename IndexSpecifierList,typename Allocator>
 class multi_index_container:
   private ::boost::base_from_member<
-    typename detail::rebind_alloc_for<
+    allocator_rebind_t<
       Allocator,
       typename detail::multi_index_node_type<
         Value,IndexSpecifierList,Allocator>::type
-    >::type
+    >
   >,
-  BOOST_MULTI_INDEX_PRIVATE_IF_MEMBER_TEMPLATE_FRIENDS detail::header_holder<
-    typename detail::allocator_traits<
-      typename detail::rebind_alloc_for<
+  private detail::header_holder<
+    allocator_pointer_t<
+      allocator_rebind_t<
         Allocator,
         typename detail::multi_index_node_type<
           Value,IndexSpecifierList,Allocator>::type
-      >::type
-    >::pointer,
+      >
+    >,
     multi_index_container<Value,IndexSpecifierList,Allocator> >,
   public detail::multi_index_base_type<
     Value,IndexSpecifierList,Allocator>::type
 {
-#if defined(BOOST_MULTI_INDEX_ENABLE_INVARIANT_CHECKING)&&\
-    BOOST_WORKAROUND(__MWERKS__,<=0x3003)
-/* The "ISO C++ Template Parser" option in CW8.3 has a problem with the
- * lifetime of const references bound to temporaries --precisely what
- * scopeguards are.
- */
-
-#pragma parse_mfunc_templ off
-#endif
-
 private:
-  BOOST_COPYABLE_AND_MOVABLE(multi_index_container)
-
-#if !defined(BOOST_NO_MEMBER_TEMPLATE_FRIENDS)
   template <typename,typename,typename> friend class  detail::index_base;
   template <typename,typename>          friend struct detail::header_holder;
   template <typename,typename>          friend struct detail::converter;
-#endif
 
   typedef typename detail::multi_index_base_type<
       Value,IndexSpecifierList,Allocator>::type    super;
-  typedef typename detail::rebind_alloc_for<
+  typedef allocator_rebind_t<
     Allocator,
     typename super::index_node_type
-  >::type                                          node_allocator;
-  typedef detail::allocator_traits<node_allocator> node_alloc_traits;
-  typedef typename node_alloc_traits::pointer      node_pointer;
+  >                                                node_allocator;
+  typedef allocator_pointer_t<node_allocator>      node_pointer;
   typedef ::boost::base_from_member<
     node_allocator>                                bfm_allocator;
   typedef detail::header_holder<
@@ -185,19 +164,7 @@ public:
 
   explicit multi_index_container(
     const ctor_args_list& args_list,
-
-#if BOOST_WORKAROUND(__IBMCPP__,<=600)
-    /* VisualAge seems to have an ETI issue with the default value for
-     * argument al.
-     */
-
-    const allocator_type& al=
-      typename mp11::mp_identity<multi_index_container>::type::
-        allocator_type()):
-#else
     const allocator_type& al=allocator_type()):
-#endif
-
     bfm_allocator(al),
     super(args_list,bfm_allocator::member),
     node_count(0)
@@ -216,23 +183,8 @@ public:
   template<typename InputIterator>
   multi_index_container(
     InputIterator first,InputIterator last,
-
-#if BOOST_WORKAROUND(__IBMCPP__,<=600)
-    /* VisualAge seems to have an ETI issue with the default values
-     * for arguments args_list and al.
-     */
-
-    const ctor_args_list& args_list=
-      typename mp11::mp_identity<multi_index_container>::type::
-        ctor_args_list(),
-    const allocator_type& al=
-      typename mp11::mp_identity<multi_index_container>::type::
-        allocator_type()):
-#else
     const ctor_args_list& args_list=ctor_args_list(),
     const allocator_type& al=allocator_type()):
-#endif
-
     bfm_allocator(al),
     super(args_list,bfm_allocator::member),
     node_count(0)
@@ -253,7 +205,6 @@ public:
     BOOST_CATCH_END
   }
 
-#if !defined(BOOST_NO_CXX11_HDR_INITIALIZER_LIST)
   multi_index_container(
     std::initializer_list<Value> list,
     const ctor_args_list& args_list=ctor_args_list(),
@@ -279,12 +230,11 @@ public:
     }
     BOOST_CATCH_END
   }
-#endif
 
   multi_index_container(
     const multi_index_container<Value,IndexSpecifierList,Allocator>& x):
     bfm_allocator(
-      node_alloc_traits::select_on_container_copy_construction(
+      allocator_select_on_container_copy_construction(
         x.bfm_allocator::member)),
     bfm_header(),
     super(x),
@@ -293,8 +243,8 @@ public:
     copy_construct_from(x);
   }
 
-  multi_index_container(BOOST_RV_REF(multi_index_container) x):
-    bfm_allocator(boost::move(x.bfm_allocator::member)),
+  multi_index_container(multi_index_container&& x):
+    bfm_allocator(std::move(x.bfm_allocator::member)),
     bfm_header(),
     super(x,detail::do_not_copy_elements_tag()),
     node_count(0)
@@ -316,7 +266,7 @@ public:
   }
 
   multi_index_container(
-    BOOST_RV_REF(multi_index_container) x,const allocator_type& al):
+    multi_index_container&& x,const allocator_type& al):
     bfm_allocator(al),
     bfm_header(),
     super(x,detail::do_not_copy_elements_tag()),
@@ -339,48 +289,33 @@ public:
     delete_all_nodes_();
   }
 
-#if defined(BOOST_NO_CXX11_RVALUE_REFERENCES)
-  /* As per http://www.boost.org/doc/html/move/emulation_limitations.html
-   * #move.emulation_limitations.assignment_operator
-   */
-
   multi_index_container<Value,IndexSpecifierList,Allocator>& operator=(
-    const multi_index_container<Value,IndexSpecifierList,Allocator>& x)
+    const multi_index_container& x)
   {
     multi_index_container y(
       x,
-      node_alloc_traits::propagate_on_container_copy_assignment::value?
-        x.get_allocator():this->get_allocator());
-    swap_(y,boost::true_type() /* swap_allocators */);
-    return *this;
-  }
-#endif
-
-  multi_index_container<Value,IndexSpecifierList,Allocator>& operator=(
-    BOOST_COPY_ASSIGN_REF(multi_index_container) x)
-  {
-    multi_index_container y(
-      x,
-      node_alloc_traits::propagate_on_container_copy_assignment::value?
+      allocator_propagate_on_container_copy_assignment_t<
+        node_allocator>::value?
         x.get_allocator():this->get_allocator());
     swap_(y,boost::true_type() /* swap_allocators */);
     return *this;
   }
 
   multi_index_container<Value,IndexSpecifierList,Allocator>& operator=(
-    BOOST_RV_REF(multi_index_container) x)
+    multi_index_container&& x)
   {
 #include <boost/multi_index/detail/define_if_constexpr_macro.hpp>
 
     BOOST_MULTI_INDEX_IF_CONSTEXPR(
-      node_alloc_traits::propagate_on_container_move_assignment::value){
+      allocator_propagate_on_container_move_assignment_t<
+        node_allocator>::value){
       swap_(x,boost::true_type() /* swap_allocators */);
     }
     else if(this->get_allocator()==x.get_allocator()){
       swap_(x,boost::false_type() /* swap_allocators */);
     }
     else{
-      multi_index_container y(boost::move(x),this->get_allocator());
+      multi_index_container y(std::move(x),this->get_allocator());
       swap_(y,boost::false_type() /* swap_allocators */);
     }
     return *this;
@@ -388,7 +323,6 @@ public:
 #include <boost/multi_index/detail/undef_if_constexpr_macro.hpp>
   }
 
-#if !defined(BOOST_NO_CXX11_HDR_INITIALIZER_LIST)
   multi_index_container<Value,IndexSpecifierList,Allocator>& operator=(
     std::initializer_list<Value> list)
   {
@@ -405,7 +339,6 @@ public:
     x.swap_elements_(*this);
     return*this;
   }
-#endif
 
   allocator_type get_allocator()const BOOST_NOEXCEPT
   {
@@ -414,7 +347,6 @@ public:
 
   /* retrieval of indices by number */
 
-#if !defined(BOOST_NO_MEMBER_TEMPLATES)
   template<int N>
   struct nth_index
   {
@@ -435,11 +367,9 @@ public:
     BOOST_STATIC_ASSERT(N>=0&&N<mp11::mp_size<index_type_list>::value);
     return *this;
   }
-#endif
 
   /* retrieval of indices by tag */
 
-#if !defined(BOOST_NO_MEMBER_TEMPLATES)
   template<typename Tag>
   struct index
   {
@@ -466,11 +396,9 @@ public:
   {
     return *this;
   }
-#endif
 
   /* projection of iterators by number */
 
-#if !defined(BOOST_NO_MEMBER_TEMPLATES)
   template<int N>
   struct nth_index_iterator
   {
@@ -488,10 +416,8 @@ public:
   {
     typedef typename nth_index<N>::type index_type;
 
-#if !defined(__SUNPRO_CC)||!(__SUNPRO_CC<0x580) /* fails in Sun C++ 5.7 */
     BOOST_STATIC_ASSERT(
       (mp11::mp_contains<iterator_type_list,IteratorType>::value));
-#endif
 
     BOOST_MULTI_INDEX_CHECK_VALID_ITERATOR(it);
     BOOST_MULTI_INDEX_CHECK_BELONGS_IN_SOME_INDEX(it,*this);
@@ -504,22 +430,18 @@ public:
   {
     typedef typename nth_index<N>::type index_type;
 
-#if !defined(__SUNPRO_CC)||!(__SUNPRO_CC<0x580) /* fails in Sun C++ 5.7 */
     BOOST_STATIC_ASSERT((
       mp11::mp_contains<iterator_type_list,IteratorType>::value||
       mp11::mp_contains<const_iterator_type_list,IteratorType>::value));
-#endif
 
     BOOST_MULTI_INDEX_CHECK_VALID_ITERATOR(it);
     BOOST_MULTI_INDEX_CHECK_BELONGS_IN_SOME_INDEX(it,*this);
     return index_type::make_iterator(
       static_cast<final_node_type*>(it.get_node()));
   }
-#endif
 
   /* projection of iterators by tag */
 
-#if !defined(BOOST_NO_MEMBER_TEMPLATES)
   template<typename Tag>
   struct index_iterator
   {
@@ -537,10 +459,8 @@ public:
   {
     typedef typename index<Tag>::type index_type;
 
-#if !defined(__SUNPRO_CC)||!(__SUNPRO_CC<0x580) /* fails in Sun C++ 5.7 */
     BOOST_STATIC_ASSERT(
       (mp11::mp_contains<iterator_type_list,IteratorType>::value));
-#endif
 
     BOOST_MULTI_INDEX_CHECK_VALID_ITERATOR(it);
     BOOST_MULTI_INDEX_CHECK_BELONGS_IN_SOME_INDEX(it,*this);
@@ -553,20 +473,17 @@ public:
   {
     typedef typename index<Tag>::type index_type;
 
-#if !defined(__SUNPRO_CC)||!(__SUNPRO_CC<0x580) /* fails in Sun C++ 5.7 */
     BOOST_STATIC_ASSERT((
       mp11::mp_contains<iterator_type_list,IteratorType>::value||
       mp11::mp_contains<const_iterator_type_list,IteratorType>::value));
-#endif
 
     BOOST_MULTI_INDEX_CHECK_VALID_ITERATOR(it);
     BOOST_MULTI_INDEX_CHECK_BELONGS_IN_SOME_INDEX(it,*this);
     return index_type::make_iterator(
       static_cast<final_node_type*>(it.get_node()));
   }
-#endif
 
-BOOST_MULTI_INDEX_PROTECTED_IF_MEMBER_TEMPLATE_FRIENDS:
+protected:
   typedef typename super::final_node_handle_type final_node_handle_type;
   typedef typename super::copy_map_type          copy_map_type;
 
@@ -603,7 +520,6 @@ BOOST_MULTI_INDEX_PROTECTED_IF_MEMBER_TEMPLATE_FRIENDS:
     BOOST_MULTI_INDEX_CHECK_INVARIANT;
   }
 
-#if !defined(BOOST_NO_CXX11_HDR_INITIALIZER_LIST)
   multi_index_container(
     const multi_index_container<Value,IndexSpecifierList,Allocator>& x,
     detail::do_not_copy_elements_tag):
@@ -614,7 +530,6 @@ BOOST_MULTI_INDEX_PROTECTED_IF_MEMBER_TEMPLATE_FRIENDS:
   {
     BOOST_MULTI_INDEX_CHECK_INVARIANT;
   }
-#endif
 
   void copy_construct_from(
     const multi_index_container<Value,IndexSpecifierList,Allocator>& x)
@@ -641,33 +556,26 @@ BOOST_MULTI_INDEX_PROTECTED_IF_MEMBER_TEMPLATE_FRIENDS:
 
   final_node_type* allocate_node()
   {
-    return &*node_alloc_traits::allocate(bfm_allocator::member,1);
+    return &*allocator_allocate(bfm_allocator::member,1);
   }
 
   void deallocate_node(final_node_type* x)
   {
-    node_alloc_traits::deallocate(
+    allocator_deallocate(
       bfm_allocator::member,static_cast<node_pointer>(x),1);
   }
 
-  void construct_value(final_node_type* x,const Value& v)
+  template<typename... Args>
+  void construct_value(final_node_type* x,Args&&... args)
   {
-    node_alloc_traits::construct(
-      bfm_allocator::member,boost::addressof(x->value()),v);
+    allocator_construct(
+      bfm_allocator::member,boost::addressof(x->value()),
+      std::forward<Args>(args)...);
   }
-
-  void construct_value(final_node_type* x,BOOST_RV_REF(Value) v)
-  {
-    node_alloc_traits::construct(
-      bfm_allocator::member,boost::addressof(x->value()),boost::move(v));
-  }
-
-  BOOST_MULTI_INDEX_OVERLOADS_TO_VARTEMPL_EXTRA_ARG(
-    void,construct_value,vartempl_construct_value_impl,final_node_type*,x)
 
   void destroy_value(final_node_type* x)
   {
-    node_alloc_traits::destroy(
+    allocator_destroy(
       bfm_allocator::member,boost::addressof(x->value()));
   }
 
@@ -780,13 +688,12 @@ BOOST_MULTI_INDEX_PROTECTED_IF_MEMBER_TEMPLATE_FRIENDS:
     }
   }
 
-  template<BOOST_MULTI_INDEX_TEMPLATE_PARAM_PACK>
-  std::pair<final_node_type*,bool> emplace_(
-    BOOST_MULTI_INDEX_FUNCTION_PARAM_PACK)
+  template<typename... Args>
+  std::pair<final_node_type*,bool> emplace_(Args&&... args)
   {
     final_node_type* x=allocate_node();
     BOOST_TRY{
-      construct_value(x,BOOST_MULTI_INDEX_FORWARD_PARAM_PACK);
+      construct_value(x,std::forward<Args>(args)...);
       BOOST_TRY{
         final_node_type* res=super::insert_(
           x->value(),x,detail::emplaced_tag());
@@ -900,14 +807,13 @@ BOOST_MULTI_INDEX_PROTECTED_IF_MEMBER_TEMPLATE_FRIENDS:
     }
   }
 
-  template<BOOST_MULTI_INDEX_TEMPLATE_PARAM_PACK>
+  template<typename... Args>
   std::pair<final_node_type*,bool> emplace_hint_(
-    final_node_type* position,
-    BOOST_MULTI_INDEX_FUNCTION_PARAM_PACK)
+    final_node_type* position,Args&&... args)
   {
     final_node_type* x=allocate_node();
     BOOST_TRY{
-      construct_value(x,BOOST_MULTI_INDEX_FORWARD_PARAM_PACK);
+      construct_value(x,std::forward<Args>(args)...);
       BOOST_TRY{
         final_node_type* res=super::insert_(
           x->value(),position,x,detail::emplaced_tag());
@@ -975,8 +881,8 @@ BOOST_MULTI_INDEX_PROTECTED_IF_MEMBER_TEMPLATE_FRIENDS:
   template<typename Index>
   void transfer_range_(
     Index& x,
-    BOOST_DEDUCED_TYPENAME Index::iterator first,
-    BOOST_DEDUCED_TYPENAME Index::iterator last)
+    typename Index::iterator first,
+    typename Index::iterator last)
   {
     while(first!=last){
       transfer_(x,static_cast<final_node_type*>((first++).get_node()));
@@ -988,7 +894,8 @@ BOOST_MULTI_INDEX_PROTECTED_IF_MEMBER_TEMPLATE_FRIENDS:
     swap_(
       x,
       boost::integral_constant<
-        bool,node_alloc_traits::propagate_on_container_swap::value>());
+        bool,allocator_propagate_on_container_swap_t<
+          node_allocator>::value>());
   }
 
   void swap_(
@@ -1206,21 +1113,7 @@ BOOST_MULTI_INDEX_PROTECTED_IF_MEMBER_TEMPLATE_FRIENDS:
 #endif
 
 private:
-  template<BOOST_MULTI_INDEX_TEMPLATE_PARAM_PACK>
-  void vartempl_construct_value_impl(
-    final_node_type* x,BOOST_MULTI_INDEX_FUNCTION_PARAM_PACK)
-  {
-    node_alloc_traits::construct(
-      bfm_allocator::member,boost::addressof(x->value()),
-      BOOST_MULTI_INDEX_FORWARD_PARAM_PACK);
-  }
-
   size_type node_count;
-
-#if defined(BOOST_MULTI_INDEX_ENABLE_INVARIANT_CHECKING)&&\
-    BOOST_WORKAROUND(__MWERKS__,<=0x3003)
-#pragma parse_mfunc_templ reset
-#endif
 };
 
 #if BOOST_WORKAROUND(BOOST_MSVC,BOOST_TESTED_AT(1500))
@@ -1257,7 +1150,7 @@ get(
   BOOST_STATIC_ASSERT(N>=0&&
     N<
     mp11::mp_size<
-      BOOST_DEDUCED_TYPENAME multi_index_type::index_type_list
+      typename multi_index_type::index_type_list
     >::value);
 
   return detail::converter<multi_index_type,index_type>::index(m);
@@ -1281,7 +1174,7 @@ get(
   BOOST_STATIC_ASSERT(N>=0&&
     N<
     mp11::mp_size<
-      BOOST_DEDUCED_TYPENAME multi_index_type::index_type_list
+      typename multi_index_type::index_type_list
     >::value);
 
   return detail::converter<multi_index_type,index_type>::index(m);
@@ -1372,12 +1265,10 @@ project(
     Value,IndexSpecifierList,Allocator>                multi_index_type;
   typedef typename nth_index<multi_index_type,N>::type index_type;
 
-#if !defined(__SUNPRO_CC)||!(__SUNPRO_CC<0x580) /* Sun C++ 5.7 fails */
   BOOST_STATIC_ASSERT((
     mp11::mp_contains<
-      BOOST_DEDUCED_TYPENAME multi_index_type::iterator_type_list,
+      typename multi_index_type::iterator_type_list,
       IteratorType>::value));
-#endif
 
   BOOST_MULTI_INDEX_CHECK_VALID_ITERATOR(it);
   BOOST_MULTI_INDEX_CHECK_BELONGS_IN_SOME_INDEX(it,m);
@@ -1398,15 +1289,13 @@ project(
     Value,IndexSpecifierList,Allocator>                multi_index_type;
   typedef typename nth_index<multi_index_type,N>::type index_type;
 
-#if !defined(__SUNPRO_CC)||!(__SUNPRO_CC<0x580) /* Sun C++ 5.7 fails */
   BOOST_STATIC_ASSERT((
     mp11::mp_contains<
-      BOOST_DEDUCED_TYPENAME multi_index_type::iterator_type_list,
+      typename multi_index_type::iterator_type_list,
       IteratorType>::value||
     mp11::mp_contains<
-      BOOST_DEDUCED_TYPENAME multi_index_type::const_iterator_type_list,
+      typename multi_index_type::const_iterator_type_list,
       IteratorType>::value));
-#endif
 
   BOOST_MULTI_INDEX_CHECK_VALID_ITERATOR(it);
   BOOST_MULTI_INDEX_CHECK_BELONGS_IN_SOME_INDEX(it,m);
@@ -1444,12 +1333,10 @@ project(
   typedef typename ::boost::multi_index::index<
     multi_index_type,Tag>::type                 index_type;
 
-#if !defined(__SUNPRO_CC)||!(__SUNPRO_CC<0x580) /* Sun C++ 5.7 fails */
   BOOST_STATIC_ASSERT((
     mp11::mp_contains<
-      BOOST_DEDUCED_TYPENAME multi_index_type::iterator_type_list,
+      typename multi_index_type::iterator_type_list,
       IteratorType>::value));
-#endif
 
   BOOST_MULTI_INDEX_CHECK_VALID_ITERATOR(it);
   BOOST_MULTI_INDEX_CHECK_BELONGS_IN_SOME_INDEX(it,m);
@@ -1471,15 +1358,13 @@ project(
   typedef typename ::boost::multi_index::index<
     multi_index_type,Tag>::type                 index_type;
 
-#if !defined(__SUNPRO_CC)||!(__SUNPRO_CC<0x580) /* Sun C++ 5.7 fails */
   BOOST_STATIC_ASSERT((
     mp11::mp_contains<
-      BOOST_DEDUCED_TYPENAME multi_index_type::iterator_type_list,
+      typename multi_index_type::iterator_type_list,
       IteratorType>::value||
     mp11::mp_contains<
-      BOOST_DEDUCED_TYPENAME multi_index_type::const_iterator_type_list,
+      typename multi_index_type::const_iterator_type_list,
       IteratorType>::value));
-#endif
 
   BOOST_MULTI_INDEX_CHECK_VALID_ITERATOR(it);
   BOOST_MULTI_INDEX_CHECK_BELONGS_IN_SOME_INDEX(it,m);

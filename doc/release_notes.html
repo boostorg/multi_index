@@ -99,6 +99,8 @@ Acknowledgements
     instead of a <code>boost::tuple</code> (and similarly for the rest of affected
     class templates).
   </li>
+  <li>Removed internal workarounds and fallbacks to support pre-C++11 compilers.
+  </li>
 </ul>
 </p>
 
@@ -504,7 +506,7 @@ Acknowledgements
       </li>
       <li>Random access indices provide <code>shrink_to_fit()</code>.</li>
   </ul>
-  Refer to the <a href="compiler_specifics.html">compiler specifics</a> section for limitations
+  Refer to the compiler specifics section for limitations
   on pre-C++11 compilers.
   </li>
   <li>The following classes are deprecated:
@@ -823,8 +825,7 @@ Acknowledgements
     Boost 1.32 release. This results in much shorter and more readable error
     messages and has also a beneficial impact on compilers with strict limits on
     symbol name lengths. Additionally, a section on further
-    <a href="compiler_specifics.html#symbol_reduction">reduction of symbol name
-    lengths</a> has been added.
+    reduction of symbol name lengths has been added.
   </li>
   <li>Restructured some parts of the documentation, new examples.</li>
   <li>Maintenance fixes.</li>
@@ -845,7 +846,7 @@ Acknowledgements
 
 <br>
 
-<p>Revised November 3rd 2025</p>
+<p>Revised November 7th 2025</p>
 
 <p>&copy; Copyright 2003-2025 Joaqu&iacute;n M L&oacute;pez Mu&ntilde;oz.
 Distributed under the Boost Software 

@@ -15,11 +15,8 @@
 
 #include <boost/config.hpp> /* keep it first to prevent nasty warns in MSVC */
 #include <boost/core/enable_if.hpp>
-#include <boost/type_traits/remove_reference.hpp>
-
-#if !defined(BOOST_NO_SFINAE)
 #include <boost/type_traits/is_convertible.hpp>
-#endif
+#include <boost/type_traits/remove_reference.hpp>
 
 namespace boost{
 
@@ -58,13 +55,8 @@ struct const_mem_fun_impl
 
   template<typename ChainedPtr>
 
-#if !defined(BOOST_NO_SFINAE)
   typename disable_if<
     is_convertible<const ChainedPtr&,const Class&>,Type>::type
-#else
-  Type
-#endif
-
   operator()(const ChainedPtr& x)const
   {
     return operator()(*x);
@@ -96,13 +88,8 @@ struct mem_fun_impl
 
   template<typename ChainedPtr>
 
-#if !defined(BOOST_NO_SFINAE)
   typename disable_if<
     is_convertible<ChainedPtr&,Class&>,Type>::type
-#else
-  Type
-#endif
-
   operator()(const ChainedPtr& x)const
   {
     return operator()(*x);
@@ -198,13 +185,8 @@ struct const_mem_fun_explicit
 
   template<typename ChainedPtr>
 
-#if !defined(BOOST_NO_SFINAE)
   typename disable_if<
     is_convertible<const ChainedPtr&,const Class&>,Type>::type
-#else
-  Type
-#endif
-
   operator()(const ChainedPtr& x)const
   {
     return operator()(*x);
@@ -236,13 +218,8 @@ struct mem_fun_explicit
 
   template<typename ChainedPtr>
 
-#if !defined(BOOST_NO_SFINAE)
   typename disable_if<
     is_convertible<ChainedPtr&,Class&>,Type>::type
-#else
-  Type
-#endif
-
   operator()(const ChainedPtr& x)const
   {
     return operator()(*x);
