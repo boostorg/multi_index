@@ -22,7 +22,6 @@
 #include <boost/detail/workaround.hpp>
 #include <boost/limits.hpp>
 #include <boost/mp11/utility.hpp>
-#include <boost/multi_index/detail/access_specifier.hpp>
 #include <boost/multi_index/detail/adl_swap.hpp>
 #include <boost/multi_index/detail/auto_space.hpp>
 #include <boost/multi_index/detail/bucket_array.hpp>
@@ -85,8 +84,7 @@ template<
   typename KeyFromValue,typename Hash,typename Pred,
   typename SuperMeta,typename TagList,typename Category
 >
-class hashed_index:
-  BOOST_MULTI_INDEX_PROTECTED_IF_MEMBER_TEMPLATE_FRIENDS SuperMeta::type
+class hashed_index:protected SuperMeta::type
 { 
 #if defined(BOOST_MULTI_INDEX_ENABLE_INVARIANT_CHECKING)&&\
     BOOST_WORKAROUND(__MWERKS__,<=0x3003)
@@ -98,11 +96,8 @@ class hashed_index:
 #pragma parse_mfunc_templ off
 #endif
 
-#if !defined(BOOST_NO_MEMBER_TEMPLATE_FRIENDS)
   /* cross-index access */
-
   template <typename,typename,typename> friend class index_base;
-#endif
 
   typedef typename SuperMeta::type               super;
 
@@ -750,7 +745,7 @@ public:
     rehash(static_cast<size_type>(std::ceil(static_cast<float>(n)/mlf)));
   }
 
-BOOST_MULTI_INDEX_PROTECTED_IF_MEMBER_TEMPLATE_FRIENDS:
+protected:
   hashed_index(const ctor_args_list& args_list,const allocator_type& al):
     super(args_list.get_tail(),al),
     key(tuples::get<1>(args_list.get_head())),
@@ -1181,13 +1176,9 @@ BOOST_MULTI_INDEX_PROTECTED_IF_MEMBER_TEMPLATE_FRIENDS:
 
   /* comparison */
 
-#if !defined(BOOST_NO_MEMBER_TEMPLATE_FRIENDS)
-  /* defect macro refers to class, not function, templates, but anyway */
-
   template<typename K,typename H,typename P,typename S,typename T,typename C>
   friend bool operator==(
     const hashed_index<K,H,P,S,T,C>&,const hashed_index<K,H,P,S,T,C>& y);
-#endif
 
   bool equals(const hashed_index& x)const{return equals(x,Category());}
 

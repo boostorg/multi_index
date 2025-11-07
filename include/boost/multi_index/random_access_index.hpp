@@ -22,7 +22,6 @@
 #include <boost/core/no_exceptions_support.hpp>
 #include <boost/detail/workaround.hpp>
 #include <boost/mp11/function.hpp>
-#include <boost/multi_index/detail/access_specifier.hpp>
 #include <boost/multi_index/detail/do_not_copy_elements_tag.hpp>
 #include <boost/multi_index/detail/index_node_base.hpp>
 #include <boost/multi_index/detail/node_handle.hpp>
@@ -77,8 +76,7 @@ namespace detail{
 #endif
 
 template<typename SuperMeta,typename TagList>
-class random_access_index:
-  BOOST_MULTI_INDEX_PROTECTED_IF_MEMBER_TEMPLATE_FRIENDS SuperMeta::type
+class random_access_index:protected SuperMeta::type
 { 
 #if defined(BOOST_MULTI_INDEX_ENABLE_INVARIANT_CHECKING)&&\
     BOOST_WORKAROUND(__MWERKS__,<=0x3003)
@@ -90,11 +88,8 @@ class random_access_index:
 #pragma parse_mfunc_templ off
 #endif
 
-#if !defined(BOOST_NO_MEMBER_TEMPLATE_FRIENDS)
   /* cross-index access */
-
   template <typename,typename,typename> friend class index_base;
-#endif
 
   typedef typename SuperMeta::type               super;
 
@@ -755,7 +750,7 @@ public:
     }
   }
     
-BOOST_MULTI_INDEX_PROTECTED_IF_MEMBER_TEMPLATE_FRIENDS:
+protected:
   random_access_index(
     const ctor_args_list& args_list,const allocator_type& al):
     super(args_list.get_tail(),al),

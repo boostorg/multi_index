@@ -25,7 +25,6 @@
 #include <boost/mp11/integral.hpp>
 #include <boost/mp11/utility.hpp>
 #include <boost/multi_index_container_fwd.hpp>
-#include <boost/multi_index/detail/access_specifier.hpp>
 #include <boost/multi_index/detail/adl_swap.hpp>
 #include <boost/multi_index/detail/base_type.hpp>
 #include <boost/multi_index/detail/do_not_copy_elements_tag.hpp>
@@ -97,7 +96,7 @@ class multi_index_container:
         Value,IndexSpecifierList,Allocator>::type
     >
   >,
-  BOOST_MULTI_INDEX_PRIVATE_IF_MEMBER_TEMPLATE_FRIENDS detail::header_holder<
+  private detail::header_holder<
     allocator_pointer_t<
       allocator_rebind_t<
         Allocator,
@@ -120,11 +119,9 @@ class multi_index_container:
 #endif
 
 private:
-#if !defined(BOOST_NO_MEMBER_TEMPLATE_FRIENDS)
   template <typename,typename,typename> friend class  detail::index_base;
   template <typename,typename>          friend struct detail::header_holder;
   template <typename,typename>          friend struct detail::converter;
-#endif
 
   typedef typename detail::multi_index_base_type<
       Value,IndexSpecifierList,Allocator>::type    super;
@@ -531,7 +528,7 @@ public:
       static_cast<final_node_type*>(it.get_node()));
   }
 
-BOOST_MULTI_INDEX_PROTECTED_IF_MEMBER_TEMPLATE_FRIENDS:
+protected:
   typedef typename super::final_node_handle_type final_node_handle_type;
   typedef typename super::copy_map_type          copy_map_type;
 

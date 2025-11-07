@@ -49,7 +49,6 @@
 #include <boost/core/ref.hpp>
 #include <boost/detail/workaround.hpp>
 #include <boost/mp11/utility.hpp>
-#include <boost/multi_index/detail/access_specifier.hpp>
 #include <boost/multi_index/detail/adl_swap.hpp>
 #include <boost/multi_index/detail/bidir_node_iterator.hpp>
 #include <boost/multi_index/detail/do_not_copy_elements_tag.hpp>
@@ -124,8 +123,7 @@ template<
   typename KeyFromValue,typename Compare,
   typename SuperMeta,typename TagList,typename Category,typename AugmentPolicy
 >
-class ordered_index_impl:
-  BOOST_MULTI_INDEX_PROTECTED_IF_MEMBER_TEMPLATE_FRIENDS SuperMeta::type
+class ordered_index_impl:protected SuperMeta::type
 { 
 #if defined(BOOST_MULTI_INDEX_ENABLE_INVARIANT_CHECKING)&&\
     BOOST_WORKAROUND(__MWERKS__,<=0x3003)
@@ -137,11 +135,8 @@ class ordered_index_impl:
 #pragma parse_mfunc_templ off
 #endif
 
-#if !defined(BOOST_NO_MEMBER_TEMPLATE_FRIENDS)
   /* cross-index access */
-
   template <typename,typename,typename> friend class index_base;
-#endif
 
   typedef typename SuperMeta::type                   super;
 
@@ -722,7 +717,7 @@ public:
     return range(lower,upper,dispatch());
   }
 
-BOOST_MULTI_INDEX_PROTECTED_IF_MEMBER_TEMPLATE_FRIENDS:
+protected:
   ordered_index_impl(const ctor_args_list& args_list,const allocator_type& al):
     super(args_list.get_tail(),al),
     key(tuples::get<0>(args_list.get_head())),
