@@ -46,19 +46,11 @@ bool operator<(const no_addressof_type& x,const no_addressof_type& y)
   return x.n<y.n;
 }
 
-#if defined(BOOST_NO_ARGUMENT_DEPENDENT_LOOKUP)
-namespace boost{
-#endif
-
 inline std::size_t hash_value(const no_addressof_type& x)
 {
   boost::hash<int> h;
   return h(x.n);
 }
-
-#if defined(BOOST_NO_ARGUMENT_DEPENDENT_LOOKUP)
-} /* namespace boost */
-#endif
 
 void test_basic()
 {

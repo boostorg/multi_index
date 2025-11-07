@@ -224,12 +224,8 @@ void swap(bucket_array<Allocator>& x,bucket_array<Allocator>& y)
  * somehow invalid archive.
  */
 
-#if defined(BOOST_NO_ARGUMENT_DEPENDENT_LOOKUP)
-namespace serialization{
-#else
 namespace multi_index{
 namespace detail{
-#endif
 
 template<class Archive,typename Allocator>
 inline void load_construct_data(
@@ -239,12 +235,8 @@ inline void load_construct_data(
   throw_exception(boost::multi_index::detail::bad_archive_exception());
 }
 
-#if defined(BOOST_NO_ARGUMENT_DEPENDENT_LOOKUP)
-} /* namespace serialization */
-#else
 } /* namespace multi_index::detail */
 } /* namespace multi_index */
-#endif
 
 #endif
 

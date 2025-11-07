@@ -26,11 +26,6 @@ struct non_default_ctble
   int n;
 };
 
-#if defined(BOOST_NO_ARGUMENT_DEPENDENT_LOOKUP)
-namespace boost{
-namespace serialization{
-#endif
-
 template<class Archive>
 void save_construct_data(
   Archive& ar,const non_default_ctble* p,const unsigned int version)
@@ -56,11 +51,6 @@ void serialize(Archive&,non_default_ctble&,const unsigned int)
 {
 }
 
-#if defined(BOOST_NO_ARGUMENT_DEPENDENT_LOOKUP)
-} /* namespace serialization */
-} /* namespace boost*/
-#endif
-
 namespace boost{
 namespace serialization{
 template<> struct version<non_default_ctble>
@@ -81,21 +71,11 @@ struct non_copyable
   int n;
 };
 
-#if defined(BOOST_NO_ARGUMENT_DEPENDENT_LOOKUP)
-namespace boost{
-namespace serialization{
-#endif
-
 template<class Archive>
 void serialize(Archive& ar,non_copyable& x,const unsigned int)
 {
   ar&boost::serialization::make_nvp("n",x.n);
 }
-
-#if defined(BOOST_NO_ARGUMENT_DEPENDENT_LOOKUP)
-} /* namespace serialization */
-} /* namespace boost*/
-#endif
 
 using namespace boost::multi_index;
 

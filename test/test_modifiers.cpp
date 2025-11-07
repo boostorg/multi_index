@@ -55,18 +55,10 @@ inline bool operator==(const always_one& x,const always_one& y)
   return x.get()==y.get();
 }
 
-#if defined(BOOST_NO_ARGUMENT_DEPENDENT_LOOKUP)
-namespace boost{
-#endif
-
 inline std::size_t hash_value(const always_one& x)
 {
   return static_cast<std::size_t>(x.get());
 }
-
-#if defined(BOOST_NO_ARGUMENT_DEPENDENT_LOOKUP)
-} /* namespace boost */
-#endif
 
 class linked_object
 {
