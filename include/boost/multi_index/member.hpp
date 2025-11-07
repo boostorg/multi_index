@@ -221,7 +221,7 @@ struct member_offset:
 
 /* BOOST_MULTI_INDEX_MEMBER used to resolve to member_offset in those defective
  * compilers for which BOOST_NO_POINTER_TO_MEMBER_TEMPLATE_PARAMETERS is
- * defined, none of which supported is supported any longer.
+ * defined, none of which is supported any longer.
  */
 
 #define BOOST_MULTI_INDEX_MEMBER(Class,Type,MemberName) \
