@@ -86,16 +86,6 @@ template<
 >
 class hashed_index:protected SuperMeta::type
 { 
-#if defined(BOOST_MULTI_INDEX_ENABLE_INVARIANT_CHECKING)&&\
-    BOOST_WORKAROUND(__MWERKS__,<=0x3003)
-/* The "ISO C++ Template Parser" option in CW8.3 has a problem with the
- * lifetime of const references bound to temporaries --precisely what
- * scopeguards are.
- */
-
-#pragma parse_mfunc_templ off
-#endif
-
   /* cross-index access */
   template <typename,typename,typename> friend class index_base;
 
@@ -1751,11 +1741,6 @@ private:
 
 #if defined(BOOST_MULTI_INDEX_ENABLE_SAFE_MODE)
   safe_container               safe;
-#endif
-
-#if defined(BOOST_MULTI_INDEX_ENABLE_INVARIANT_CHECKING)&&\
-    BOOST_WORKAROUND(__MWERKS__,<=0x3003)
-#pragma parse_mfunc_templ reset
 #endif
 };
 

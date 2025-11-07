@@ -23,15 +23,6 @@
 
 using namespace boost::multi_index;
 
-#if BOOST_WORKAROUND(__MWERKS__,<=0x3003)
-/* The "ISO C++ Template Parser" option makes CW8.3 incorrectly fail at
- * expressions of the form sizeof(x) where x is an array local to a
- * template function.
- */
-
-#pragma parse_func_templ off
-#endif
-
 typedef multi_index_container<int> copyable_and_movable;
 
 struct holder
@@ -63,10 +54,6 @@ static void test_assign()
   s.assign((std::size_t)12,167);
   BOOST_TEST(s.size()==12&&std::accumulate(s.begin(),s.end(),0)==2004);
 }
-
-#if BOOST_WORKAROUND(__MWERKS__,<=0x3003)
-#pragma parse_func_templ reset
-#endif
 
 template<typename Sequence>
 static void test_integral_assign()

@@ -108,16 +108,6 @@ class multi_index_container:
   public detail::multi_index_base_type<
     Value,IndexSpecifierList,Allocator>::type
 {
-#if defined(BOOST_MULTI_INDEX_ENABLE_INVARIANT_CHECKING)&&\
-    BOOST_WORKAROUND(__MWERKS__,<=0x3003)
-/* The "ISO C++ Template Parser" option in CW8.3 has a problem with the
- * lifetime of const references bound to temporaries --precisely what
- * scopeguards are.
- */
-
-#pragma parse_mfunc_templ off
-#endif
-
 private:
   template <typename,typename,typename> friend class  detail::index_base;
   template <typename,typename>          friend struct detail::header_holder;
@@ -174,19 +164,7 @@ public:
 
   explicit multi_index_container(
     const ctor_args_list& args_list,
-
-#if BOOST_WORKAROUND(__IBMCPP__,<=600)
-    /* VisualAge seems to have an ETI issue with the default value for
-     * argument al.
-     */
-
-    const allocator_type& al=
-      typename mp11::mp_identity<multi_index_container>::type::
-        allocator_type()):
-#else
     const allocator_type& al=allocator_type()):
-#endif
-
     bfm_allocator(al),
     super(args_list,bfm_allocator::member),
     node_count(0)
@@ -205,23 +183,8 @@ public:
   template<typename InputIterator>
   multi_index_container(
     InputIterator first,InputIterator last,
-
-#if BOOST_WORKAROUND(__IBMCPP__,<=600)
-    /* VisualAge seems to have an ETI issue with the default values
-     * for arguments args_list and al.
-     */
-
-    const ctor_args_list& args_list=
-      typename mp11::mp_identity<multi_index_container>::type::
-        ctor_args_list(),
-    const allocator_type& al=
-      typename mp11::mp_identity<multi_index_container>::type::
-        allocator_type()):
-#else
     const ctor_args_list& args_list=ctor_args_list(),
     const allocator_type& al=allocator_type()):
-#endif
-
     bfm_allocator(al),
     super(args_list,bfm_allocator::member),
     node_count(0)
@@ -453,10 +416,8 @@ public:
   {
     typedef typename nth_index<N>::type index_type;
 
-#if !defined(__SUNPRO_CC)||!(__SUNPRO_CC<0x580) /* fails in Sun C++ 5.7 */
     BOOST_STATIC_ASSERT(
       (mp11::mp_contains<iterator_type_list,IteratorType>::value));
-#endif
 
     BOOST_MULTI_INDEX_CHECK_VALID_ITERATOR(it);
     BOOST_MULTI_INDEX_CHECK_BELONGS_IN_SOME_INDEX(it,*this);
@@ -469,11 +430,9 @@ public:
   {
     typedef typename nth_index<N>::type index_type;
 
-#if !defined(__SUNPRO_CC)||!(__SUNPRO_CC<0x580) /* fails in Sun C++ 5.7 */
     BOOST_STATIC_ASSERT((
       mp11::mp_contains<iterator_type_list,IteratorType>::value||
       mp11::mp_contains<const_iterator_type_list,IteratorType>::value));
-#endif
 
     BOOST_MULTI_INDEX_CHECK_VALID_ITERATOR(it);
     BOOST_MULTI_INDEX_CHECK_BELONGS_IN_SOME_INDEX(it,*this);
@@ -500,10 +459,8 @@ public:
   {
     typedef typename index<Tag>::type index_type;
 
-#if !defined(__SUNPRO_CC)||!(__SUNPRO_CC<0x580) /* fails in Sun C++ 5.7 */
     BOOST_STATIC_ASSERT(
       (mp11::mp_contains<iterator_type_list,IteratorType>::value));
-#endif
 
     BOOST_MULTI_INDEX_CHECK_VALID_ITERATOR(it);
     BOOST_MULTI_INDEX_CHECK_BELONGS_IN_SOME_INDEX(it,*this);
@@ -516,11 +473,9 @@ public:
   {
     typedef typename index<Tag>::type index_type;
 
-#if !defined(__SUNPRO_CC)||!(__SUNPRO_CC<0x580) /* fails in Sun C++ 5.7 */
     BOOST_STATIC_ASSERT((
       mp11::mp_contains<iterator_type_list,IteratorType>::value||
       mp11::mp_contains<const_iterator_type_list,IteratorType>::value));
-#endif
 
     BOOST_MULTI_INDEX_CHECK_VALID_ITERATOR(it);
     BOOST_MULTI_INDEX_CHECK_BELONGS_IN_SOME_INDEX(it,*this);
@@ -1159,11 +1114,6 @@ protected:
 
 private:
   size_type node_count;
-
-#if defined(BOOST_MULTI_INDEX_ENABLE_INVARIANT_CHECKING)&&\
-    BOOST_WORKAROUND(__MWERKS__,<=0x3003)
-#pragma parse_mfunc_templ reset
-#endif
 };
 
 #if BOOST_WORKAROUND(BOOST_MSVC,BOOST_TESTED_AT(1500))
@@ -1315,12 +1265,10 @@ project(
     Value,IndexSpecifierList,Allocator>                multi_index_type;
   typedef typename nth_index<multi_index_type,N>::type index_type;
 
-#if !defined(__SUNPRO_CC)||!(__SUNPRO_CC<0x580) /* Sun C++ 5.7 fails */
   BOOST_STATIC_ASSERT((
     mp11::mp_contains<
       typename multi_index_type::iterator_type_list,
       IteratorType>::value));
-#endif
 
   BOOST_MULTI_INDEX_CHECK_VALID_ITERATOR(it);
   BOOST_MULTI_INDEX_CHECK_BELONGS_IN_SOME_INDEX(it,m);
@@ -1341,7 +1289,6 @@ project(
     Value,IndexSpecifierList,Allocator>                multi_index_type;
   typedef typename nth_index<multi_index_type,N>::type index_type;
 
-#if !defined(__SUNPRO_CC)||!(__SUNPRO_CC<0x580) /* Sun C++ 5.7 fails */
   BOOST_STATIC_ASSERT((
     mp11::mp_contains<
       typename multi_index_type::iterator_type_list,
@@ -1349,7 +1296,6 @@ project(
     mp11::mp_contains<
       typename multi_index_type::const_iterator_type_list,
       IteratorType>::value));
-#endif
 
   BOOST_MULTI_INDEX_CHECK_VALID_ITERATOR(it);
   BOOST_MULTI_INDEX_CHECK_BELONGS_IN_SOME_INDEX(it,m);
@@ -1387,12 +1333,10 @@ project(
   typedef typename ::boost::multi_index::index<
     multi_index_type,Tag>::type                 index_type;
 
-#if !defined(__SUNPRO_CC)||!(__SUNPRO_CC<0x580) /* Sun C++ 5.7 fails */
   BOOST_STATIC_ASSERT((
     mp11::mp_contains<
       typename multi_index_type::iterator_type_list,
       IteratorType>::value));
-#endif
 
   BOOST_MULTI_INDEX_CHECK_VALID_ITERATOR(it);
   BOOST_MULTI_INDEX_CHECK_BELONGS_IN_SOME_INDEX(it,m);
@@ -1414,7 +1358,6 @@ project(
   typedef typename ::boost::multi_index::index<
     multi_index_type,Tag>::type                 index_type;
 
-#if !defined(__SUNPRO_CC)||!(__SUNPRO_CC<0x580) /* Sun C++ 5.7 fails */
   BOOST_STATIC_ASSERT((
     mp11::mp_contains<
       typename multi_index_type::iterator_type_list,
@@ -1422,7 +1365,6 @@ project(
     mp11::mp_contains<
       typename multi_index_type::const_iterator_type_list,
       IteratorType>::value));
-#endif
 
   BOOST_MULTI_INDEX_CHECK_VALID_ITERATOR(it);
   BOOST_MULTI_INDEX_CHECK_BELONGS_IN_SOME_INDEX(it,m);
