@@ -24,7 +24,6 @@ target_link_libraries(boost_multi_index
     Boost::mp11
     Boost::preprocessor
     Boost::smart_ptr
-    Boost::static_assert
     Boost::throw_exception
     Boost::tuple
     Boost::type_traits
