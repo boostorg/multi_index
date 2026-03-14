@@ -710,10 +710,10 @@ public:
 
   /* hash policy */
 
-  float load_factor()const BOOST_NOEXCEPT
-    {return static_cast<float>(size())/bucket_count();}
-  float max_load_factor()const BOOST_NOEXCEPT{return mlf;}
-  void  max_load_factor(float z){mlf=z;calculate_max_load();}
+  double load_factor()const BOOST_NOEXCEPT
+    {return static_cast<double>(size())/bucket_count();}
+  double max_load_factor()const BOOST_NOEXCEPT{return mlf;}
+  void  max_load_factor(double z){mlf=z;calculate_max_load();}
 
   void rehash(size_type n)
   {
@@ -721,7 +721,7 @@ public:
     if(size()<=max_load&&n<=bucket_count())return;
 
     size_type bc =(std::numeric_limits<size_type>::max)();
-    float     fbc=1.0f+static_cast<float>(size())/mlf;
+    double     fbc=1.0f+static_cast<double>(size())/mlf;
     if(bc>fbc){
       bc=static_cast<size_type>(fbc);
       if(bc<n)bc=n;
@@ -731,7 +731,7 @@ public:
 
   void reserve(size_type n)
   {
-    rehash(static_cast<size_type>(std::ceil(static_cast<float>(n)/mlf)));
+    rehash(static_cast<size_type>(std::ceil(static_cast<double>(n)/mlf)));
   }
 
 protected:
@@ -1422,7 +1422,7 @@ private:
 
   void calculate_max_load()
   {
-    float fml=mlf*static_cast<float>(bucket_count());
+    double fml=mlf*static_cast<double>(bucket_count());
     max_load=(std::numeric_limits<size_type>::max)();
     if(max_load>fml)max_load=static_cast<size_type>(fml);
   }
@@ -1431,7 +1431,7 @@ private:
   {
     if(n>max_load){
       size_type bc =(std::numeric_limits<size_type>::max)();
-      float     fbc=1.0f+static_cast<float>(n)/mlf;
+      double     fbc=1.0f+static_cast<double>(n)/mlf;
       if(bc>fbc)bc =static_cast<size_type>(fbc);
       unchecked_rehash(bc);
     }
@@ -1735,7 +1735,7 @@ private:
   hasher                       hash_;
   key_equal                    eq_;
   bucket_array_type            buckets;
-  float                        mlf;
+  double                        mlf;
   size_type                    max_load;
 
 #if defined(BOOST_MULTI_INDEX_ENABLE_SAFE_MODE)
