@@ -1,4 +1,4 @@
-/* Copyright 2003-2025 Joaquin M Lopez Munoz.
+/* Copyright 2003-2026 Joaquin M Lopez Munoz.
  * Distributed under the Boost Software License, Version 1.0.
  * (See accompanying file LICENSE_1_0.txt or copy at
  * http://www.boost.org/LICENSE_1_0.txt)
@@ -49,6 +49,7 @@
 #include <boost/core/ref.hpp>
 #include <boost/mp11/utility.hpp>
 #include <boost/multi_index/detail/adl_swap.hpp>
+#include <boost/multi_index/detail/assume.hpp>
 #include <boost/multi_index/detail/bidir_node_iterator.hpp>
 #include <boost/multi_index/detail/do_not_copy_elements_tag.hpp>
 #include <boost/multi_index/detail/index_node_base.hpp>
@@ -1164,6 +1165,7 @@ private:
       else index_node_type::decrement(yy);
     }
 
+    BOOST_MULTI_INDEX_ASSUME(yy != 0);
     if(comp_(key(yy->value()),k)){
       inf.side=c?to_left:to_right;
       inf.pos=y->impl();

@@ -1,4 +1,4 @@
-/* Copyright 2003-2025 Joaquin M Lopez Munoz.
+/* Copyright 2003-2026 Joaquin M Lopez Munoz.
  * Distributed under the Boost Software License, Version 1.0.
  * (See accompanying file LICENSE_1_0.txt or copy at
  * http://www.boost.org/LICENSE_1_0.txt)
@@ -43,6 +43,7 @@
 #include <boost/config.hpp> /* keep it first to prevent nasty warns in MSVC */
 #include <boost/core/allocator_access.hpp>
 #include <cstddef>
+#include <boost/multi_index/detail/assume.hpp>
 #include <boost/multi_index/detail/raw_ptr.hpp>
 
 #if !defined(BOOST_MULTI_INDEX_DISABLE_COMPRESSED_ORDERED_INDEX_NODES)
@@ -279,6 +280,7 @@ public:
 
   static void decrement(pointer& x)
   {
+    BOOST_MULTI_INDEX_ASSUME(x->color()!=red||x->parent()!=pointer(0));
     if(x->color()==red&&x->parent()->parent()==x){
       x=x->right();
     }
