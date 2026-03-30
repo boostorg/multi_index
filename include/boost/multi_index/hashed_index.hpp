@@ -22,6 +22,7 @@
 #include <boost/limits.hpp>
 #include <boost/mp11/utility.hpp>
 #include <boost/multi_index/detail/adl_swap.hpp>
+#include <boost/multi_index/detail/assume.hpp>
 #include <boost/multi_index/detail/auto_space.hpp>
 #include <boost/multi_index/detail/bucket_array.hpp>
 #include <boost/multi_index/detail/do_not_copy_elements_tag.hpp>
@@ -1511,6 +1512,7 @@ private:
           if(x==end_)break;
 
           /* only this can possibly throw */
+          BOOST_MULTI_INDEX_ASSUME(index_node_type::from_impl(x)!=0);
           std::size_t h=hash_(key(index_node_type::from_impl(x)->value()));
 
           hashes.data()[i]=h;
