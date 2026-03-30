@@ -1,6 +1,6 @@
 # Boost.MultiIndex tests Jamfile
 #
-# Copyright 2003-2025 Joaquín M López Muñoz.
+# Copyright 2003-2026 Joaquín M López Muñoz.
 # Distributed under the Boost Software License, Version 1.0.
 # (See accompanying file LICENSE_1_0.txt or copy at
 # http://www.boost.org/LICENSE_1_0.txt)
@@ -37,6 +37,7 @@ project
       <toolset>msvc:<define>_CRT_SECURE_NO_WARNINGS
       <toolset>msvc:<define>_SILENCE_ALL_CXX17_DEPRECATION_WARNINGS
       <toolset>msvc:<cxxflags>/wd4494
+      <toolset>msvc:<cxxflags>-Werror=null-dereference
     ;
 
 obj boost_multi_index_key_supported : check_bmi_key_supported.cpp  ;
