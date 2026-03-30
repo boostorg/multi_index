@@ -270,6 +270,7 @@ public:
     }
     else{
       pointer y=x->parent();
+      BOOST_MULTI_INDEX_ASSUME(y!=pointer(0));
       while(x==y->right()){
         x=y;
         y=y->parent();

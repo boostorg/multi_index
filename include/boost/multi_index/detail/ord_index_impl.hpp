@@ -1165,7 +1165,7 @@ private:
       else index_node_type::decrement(yy);
     }
 
-    BOOST_MULTI_INDEX_ASSUME(yy != 0);
+    BOOST_MULTI_INDEX_ASSUME(yy!=0);
     if(comp_(key(yy->value()),k)){
       inf.side=c?to_left:to_right;
       inf.pos=y->impl();
