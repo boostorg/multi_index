@@ -1,4 +1,4 @@
-/* Copyright 2003-2025 Joaquin M Lopez Munoz.
+/* Copyright 2003-2026 Joaquin M Lopez Munoz.
  * Distributed under the Boost Software License, Version 1.0.
  * (See accompanying file LICENSE_1_0.txt or copy at
  * http://www.boost.org/LICENSE_1_0.txt)
@@ -15,6 +15,7 @@
 
 #include <boost/config.hpp> /* keep it first to prevent nasty warns in MSVC */
 #include <boost/core/allocator_access.hpp>
+#include <boost/multi_index/detail/assume.hpp>
 #include <boost/multi_index/detail/raw_ptr.hpp>
 #include <utility>
 
@@ -404,6 +405,7 @@ struct hashed_index_node_alg<Node,hashed_non_unique_tag>
       x->prior()=buc->prior()->prior();
       x->next()=base_pointer_from(buc->prior());
       buc->prior()=x;
+      BOOST_MULTI_INDEX_ASSUME(x->next()!=pointer(0));
       x->next()->prior()=x;
     }
   }
@@ -655,8 +657,9 @@ private:
   static void unlink_last_but_one_of_group(pointer x,Assigner& assign)
   {
     pointer first=pointer_from(x->next()),
-            second=pointer_from(first->next()),
-            last=second->prior();
+            second=pointer_from(first->next());
+    BOOST_MULTI_INDEX_ASSUME(second!=pointer(0));
+    pointer last=second->prior();
     if(second==x){
       assign(last->prior(),first);
       assign(first->next(),base_pointer_from(last));
