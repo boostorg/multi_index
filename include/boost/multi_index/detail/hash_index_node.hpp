@@ -405,7 +405,7 @@ struct hashed_index_node_alg<Node,hashed_non_unique_tag>
       x->prior()=buc->prior()->prior();
       x->next()=base_pointer_from(buc->prior());
       buc->prior()=x;
-      BOOST_MULTI_INDEX_ASSUME(x->next()!=pointer(0));
+      BOOST_MULTI_INDEX_ASSUME(pointer_from(x->next())!=pointer(0));
       x->next()->prior()=x;
     }
   }
