@@ -1459,6 +1459,7 @@ private:
           node_impl_pointer x=end_->prior();
 
           /* only this can possibly throw */
+          BOOST_MULTI_INDEX_ASSUME(index_node_type::from_impl(x)!=0);
           std::size_t h=hash_(key(index_node_type::from_impl(x)->value()));
 
           hashes.data()[i]=h;
