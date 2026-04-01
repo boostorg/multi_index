@@ -1220,7 +1220,7 @@ private:
       else return link_point(k,inf,ordered_unique_tag());
     } 
     else if(position==header()){ 
-      BOOST_MULTI_INDEX_ASSUME(rightmost()!=pointer(0));
+      BOOST_MULTI_INDEX_ASSUME(rightmost()!=0);
       if(comp_(key(rightmost()->value()),k)){
         inf.side=to_right;
         inf.pos=rightmost()->impl();
