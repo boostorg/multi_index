@@ -1,4 +1,4 @@
-/* Copyright 2003-2025 Joaquin M Lopez Munoz.
+/* Copyright 2003-2026 Joaquin M Lopez Munoz.
  * Distributed under the Boost Software License, Version 1.0.
  * (See accompanying file LICENSE_1_0.txt or copy at
  * http://www.boost.org/LICENSE_1_0.txt)
@@ -17,6 +17,7 @@
 #include <boost/core/allocator_access.hpp>
 #include <algorithm>
 #include <boost/core/noncopyable.hpp>
+#include <boost/multi_index/detail/assume.hpp>
 #include <boost/multi_index/detail/auto_space.hpp>
 #include <boost/multi_index/detail/rnd_index_node.hpp>
 
@@ -87,6 +88,7 @@ public:
     *(end()+1)=*end();
     (*(end()+1))->up()=end()+1;
     *end()=x;
+    BOOST_MULTI_INDEX_ASSUME(*end()!=value_type(0));
     (*end())->up()=end();
     ++size_;
   }

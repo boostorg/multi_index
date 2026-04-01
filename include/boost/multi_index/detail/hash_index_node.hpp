@@ -264,6 +264,7 @@ struct hashed_index_node_alg<Node,hashed_unique_tag>
       x->prior()=buc->prior()->prior();
       x->next()=base_pointer_from(buc->prior());
       buc->prior()=x;
+      BOOST_MULTI_INDEX_ASSUME(x->next()!=base_pointer(0));
       x->next()->prior()=x;
     }
   }
