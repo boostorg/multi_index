@@ -413,6 +413,7 @@ struct hashed_index_node_alg<Node,hashed_non_unique_tag>
 
   static void link(pointer x,pointer first,pointer last)
   {
+    BOOST_MULTI_INDEX_ASSUME(x!=pointer(0)&&first!=pointer(0));
     x->prior()=first->prior();
     x->next()=base_pointer_from(first);
     if(is_first_of_bucket(first)){
@@ -432,6 +433,7 @@ struct hashed_index_node_alg<Node,hashed_non_unique_tag>
     else{
       pointer second=pointer_from(first->next()),
               lastbutone=last->prior();
+      BOOST_MULTI_INDEX_ASSUME(second!=pointer(0));
       second->prior()=first;
       first->prior()=last;
       lastbutone->next()=base_pointer_from(x);
