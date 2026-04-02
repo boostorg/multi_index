@@ -1260,6 +1260,7 @@ private:
       else return lower_link_point(k,inf,ordered_non_unique_tag());
     } 
     else if(position==header()){
+      BOOST_MULTI_INDEX_ASSUME(rightmost()!=0);
       if(!comp_(k,key(rightmost()->value()))){
         inf.side=to_right;
         inf.pos=rightmost()->impl();
