@@ -721,7 +721,7 @@ public:
     if(size()<=max_load&&n<=bucket_count())return;
 
     size_type bc =(std::numeric_limits<size_type>::max)();
-    double     fbc=1.0f+static_cast<double>(size())/mlf;
+    double    fbc=1.0f+static_cast<double>(size())/mlf;
     if(bc>fbc){
       bc=static_cast<size_type>(fbc);
       if(bc<n)bc=n;
@@ -1431,7 +1431,7 @@ private:
   {
     if(n>max_load){
       size_type bc =(std::numeric_limits<size_type>::max)();
-      double     fbc=1.0f+static_cast<double>(n)/mlf;
+      double    fbc=1.0f+static_cast<double>(n)/mlf;
       if(bc>fbc)bc =static_cast<size_type>(fbc);
       unchecked_rehash(bc);
     }
@@ -1735,7 +1735,7 @@ private:
   hasher                       hash_;
   key_equal                    eq_;
   bucket_array_type            buckets;
-  double                        mlf;
+  double                       mlf;
   size_type                    max_load;
 
 #if defined(BOOST_MULTI_INDEX_ENABLE_SAFE_MODE)
