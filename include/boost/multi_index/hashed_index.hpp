@@ -1432,7 +1432,7 @@ private:
     if(n>max_load){
       size_type bc =(std::numeric_limits<size_type>::max)();
       float     fbc=1.0f+static_cast<float>(n)/mlf;
-      if(bc>fbc)bc =static_cast<size_type>(fbc);
+      if(bc>fbc)bc =(std::max)(static_cast<size_type>(fbc),bucket_count()+1);
       unchecked_rehash(bc);
     }
   }
