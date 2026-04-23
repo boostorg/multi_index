@@ -1,4 +1,4 @@
-/* Copyright 2003-2025 Joaquin M Lopez Munoz.
+/* Copyright 2003-2026 Joaquin M Lopez Munoz.
  * Distributed under the Boost Software License, Version 1.0.
  * (See accompanying file LICENSE_1_0.txt or copy at
  * http://www.boost.org/LICENSE_1_0.txt)
@@ -1432,7 +1432,11 @@ private:
     if(n>max_load){
       size_type bc =(std::numeric_limits<size_type>::max)();
       float     fbc=1.0f+static_cast<float>(n)/mlf;
-      if(bc>fbc)bc =(std::max)(static_cast<size_type>(fbc),bucket_count()+1);
+      if(bc>fbc){
+        bc =(std::max)(
+          static_cast<size_type>(fbc),
+          static_cast<size_type>(bucket_count()+1));
+      }
       unchecked_rehash(bc);
     }
   }
