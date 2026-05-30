@@ -87,6 +87,11 @@ struct unequal_alloc_move_ctor_tag{};
 #pragma warning(disable:4522) /* spurious warning on multiple operator=()'s */
 #endif
 
+#if BOOST_WORKAROUND(BOOST_GCC_VERSION,>=160100)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wuninitialized"
+#endif
+
 template<typename Value,typename IndexSpecifierList,typename Allocator>
 class multi_index_container:
   private ::boost::base_from_member<
@@ -551,14 +556,7 @@ protected:
 
   final_node_type* header()const
   {
-#if BOOST_WORKAROUND(BOOST_GCC_VERSION,>=160100)
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wuninitialized"
-#endif
     return &*bfm_header::member;
-#if BOOST_WORKAROUND(BOOST_GCC_VERSION,>=160100)
-#pragma GCC diagnostic pop
-#endif
   }
 
   final_node_type* allocate_node()
@@ -1122,6 +1120,10 @@ protected:
 private:
   size_type node_count;
 };
+
+#if BOOST_WORKAROUND(BOOST_GCC_VERSION,>=160100)
+#pragma GCC diagnostic pop /* -Wuninitialized */
+#endif
 
 #if BOOST_WORKAROUND(BOOST_MSVC,BOOST_TESTED_AT(1500))
 #pragma warning(pop) /* C4522 */
