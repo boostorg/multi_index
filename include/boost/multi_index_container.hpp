@@ -156,7 +156,6 @@ public:
 
   multi_index_container():
     bfm_allocator(allocator_type()),
-    bfm_header(),
     super(ctor_args_list(),bfm_allocator::member),
     node_count(0)
   {
@@ -167,7 +166,6 @@ public:
     const ctor_args_list& args_list,
     const allocator_type& al=allocator_type()):
     bfm_allocator(al),
-    bfm_header(),
     super(args_list,bfm_allocator::member),
     node_count(0)
   {
@@ -176,7 +174,6 @@ public:
 
   explicit multi_index_container(const allocator_type& al):
     bfm_allocator(al),
-    bfm_header(),
     super(ctor_args_list(),bfm_allocator::member),
     node_count(0)
   {
@@ -189,7 +186,6 @@ public:
     const ctor_args_list& args_list=ctor_args_list(),
     const allocator_type& al=allocator_type()):
     bfm_allocator(al),
-    bfm_header(),
     super(args_list,bfm_allocator::member),
     node_count(0)
   {
@@ -214,7 +210,6 @@ public:
     const ctor_args_list& args_list=ctor_args_list(),
     const allocator_type& al=allocator_type()):
     bfm_allocator(al),
-    bfm_header(),
     super(args_list,bfm_allocator::member),
     node_count(0)
   {
@@ -554,10 +549,19 @@ protected:
     BOOST_MULTI_INDEX_CHECK_INVARIANT;
   }
 
+#if BOOST_WORKAROUND(BOOST_GCC_VERSION,>=160100)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wuninitialized"
+#endif
+
   final_node_type* header()const
   {
     return &*bfm_header::member;
   }
+
+#if BOOST_WORKAROUND(BOOST_GCC_VERSION,>=160100)
+#pragma GCC diagnostic pop
+#endif
 
   final_node_type* allocate_node()
   {
