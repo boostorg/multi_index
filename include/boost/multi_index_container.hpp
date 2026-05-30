@@ -550,12 +550,30 @@ protected:
   }
 
 #if BOOST_WORKAROUND(BOOST_GCC_VERSION,>=160100)
-  BOOST_NOINLINE /* bogus uninitialized warning otherwise */
-#endif
+  /* prevents bogus uninitialized warning */
+
+  template<typename Holder, typename PtrToMember>
+  static BOOST_NOINLINE final_node_type* 
+  header_from_holder(const Holder* p,PtrToMember pm)
+  {
+    return &*(p->*pm);
+  }
+
+  final_node_type* header()const
+  {
+    using header_holder = detail::header_holder<
+      node_pointer,
+      multi_index_container>;
+
+    return header_from_holder(
+      static_cast<const header_holder*>(this),&header_holder::member);
+  }
+#else
   final_node_type* header()const
   {
     return &*bfm_header::member;
   }
+#endif
 
   final_node_type* allocate_node()
   {
