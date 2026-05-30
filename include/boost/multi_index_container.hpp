@@ -549,19 +549,17 @@ protected:
     BOOST_MULTI_INDEX_CHECK_INVARIANT;
   }
 
+  final_node_type* header()const
+  {
 #if BOOST_WORKAROUND(BOOST_GCC_VERSION,>=160100)
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wuninitialized"
 #endif
-
-  final_node_type* header()const
-  {
     return &*bfm_header::member;
-  }
-
 #if BOOST_WORKAROUND(BOOST_GCC_VERSION,>=160100)
 #pragma GCC diagnostic pop
 #endif
+  }
 
   final_node_type* allocate_node()
   {
