@@ -1,6 +1,6 @@
 /* Multiply indexed container.
  *
- * Copyright 2003-2025 Joaquin M Lopez Munoz.
+ * Copyright 2003-2026 Joaquin M Lopez Munoz.
  * Distributed under the Boost Software License, Version 1.0.
  * (See accompanying file LICENSE_1_0.txt or copy at
  * http://www.boost.org/LICENSE_1_0.txt)
@@ -156,6 +156,7 @@ public:
 
   multi_index_container():
     bfm_allocator(allocator_type()),
+    bfm_header(),
     super(ctor_args_list(),bfm_allocator::member),
     node_count(0)
   {
@@ -166,6 +167,7 @@ public:
     const ctor_args_list& args_list,
     const allocator_type& al=allocator_type()):
     bfm_allocator(al),
+    bfm_header(),
     super(args_list,bfm_allocator::member),
     node_count(0)
   {
@@ -174,6 +176,7 @@ public:
 
   explicit multi_index_container(const allocator_type& al):
     bfm_allocator(al),
+    bfm_header(),
     super(ctor_args_list(),bfm_allocator::member),
     node_count(0)
   {
@@ -186,6 +189,7 @@ public:
     const ctor_args_list& args_list=ctor_args_list(),
     const allocator_type& al=allocator_type()):
     bfm_allocator(al),
+    bfm_header(),
     super(args_list,bfm_allocator::member),
     node_count(0)
   {
@@ -210,6 +214,7 @@ public:
     const ctor_args_list& args_list=ctor_args_list(),
     const allocator_type& al=allocator_type()):
     bfm_allocator(al),
+    bfm_header(),
     super(args_list,bfm_allocator::member),
     node_count(0)
   {
