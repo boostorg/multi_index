@@ -1,4 +1,4 @@
-/* Copyright 2003-2022 Joaquin M Lopez Munoz.
+/* Copyright 2003-2026 Joaquin M Lopez Munoz.
  * Distributed under the Boost Software License, Version 1.0.
  * (See accompanying file LICENSE_1_0.txt or copy at
  * http://www.boost.org/LICENSE_1_0.txt)
@@ -32,13 +32,31 @@ namespace detail{
 template<typename NodeTypePtr,typename Final>
 struct header_holder:private noncopyable
 {
-  header_holder():member(final().allocate_node()){}
-  ~header_holder(){final().deallocate_node(&*member);}
+  header_holder()
+  {
+    new (&spc) NodeTypePtr(final().allocate_node());
+  }
 
-  NodeTypePtr member;
+  ~header_holder()
+  {
+    final().deallocate_node(&*member());
+    member().~NodeTypePtr();
+  }
+
+  const NodeTypePtr& member()const noexcept
+  {
+    return *static_cast<const NodeTypePtr*>(static_cast<void const*>(&spc));
+  }
+
+  NodeTypePtr& member()noexcept
+  {
+    return *static_cast<NodeTypePtr*>(static_cast<void*>(&spc));
+  }
 
 private:
   Final& final(){return *static_cast<Final*>(this);}
+
+  alignas(NodeTypePtr) unsigned char spc[sizeof(NodeTypePtr)];
 };
 
 } /* namespace multi_index::detail */

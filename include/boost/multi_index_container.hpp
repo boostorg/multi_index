@@ -549,31 +549,10 @@ protected:
     BOOST_MULTI_INDEX_CHECK_INVARIANT;
   }
 
-#if BOOST_WORKAROUND(BOOST_GCC_VERSION,>=160100)
-  /* prevents bogus uninitialized warning */
-
-  template<typename Holder, typename PtrToMember>
-  static BOOST_NOINLINE final_node_type* 
-  header_from_holder(const Holder* p,PtrToMember pm)
-  {
-    return &*(p->*pm);
-  }
-
   final_node_type* header()const
   {
-    using header_holder = detail::header_holder<
-      node_pointer,
-      multi_index_container>;
-
-    return header_from_holder(
-      static_cast<const header_holder*>(this),&header_holder::member);
+    return &*bfm_header::member();
   }
-#else
-  final_node_type* header()const
-  {
-    return &*bfm_header::member;
-  }
-#endif
 
   final_node_type* allocate_node()
   {
@@ -924,7 +903,7 @@ protected:
     boost::true_type swap_allocators)
   {
     detail::adl_swap(bfm_allocator::member,x.bfm_allocator::member);
-    std::swap(bfm_header::member,x.bfm_header::member);
+    std::swap(bfm_header::member(),x.bfm_header::member());
     super::swap_(x,swap_allocators);
     std::swap(node_count,x.node_count);
   }
@@ -933,7 +912,7 @@ protected:
     multi_index_container<Value,IndexSpecifierList,Allocator>& x,
     boost::false_type swap_allocators)
   {
-    std::swap(bfm_header::member,x.bfm_header::member);
+    std::swap(bfm_header::member(),x.bfm_header::member());
     super::swap_(x,swap_allocators);
     std::swap(node_count,x.node_count);
   }
@@ -941,7 +920,7 @@ protected:
   void swap_elements_(
     multi_index_container<Value,IndexSpecifierList,Allocator>& x)
   {
-    std::swap(bfm_header::member,x.bfm_header::member);
+    std::swap(bfm_header::member(),x.bfm_header::member());
     super::swap_elements_(x);
     std::swap(node_count,x.node_count);
   }
