@@ -45,12 +45,13 @@ struct header_holder:private noncopyable
 
   const NodeTypePtr& member()const noexcept
   {
-    return *static_cast<const NodeTypePtr*>(static_cast<void const*>(&spc));
+    return *reinterpret_cast<const NodeTypePtr*>(
+      static_cast<void const*>(&spc));
   }
 
   NodeTypePtr& member()noexcept
   {
-    return *static_cast<NodeTypePtr*>(static_cast<void*>(&spc));
+    return *reinterpret_cast<NodeTypePtr*>(static_cast<void*>(&spc));
   }
 
 private:
