@@ -742,7 +742,7 @@ protected:
     key(tuples::get<1>(args_list.get_head())),
     hash_(tuples::get<2>(args_list.get_head())),
     eq_(tuples::get<3>(args_list.get_head())),
-    buckets(al,header()->impl(),tuples::get<0>(args_list.get_head())),
+    buckets(al,h->impl(),tuples::get<0>(args_list.get_head())),
     mlf(1.0f)
 
 #if defined(BOOST_MULTI_INDEX_ENABLE_SAFE_MODE)
@@ -760,7 +760,7 @@ protected:
     key(x.key),
     hash_(x.hash_),
     eq_(x.eq_),
-    buckets(x.get_allocator(),header()->impl(),x.buckets.size()),
+    buckets(al,h->impl(),x.buckets.size()),
     mlf(x.mlf),
     max_load(x.max_load)
 
@@ -782,7 +782,7 @@ protected:
     key(x.key),
     hash_(x.hash_),
     eq_(x.eq_),
-    buckets(x.get_allocator(),h->impl(),0),
+    buckets(al,h->impl(),0),
     mlf(1.0f)
 
 #if defined(BOOST_MULTI_INDEX_ENABLE_SAFE_MODE)

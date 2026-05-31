@@ -267,7 +267,6 @@ public:
   multi_index_container(
     multi_index_container&& x,const allocator_type& al):
     bfm_allocator(al),
-    bfm_header(),
     super(
       x,bfm_allocator::member,&*bfm_header::member,
       detail::do_not_copy_elements_tag()),

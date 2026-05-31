@@ -744,7 +744,7 @@ protected:
     const ctor_args_list& args_list,
     const allocator_type& al,index_node_type* h):
     super(args_list.get_tail(),al,h),
-    ptrs(al,header()->impl(),0)
+    ptrs(al,h->impl(),0)
 
 #if defined(BOOST_MULTI_INDEX_ENABLE_SAFE_MODE)
     ,safe(*this)
