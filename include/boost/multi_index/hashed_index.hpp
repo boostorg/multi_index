@@ -735,12 +735,14 @@ public:
   }
 
 protected:
-  hashed_index(const ctor_args_list& args_list,const allocator_type& al):
-    super(args_list.get_tail(),al),
+  hashed_index(
+    const ctor_args_list& args_list,
+    const allocator_type& al,index_node_type* h):
+    super(args_list.get_tail(),al,h),
     key(tuples::get<1>(args_list.get_head())),
     hash_(tuples::get<2>(args_list.get_head())),
     eq_(tuples::get<3>(args_list.get_head())),
-    buckets(al,header()->impl(),tuples::get<0>(args_list.get_head())),
+    buckets(al,h->impl(),tuples::get<0>(args_list.get_head())),
     mlf(1.0f)
 
 #if defined(BOOST_MULTI_INDEX_ENABLE_SAFE_MODE)
@@ -752,12 +754,13 @@ protected:
   }
 
   hashed_index(
-    const hashed_index<KeyFromValue,Hash,Pred,SuperMeta,TagList,Category>& x):
-    super(x),
+    const hashed_index<KeyFromValue,Hash,Pred,SuperMeta,TagList,Category>& x,
+    const allocator_type& al,index_node_type* h):
+    super(x,al,h),
     key(x.key),
     hash_(x.hash_),
     eq_(x.eq_),
-    buckets(x.get_allocator(),header()->impl(),x.buckets.size()),
+    buckets(al,h->impl(),x.buckets.size()),
     mlf(x.mlf),
     max_load(x.max_load)
 
@@ -773,12 +776,13 @@ protected:
 
   hashed_index(
     const hashed_index<KeyFromValue,Hash,Pred,SuperMeta,TagList,Category>& x,
+    const allocator_type& al,index_node_type* h,
     do_not_copy_elements_tag):
-    super(x,do_not_copy_elements_tag()),
+    super(x,al,h,do_not_copy_elements_tag()),
     key(x.key),
     hash_(x.hash_),
     eq_(x.eq_),
-    buckets(x.get_allocator(),header()->impl(),0),
+    buckets(al,h->impl(),0),
     mlf(1.0f)
 
 #if defined(BOOST_MULTI_INDEX_ENABLE_SAFE_MODE)
