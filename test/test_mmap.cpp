@@ -24,6 +24,9 @@
 #include <boost/multi_index/random_access_index.hpp>
 #include <boost/uuid/random_generator.hpp>
 #include <boost/uuid/uuid_io.hpp>
+#include <iterator>
+#include <memory>
+#include <string>
 
 void test_mmap()
 {
