@@ -78,6 +78,11 @@ Acknowledgements
 
 <p>
 <ul>
+  <li>Fancy pointer support has been extended so that <code>multi_index_container</code>
+    iterators now store references to the elements through the allocator's pointer type.
+    In particular, this means that iterators can now be placed in shared memory using
+    <a href="../../interprocess/index.html">Boost.Interprocess</a> allocators.
+  </li>
   <li>Fixed a performance issue with hashed indices when rehashing at very large
     container sizes (<a href="https://github.com/boostorg/multi_index/pull/94">PR#94</a>).
     Contributed by Daniel Kr&aacute;l.
@@ -858,7 +863,7 @@ Acknowledgements
 
 <br>
 
-<p>Revised April 24th 2026</p>
+<p>Revised June 27th 2026</p>
 
 <p>&copy; Copyright 2003-2026 Joaqu&iacute;n M L&oacute;pez Mu&ntilde;oz.
 Distributed under the Boost Software 
