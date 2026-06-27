@@ -56,8 +56,8 @@ void test_mmap()
   static auto file_name=file_name_str.c_str();
   
   bip::file_mapping::remove(file_name);
-  auto pseg1=std::make_unique<bip::managed_mapped_file>(
-    bip::create_only,file_name,65536);
+  std::unique_ptr<bip::managed_mapped_file> pseg1(
+    new bip::managed_mapped_file(bip::create_only,file_name,65536));
   container& c1=*pseg1->construct<container>(container_name)(
     container::ctor_args_list(),
     container::allocator_type(pseg1->get_segment_manager()));
