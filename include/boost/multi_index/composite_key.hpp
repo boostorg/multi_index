@@ -1,4 +1,4 @@
-/* Copyright 2003-2025 Joaquin M Lopez Munoz.
+/* Copyright 2003-2026 Joaquin M Lopez Munoz.
  * Distributed under the Boost Software License, Version 1.0.
  * (See accompanying file LICENSE_1_0.txt or copy at
  * http://www.boost.org/LICENSE_1_0.txt)
@@ -338,6 +338,7 @@ public:
   using super::super;
   composite_key()=default;
   composite_key(const composite_key&)=default;
+  composite_key& operator=(const composite_key&)=default;
 
   const key_extractor_tuple& key_extractors()const{return *this;}
   key_extractor_tuple&       key_extractors(){return *this;}
@@ -586,6 +587,7 @@ public:
   using super::super;
   composite_key_equal_to()=default;
   composite_key_equal_to(const composite_key_equal_to&)=default;
+  composite_key_equal_to& operator=(const composite_key_equal_to&)=default;
 
   const key_eq_tuple& key_eqs()const{return *this;}
   key_eq_tuple&       key_eqs(){return *this;}
@@ -704,6 +706,7 @@ public:
   using super::super;
   composite_key_compare()=default;
   composite_key_compare(const composite_key_compare&)=default;
+  composite_key_compare& operator=(const composite_key_compare&)=default;
 
   const key_comp_tuple& key_comps()const{return *this;}
   key_comp_tuple&       key_comps(){return *this;}
@@ -837,6 +840,7 @@ public:
   using super::super;
   composite_key_hash()=default;
   composite_key_hash(const composite_key_hash&)=default;
+  composite_key_hash& operator=(const composite_key_hash&)=default;
 
   const key_hasher_tuple& key_hash_functions()const{return *this;}
   key_hasher_tuple&       key_hash_functions(){return *this;}
