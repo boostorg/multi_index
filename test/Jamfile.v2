@@ -38,6 +38,7 @@ project
       <toolset>msvc:<define>_SILENCE_ALL_CXX17_DEPRECATION_WARNINGS
       <toolset>msvc:<cxxflags>/wd4494
       <toolset>gcc-16:<cxxflags>-fno-thread-jumps # https://gcc.gnu.org/bugzilla/show_bug.cgi?id=119321
+      <toolset>clang-20:<cxxflags>-Wdeprecated-copy
     ;
 
 obj boost_multi_index_key_supported : check_bmi_key_supported.cpp  ;
