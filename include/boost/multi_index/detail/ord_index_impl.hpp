@@ -719,7 +719,7 @@ protected:
 #endif
 
   {
-    empty_initialize();
+    empty_initialize(h);
   }
 
   ordered_index_impl(
@@ -754,7 +754,7 @@ protected:
 #endif
 
   {
-    empty_initialize();
+    empty_initialize(h);
   }
 
   ~ordered_index_impl()
@@ -1129,14 +1129,16 @@ protected: /* for the benefit of AugmentPolicy::augmented_interface */
     {return index_node_type::from_impl(header()->right());}
 
 private:
-  void empty_initialize()
+  void empty_initialize(){empty_initialize(header());}
+
+  static void empty_initialize(index_node_type* h)
   {
-    header()->color()=red;
-    /* used to distinguish header() from root, in iterator.operator++ */
+    h->color()=red;
+    /* used to distinguish header from root, in iterator.operator++ */
     
-    header()->parent()=node_impl_pointer(0);
-    header()->left()=header()->impl();
-    header()->right()=header()->impl();
+    h->parent()=node_impl_pointer(0);
+    h->left()=h->impl();
+    h->right()=h->impl();
   }
 
   struct link_info
