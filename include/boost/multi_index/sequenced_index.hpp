@@ -665,7 +665,7 @@ protected:
 #endif
 
   {
-    empty_initialize();
+    empty_initialize(h);
   }
 
   sequenced_index(
@@ -692,7 +692,7 @@ protected:
 #endif
 
   {
-    empty_initialize();
+    empty_initialize(h);
   }
 
   ~sequenced_index()
@@ -896,9 +896,11 @@ protected:
 private:
   index_node_type* header()const{return this->final_header();}
 
-  void empty_initialize()
+  void empty_initialize(){empty_initialize(header());}
+
+  static void empty_initialize(index_node_type* h)
   {
-    header()->prior()=header()->next()=header()->impl();
+    h->prior()=h->next()=h->impl();
   }
 
   void link(index_node_type* x)
